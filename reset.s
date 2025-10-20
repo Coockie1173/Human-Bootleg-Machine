@@ -1,3 +1,6 @@
+;reset/pre-boot code
+;this sets everything required up PPU wise and sets the program up to work
+
 reset:
   sei		; disable IRQs
   cld		; disable decimal mode
@@ -32,4 +35,25 @@ reset:
   vblankwait2:
   bit $2002
   bpl vblankwait2
-  jmp main
+
+  load_palettes:
+    lda $2002
+    lda #$3f
+    sta $2006
+    lda #$00
+    sta $2006
+    ldx #$00
+  @loop:
+    lda palettes, x
+    sta $2007
+    inx
+    cpx #$20
+    bne @loop
+
+  enable_rendering:
+    lda #%10000000	; Enable NMI
+    sta $2000
+    lda #%00010000	; Enable Sprites
+    sta $2001
+
+    jmp main ;start main game loop
