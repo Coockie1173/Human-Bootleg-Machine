@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "alchemy65",
+      "request": "launch",
+      "preLaunchTask": "Build NES",
+      "name": "Debug ROM with Mesen",
+      "romPath": "${workspaceFolder}/Build/HRS.nes",
+      "dbgPath": "${workspaceFolder}/Build/HRS.dbg",
+      "program": "C:\\Users\\rudje\\Documents\\School\\jaar2\\retro\\Emulator\\Mesen.exe",
+      "sourcePath": "${workspaceFolder}/",
+      "stopOnEntry": false,
+      "resetOnEntry": true
+    }
+  ]
+}

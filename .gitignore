@@ -1,0 +1,8 @@
+*.o
+*.nes*
+*.dbg*
+*.deb*
+*.lst*
+.DS_Store
+*.kate-swp
+Build/*

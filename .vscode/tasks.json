@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Assemble and Link NES",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "if (!(Test-Path Build)) { New-Item -ItemType Directory Build | Out-Null }; ca65 main.s -g -o Build/main.o"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$ca65"],
+      "detail": "Assembles an NES project using cc65, creating the Build folder if needed."
+    },
+    {
+      "label": "Build NES",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "if (!(Test-Path Build)) { New-Item -ItemType Directory Build | Out-Null }; ld65 -t nes -o Build/HRS.nes Build/main.o --dbgfile Build/HRS.dbg"
+      ],
+      "group": "build",
+      "dependsOn": "Assemble and Link NES",
+      "problemMatcher": ["$ld65"],
+      "detail": "Links the NES object file to create a ROM, ensuring the Build folder exists."
+    },
+    {
+      "label": "Clean NES Build",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "if (Test-Path Build) { Remove-Item -Recurse -Force Build }"
+      ],
+      "problemMatcher": [],
+      "detail": "Removes the Build directory and all generated files."
+    }
+  ]
+}
