@@ -1,9 +1,6 @@
-.segment "HEADER"
-  ; .byte "NES", $1A      ; iNES header identifier
-  .byte $4E, $45, $53, $1A
-  .byte 2               ; 2x 16KB PRG code
-  .byte 1               ; 1x  8KB CHR data
-  .byte $01, $00        ; mapper 0, vertical mirroring
+.include "header.s"
+
+.include "graphics.s"
 
 .segment "VECTORS"
   ;; When an NMI happens (once per frame if enabled) the label nmi:
@@ -19,41 +16,7 @@
 
 ; Main code segment for the program
 .segment "CODE"
-
-reset:
-  sei		; disable IRQs
-  cld		; disable decimal mode
-  ldx #$40
-  stx $4017	; disable APU frame IRQ
-  ldx #$ff 	; Set up stack
-  txs		;  .
-  inx		; now X = 0
-  stx $2000	; disable NMI
-  stx $2001 	; disable rendering
-  stx $4010 	; disable DMC IRQs
-
-;; first wait for vblank to make sure PPU is ready
-vblankwait1:
-  bit $2002
-  bpl vblankwait1
-
-clear_memory:
-  lda #$00
-  sta $0000, x
-  sta $0100, x
-  sta $0200, x
-  sta $0300, x
-  sta $0400, x
-  sta $0500, x
-  sta $0600, x
-  sta $0700, x
-  inx
-  bne clear_memory
-
-;; second wait for vblank, PPU is ready after this
-vblankwait2:
-  bit $2002
-  bpl vblankwait2
+.include "reset.s"
 
 main:
 load_palettes:
@@ -116,65 +79,3 @@ palettes:
   .byte $0f, $00, $00, $00
   .byte $0f, $00, $00, $00
   .byte $0f, $00, $00, $00
-
-; Character memory
-.segment "CHARS"
-  .byte %11111111	; T (00)
-  .byte %11111111
-  .byte %00011000
-  .byte %00011000
-  .byte %00011000
-  .byte %00011000
-  .byte %00011000
-  .byte %00011000
-  .byte $00, $00, $00, $00, $00, $00, $00, $00
-
-  .byte %11111111 ; O (01)
-  .byte %11111111
-  .byte %11000011
-  .byte %11000011
-  .byte %11000011
-  .byte %11000011
-  .byte %11111111
-  .byte %11111111
-  .byte $00, $00, $00, $00, $00, $00, $00, $00
-
-  .byte %11000011	; M (02)
-  .byte %11100111
-  .byte %11111111
-  .byte %11011011
-  .byte %11000011
-  .byte %11000011
-  .byte %11000011
-  .byte %11000011
-  .byte $00, $00, $00, $00, $00, $00, $00, $00
-
-  .byte %11000011	; H (03)
-  .byte %11000011
-  .byte %11000011
-  .byte %11111111
-  .byte %11111111
-  .byte %11000011
-  .byte %11000011
-  .byte %11000011
-  .byte $00, $00, $00, $00, $00, $00, $00, $00
-
-  .byte %11111111	; E (04)
-  .byte %11111111
-  .byte %11000000
-  .byte %11111100
-  .byte %11111100
-  .byte %11000000
-  .byte %11111111
-  .byte %11111111
-  .byte $00, $00, $00, $00, $00, $00, $00, $00
-
-  .byte %11000000	; L (05)
-  .byte %11000000
-  .byte %11000000
-  .byte %11000000
-  .byte %11000000
-  .byte %11000000
-  .byte %11111111
-  .byte %11111111
-  .byte $00, $00, $00, $00, $00, $00, $00, $00  
