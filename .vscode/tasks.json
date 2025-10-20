@@ -7,7 +7,7 @@
       "command": "powershell",
       "args": [
         "-Command",
-        "if (!(Test-Path Build)) { New-Item -ItemType Directory Build | Out-Null }; ca65 main.s -g -o Build/main.o"
+        "if (!(Test-Path Build)) { New-Item -ItemType Directory Build | Out-Null }; ca65 src/main.s -g -o Build/main.o"
       ],
       "group": {
         "kind": "build",

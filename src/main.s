@@ -1,4 +1,4 @@
-.include "boot.s"
+.include "./boot/boot.s"
 .include "nmi.s"
 
 main:
