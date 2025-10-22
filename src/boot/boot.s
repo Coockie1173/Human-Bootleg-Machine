@@ -1,6 +1,6 @@
 ;this just brings all the required boot asm files together into one nice file
 .include "header.s"
-.include "graphics.s"
+.include "../gfx/graphics.s"
 
 .include "vectors.s"
 
