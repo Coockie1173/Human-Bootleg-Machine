@@ -5,4 +5,6 @@
 .include "commands.s"
 
 main:
+    LDA #$ff
+    STA VAR0
     jmp main

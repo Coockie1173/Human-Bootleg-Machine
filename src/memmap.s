@@ -18,7 +18,7 @@
 .define CONADDR $10
 .define CONADDRPREV $11
 
-.define COMMANDS $0100 ;size 0xFF
-.define VARIABLES $0200 ;size 0xFF
-.define GAMEMMEM $0300 ;size 0x08
-.define HANDMEM $0309 ;size 0x01
+.define COMMANDS $0200 ;size 0xFF
+.define VARIABLES $0300 ;size 0xFF
+.define GAMEMMEM $0400 ;size 0x08
+.define HANDMEM $0409 ;size 0x01
