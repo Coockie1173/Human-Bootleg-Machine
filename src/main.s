@@ -5,6 +5,4 @@
 .include "commands.s"
 
 main:
-    LDA #$01
-    STA SCRATCH0
     jmp main
