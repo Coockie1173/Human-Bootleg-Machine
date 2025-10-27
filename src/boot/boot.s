@@ -9,5 +9,5 @@
 
 ; Main code segment for the program
 .segment "CODE"
-.include "palette.s"
+.include "../gfx/palette.s"
 .include "reset.s"
