@@ -1,0 +1,11 @@
+.define INBOX $00
+.define OUTBOX $01
+.define COPYFROM $02
+.define COPYTO $03
+.define ADD $04
+.define SUB $05
+.define BUMPUP $06
+.define BUMPDOWN $07
+.define JUMP $08
+.define JUMPZERO $09
+.define JUMPNEGATIVE $0A
