@@ -18,6 +18,8 @@
 .define CONADDR $10
 .define CONADDRPREV $11
 
+.define STACK $0100 ;size 0xFF DO NOT TOUCH THIS RANGE
+
 .define COMMANDS $0200 ;size 0xFF
 .define VARIABLES $0300 ;size 0xFF
 .define GAMEMMEM $0400 ;size 0x08

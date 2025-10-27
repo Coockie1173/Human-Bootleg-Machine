@@ -1,7 +1,7 @@
 # TODO
 
 ## COMMAND SELECTION/CONSTRUCTION - Zendé & Kerem
-- [ ] Inputs
+- [ ] Inputs 
 - [ ] List construction
 - [ ] Figure out how to set var
 ## GRAPHICS - Oumi
