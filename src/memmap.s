@@ -20,3 +20,5 @@
 
 .define COMMANDS $0100 ;size 0xFF
 .define VARIABLES $0200 ;size 0xFF
+.define GAMEMMEM $0300 ;size 0x08
+.define HANDMEM $0309 ;size 0x01
