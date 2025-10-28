@@ -9,3 +9,4 @@
 .define JUMP            #$08
 .define JUMPZERO        #$09
 .define JUMPNEGATIVE    #$0A
+.define EOL             #$FF
