@@ -3,6 +3,7 @@
 .include "controller/inputs.s"
 .include "memmap.s"
 .include "commands.s"
+.include "interpreter/interpreter.s"
 
 main:
     LDA #$ff

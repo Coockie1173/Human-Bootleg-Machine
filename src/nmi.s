@@ -1,6 +1,10 @@
 ;all NMI code goes here
 
 nmi:
+  PHA
+  PHX
+  PHY
+  PHP
   ldx #$00 	; Set SPR-RAM address to 0
   stx $2003
 @loop:	lda hello, x 	; Load the hello message into SPR-RAM
@@ -8,6 +12,10 @@ nmi:
   inx
   cpx #$5c
   bne @loop
+  PLP
+  PLY
+  PLX
+  PLA
   rti
 
 hello:

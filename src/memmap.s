@@ -24,3 +24,6 @@
 .define VARIABLES $0300 ;size 0xFF
 .define GAMEMMEM $0400 ;size 0x08
 .define HANDMEM $0409 ;size 0x01
+
+.define SOLUTION $0450 ;size 0x20
+.define MAXSOLUTIONSIZE #$20
