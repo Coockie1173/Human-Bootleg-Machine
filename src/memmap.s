@@ -28,4 +28,5 @@
 .define SOLUTION $0450 ;size 0x20
 .define MAXSOLUTIONSIZE #$20
 .define INBOXIDX $0471
-.define SOLPOS $0472
+.define INTERPTR $0472
+.define SOLPTR $0473
