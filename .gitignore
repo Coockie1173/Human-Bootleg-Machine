@@ -6,3 +6,4 @@
 .DS_Store
 *.kate-swp
 Build/*
+.vscode/*.*
