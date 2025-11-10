@@ -5,7 +5,7 @@ CommandJumpTable:
     .dbyt SubCommand - 1, BumpUpCommand - 1, BumpDownCommand - 1, JumpCommand - 1, JumpZeroCommand - 1, JumpNegativeCommand - 1
 
 TestInstructions:
-.byte $00,$03,$06,$02,$01,$08
+.byte $00,$03,$06,$02,$01,$08,$FF
 TestVars:
 .byte $00,$01,$01,$01,$00,$00
 
@@ -21,6 +21,12 @@ ParseInstruction:
 
     ;LDA COMMANDS,x ;load the command in the list
     LDA TestInstructions,x
+    CMP #$FF
+    BNE :+
+        SEC
+        RTS
+    :
+
     ASL ;adjust for 16 bits to index the CommandJumpTable
     TAX ;move it to X so we can index with it later
 
