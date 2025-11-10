@@ -73,6 +73,8 @@ CheckAllSolutions:
     JSR ParseInstruction ;parse all instructions until the inbox is empty or something else fails
     BCC :-
 
+    ;now check if the solution the interpreter produced matches out solution pointer
+
     PLY ;get our counter back
     DEY ;decrement and check
     CPY #$00
