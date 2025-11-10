@@ -8,5 +8,5 @@
 .include "interpreter/MainInterpreter.s"
 
 main:
-    jsr ParseInstruction
+    ;jsr ParseInstruction
     jmp main
