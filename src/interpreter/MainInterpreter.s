@@ -21,10 +21,10 @@ ParseInstruction:
 
     ;LDA COMMANDS,x ;load the command in the list
     LDA TestInstructions,x
-    CMP #$FF
+    CMP #$FF ;end of list?
     BNE :+
         SEC
-        RTS
+        RTS ;tell the program and leave the list
     :
 
     ASL ;adjust for 16 bits to index the CommandJumpTable
