@@ -1,6 +1,7 @@
 ;all hardcoded nonsense that isn't memory addresses goes here
 .define MAXSOLUTIONSIZE #$20
 
+;USED IN TABLES
 .define TILE0LOCHI $00
 .define TILE0LOCLO $00
 
@@ -24,6 +25,7 @@
 
 .define TILE7LOCHI $00
 .define TILE7LOCLO $00
+;END TABLE USE
 
 .define INBOXLOCHI #$00
 .define INBOXLOCLO #$00
