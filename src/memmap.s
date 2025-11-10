@@ -15,8 +15,8 @@
 .define VARE $0E
 .define VARF $0F
 
-.define CONADDR $10
-.define CONADDRPREV $11
+.define CONADDR $10 ;controller input buffer
+.define CONADDRPREV $11 ;previous controller input buffer
 
 .define STACK $0100 ;size 0xFF DO NOT TOUCH THIS RANGE
 

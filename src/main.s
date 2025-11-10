@@ -9,4 +9,6 @@
 
 main:
     ;jsr ParseInstruction
+
+    ;jsr ReadJoy
     jmp main
