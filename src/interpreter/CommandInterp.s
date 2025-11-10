@@ -8,10 +8,10 @@ RTS
 OutboxCommand:
     LDX SOLPTR
     CPX MAXSOLUTIONSIZE
-    BEQ +
+    BEQ :+
         LDA HANDMEM
         STA SOLUTION,x
-    +
+    :
 RTS
 
 CopyFromCommand:
@@ -59,14 +59,14 @@ RTS
 
 JumpZeroCommand:
     LDA HANDMEM
-    BNE +
+    BNE :+
         JMP JumpCommand
-    +
+    :
 RTS
 
 JumpNegativeCommand:
     LDA HANDMEM
-    BMI +
+    BMI :+
         JMP JumpCommand
-    +
+    :
 RTS

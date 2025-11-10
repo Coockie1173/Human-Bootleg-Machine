@@ -1,8 +1,8 @@
 .include "CommandInterp.s"
 
 CommandJumpTable:
-    .dbyt InboxCommand, OutboxCommand, CopyFromCommand, CopyToCommand, AddCommand
-    .dbyt SubCommand, BumpUpCommand, BumpDownCommand, JumpCommand, JumpZeroCommand, JumpNegativeCommand
+    .dbyt InboxCommand - 1, OutboxCommand - 1, CopyFromCommand - 1, CopyToCommand - 1, AddCommand - 1
+    .dbyt SubCommand - 1, BumpUpCommand - 1, BumpDownCommand - 1, JumpCommand - 1, JumpZeroCommand - 1, JumpNegativeCommand - 1
 
 TestInstructions:
 .byte $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A
@@ -32,7 +32,5 @@ ParseInstruction:
     LDA CommandJumpTable,x ;now we build a trampoline by pushing the address of the correct command onto the stack
     PHA ;this effectively works as a jump rather than a return now
     LDA CommandJumpTable+1,x ;no need to increase X if we can just increase the raw addr
-    SEC
-    SBC #$01
     PHA
     RTS
