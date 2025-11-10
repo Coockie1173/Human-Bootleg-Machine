@@ -17,6 +17,7 @@
 
 .define CONADDR $10
 .define CONADDRPREV $11
+.define INBOXPTR $12 ;size 0x02
 
 .define STACK $0100 ;size 0xFF DO NOT TOUCH THIS RANGE
 
@@ -28,6 +29,6 @@
 .define DEDSTINATIONPLAYERY $040C ;size 0x02
 
 .define SOLUTION $0450 ;size 0x20
-.define INBOXIDX $0471
-.define INTERPTR $0472
-.define SOLPTR $0473
+.define INBOXIDX $0471 ;size 0x01
+.define INTERPTR $0472 ;size 0x01
+.define SOLPTR $0473 ;size 0x01

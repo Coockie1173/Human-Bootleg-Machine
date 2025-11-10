@@ -6,6 +6,9 @@
 .include "nmi.s"
 .include "controller/inputs.s"
 .include "interpreter/MainInterpreter.s"
+.include "interpreter/Puzzles.s"
+
+;TODO: ADD LOAD LEVEL THING
 
 main:
     ;jsr ParseInstruction

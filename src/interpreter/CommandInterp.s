@@ -16,13 +16,30 @@ SetTileDest:
 RTS
 
 InboxCommand:
-    LDA INBOXIDX
+    LDY #$00
+    LDA (INBOXPTR),y
+
+    CMP #$FF
+    BEQ ReachedEnd ;FF indicates end of list   
     STA HANDMEM
+
+    LDA INBOXPTR
+    CLC
+    ADC #$01
+    STA INBOXPTR
+
+    LDA INBOXPTR + 1 ;handle overflow
+    ADC #$00
+    STA INBOXPTR + 1
 
     LDA INBOXLOCHI
     STA DEDSTINATIONPLAYERX ;set player destination high
     LDA INBOXLOCLO
     STA DEDSTINATIONPLAYERX + 1 ;set player destination low
+
+RTS
+
+ReachedEnd:
 RTS
 
 OutboxCommand:

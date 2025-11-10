@@ -9,7 +9,7 @@
 - [ ] Player logic van interpreter lezen
 ## INTERPRETER - Rudy
 - [ ] solution checker
-- [ ] interpreter
+- [x] interpreter
 - [ ] player position logic
 ## SOUND (misschien)
 - [ ] probeer namaken lol

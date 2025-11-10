@@ -5,9 +5,9 @@ CommandJumpTable:
     .dbyt SubCommand - 1, BumpUpCommand - 1, BumpDownCommand - 1, JumpCommand - 1, JumpZeroCommand - 1, JumpNegativeCommand - 1
 
 TestInstructions:
-.byte $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A
+.byte $00,$03,$06,$02,$01,$08
 TestVars:
-.byte $05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05
+.byte $00,$01,$01,$01,$00,$00
 
 ;set INTERPTR to 0 to jump to the start of the interpreter
 ;assumes INTERPTR is the position within the solution, will increment during runtime
