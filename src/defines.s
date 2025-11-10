@@ -25,8 +25,8 @@
 .define TILE7LOCHI $00
 .define TILE7LOCLO $00
 
-.define INBOXLOCHI $00
-.define INBOXLOCLO $00
+.define INBOXLOCHI #$00
+.define INBOXLOCLO #$00
 
-.define OUTBOXLOCHI $00
-.define OUTBOXLOCLO $00
+.define OUTBOXLOCHI #$00
+.define OUTBOXLOCLO #$00
