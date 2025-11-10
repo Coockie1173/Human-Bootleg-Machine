@@ -1,8 +1,28 @@
 ;ALL OF THESE EXPECT THEIR "argument" TO COME IN VAR0
 
+TileLocationsHi:
+    .byte TILE0LOCHI, TILE1LOCHI, TILE2LOCHI, TILE3LOCHI
+    .byte TILE4LOCHI, TILE5LOCHI, TILE6LOCHI, TILE7LOCHI
+
+TileLocationsLo:
+    .byte TILE0LOCLO, TILE1LOCLO, TILE2LOCLO, TILE3LOCLO
+    .byte TILE4LOCLO, TILE5LOCLO, TILE6LOCLO, TILE7LOCLO
+
+SetTileDest:
+    LDA TileLocationsHi,x ;set destination per§ tile
+    STA DEDSTINATIONPLAYERX
+    LDA TileLocationsLo,x
+    STA DEDSTINATIONPLAYERX + 1 ;set player destination low
+RTS
+
 InboxCommand:
     LDA INBOXIDX
     STA HANDMEM
+
+    LDA INBOXLOCHI
+    STA DEDSTINATIONPLAYERX ;set player destination high
+    LDA INBOXLOCLO
+    STA DEDSTINATIONPLAYERX + 1 ;set player destination low
 RTS
 
 OutboxCommand:
@@ -12,19 +32,26 @@ OutboxCommand:
         LDA HANDMEM
         STA SOLUTION,x
     :
+
+    LDA OUTBOXLOCHI
+    STA DEDSTINATIONPLAYERX ;set player destination high
+    LDA OUTBOXLOCLO
+    STA DEDSTINATIONPLAYERX + 1 ;set player destination low
 RTS
 
 CopyFromCommand:
     LDX VAR0
     LDA GAMEMMEM,x
     STA HANDMEM
-RTS
+
+    JMP SetTileDest
 
 CopyToCommand:
     LDX VAR0
     LDA HANDMEM
     STA GAMEMMEM,x
-RTS
+
+    JMP SetTileDest
 
 AddCommand:
     LDA HANDMEM
@@ -32,7 +59,8 @@ AddCommand:
     CLC
     ADC GAMEMMEM,x
     STA HANDMEM
-RTS
+
+    JMP SetTileDest
 
 SubCommand:
     LDA HANDMEM
@@ -40,17 +68,20 @@ SubCommand:
     SEC
     SBC GAMEMMEM,x
     STA HANDMEM
-RTS
+
+    JMP SetTileDest
 
 BumpUpCommand:
     LDX VAR0
     INC GAMEMMEM,x
-RTS
+
+    JMP SetTileDest
 
 BumpDownCommand:
     LDX VAR0
     DEC GAMEMMEM,x
-RTS
+
+    JMP SetTileDest
 
 JumpCommand:
     LDA VAR0
