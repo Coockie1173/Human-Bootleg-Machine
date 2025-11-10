@@ -55,10 +55,5 @@ reset:
     sta $2000
     lda #%00010000	; Enable Sprites
     sta $2001
-
-    LDA #<TestPuzzle
-    STA INBOXPTR
-    LDA #>TestPuzzle
-    STA INBOXPTR + 1
-
+    
     jmp main ;start main game loop

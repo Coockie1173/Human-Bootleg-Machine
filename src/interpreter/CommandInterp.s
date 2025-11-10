@@ -13,6 +13,7 @@ SetTileDest:
     STA DEDSTINATIONPLAYERX
     LDA TileLocationsLo,x
     STA DEDSTINATIONPLAYERX + 1 ;set player destination low
+    CLC
 RTS
 
 InboxCommand:
@@ -36,10 +37,11 @@ InboxCommand:
     STA DEDSTINATIONPLAYERX ;set player destination high
     LDA INBOXLOCLO
     STA DEDSTINATIONPLAYERX + 1 ;set player destination low
-
+    CLC
 RTS
 
 ReachedEnd:
+    SEC
 RTS
 
 OutboxCommand:
@@ -50,10 +52,14 @@ OutboxCommand:
         STA SOLUTION,x
     :
 
+    INX
+    STX SOLPTR
+
     LDA OUTBOXLOCHI
     STA DEDSTINATIONPLAYERX ;set player destination high
     LDA OUTBOXLOCLO
     STA DEDSTINATIONPLAYERX + 1 ;set player destination low
+    CLC
 RTS
 
 CopyFromCommand:
@@ -103,6 +109,7 @@ BumpDownCommand:
 JumpCommand:
     LDA VAR0
     STA INTERPTR
+    CLC
 RTS
 
 JumpZeroCommand:
@@ -110,6 +117,7 @@ JumpZeroCommand:
     BNE :+
         JMP JumpCommand
     :
+    CLC
 RTS
 
 JumpNegativeCommand:
@@ -117,4 +125,5 @@ JumpNegativeCommand:
     BMI :+
         JMP JumpCommand
     :
+    CLC
 RTS

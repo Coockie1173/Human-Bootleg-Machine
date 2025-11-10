@@ -11,5 +11,6 @@
 ;TODO: ADD LOAD LEVEL THING
 
 main:
-    ;jsr ParseInstruction
+    ;LDX #$00
+    ;jsr CheckAllSolutions
     jmp main

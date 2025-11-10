@@ -11,6 +11,7 @@ TestVars:
 
 ;set INTERPTR to 0 to jump to the start of the interpreter
 ;assumes INTERPTR is the position within the solution, will increment during runtime
+;if CARRY is set, we have reached the end of our list
 ParseInstruction:
     LDX INTERPTR ;load our cursor within the solution
     ;store var first so we don't need to access X again later

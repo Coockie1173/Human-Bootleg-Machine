@@ -18,6 +18,7 @@
 .define CONADDR $10
 .define CONADDRPREV $11
 .define INBOXPTR $12 ;size 0x02
+.define CHECKSOLPTR $14 ;size 0x02
 
 .define STACK $0100 ;size 0xFF DO NOT TOUCH THIS RANGE
 
