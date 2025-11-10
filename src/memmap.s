@@ -24,9 +24,10 @@
 .define VARIABLES $0300 ;size 0xFF
 .define GAMEMMEM $0400 ;size 0x08
 .define HANDMEM $0409 ;size 0x01
+.define DEDSTINATIONPLAYERX $040A ;size 0x02
+.define DEDSTINATIONPLAYERY $040C ;size 0x02
 
 .define SOLUTION $0450 ;size 0x20
-.define MAXSOLUTIONSIZE #$20
 .define INBOXIDX $0471
 .define INTERPTR $0472
 .define SOLPTR $0473
