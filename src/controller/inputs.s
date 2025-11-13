@@ -17,7 +17,7 @@ ReadJoy:
     ;Now clear the strobe bit in joypad 1 so the reloading stops and the data starts getting sent over to the register.
     ;now since this is a shift register, it loads in bit per bit. You could use the X/Y register to read this in a loop, or you roll in the data into the controller buffer.
     ;In this example we "roll" the data into our controller address.
-    STA JOYPAD1 ;now set the strobe bit back to 0 so we can start reading in the controller data.
+    sta JOYPAD1 ;now set the strobe bit back to 0 so we can start reading in the controller data.
 loop:
     lda JOYPAD1
     lsr A ;shift the read bit into the carry

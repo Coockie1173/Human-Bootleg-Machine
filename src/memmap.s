@@ -27,6 +27,9 @@
 .define DEDSTINATIONPLAYERX $040A ;size 0x02
 .define DEDSTINATIONPLAYERY $040C ;size 0x02
 
+.define CURRCOMMAND $0448 ;size 0x01
+.define LISTCURSOR $0449 ;size 0x01
+
 .define SOLUTION $0450 ;size 0x20
 .define INBOXIDX $0471
 .define INTERPTR $0472
