@@ -1,5 +1,5 @@
 ;all NMI code goes here
-
+;to do > figure out where how to load the background/nametables
 nmi:
   PHP
   PHA
@@ -7,7 +7,7 @@ nmi:
   PHY
   ldx #$00 	; Set SPR-RAM address to 0
   stx $2003
-@loop:	lda hello, x 	; Load the hello message into SPR-RAM
+@loop:	lda testsprites, x 	; Load the sprites into SPR-RAM
   sta $2004
   inx
   cpx #$5c
@@ -18,16 +18,17 @@ nmi:
   PLP
   rti
 
-hello:
-  .byte $00, $00, $00, $00 	; Why do I need these here?
+testsprites:
+
+  .byte $00, $00, $00, $00 	; Dummy
   .byte $00, $00, $00, $00
 
-  .byte $6c, $03, $00, $4e ;h 
-  .byte $6c, $04, $00, $58 ;e
-  .byte $6c, $05, $00, $62 ;l
-  .byte $6c, $05, $00, $6c ;l
-  .byte $6c, $01, $00, $76 ;o
-  .byte $6c, $00, $00, $8a
-  .byte $6c, $01, $00, $94
-  .byte $6c, $02, $00, $9e
+  .byte $20, $21, $03, $C0
+  .byte $20, $22, $02, $C8
+  .byte $10, $1F, $01, $B8
+  .byte $20, $23, $13, $D0
+  .byte $20, $23, $23, $D8
+  .byte $20, $23, $33, $E0
+  .byte $20, $23, $03, $E8
+  
 
