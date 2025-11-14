@@ -8,6 +8,7 @@ nmi:
   ldx #$00 	; Set SPR-RAM address to 0
   stx $2003
 @loop:	lda hello, x 	; Load the hello message into SPR-RAM
+  jsr HandleHorizontal
   sta $2004
   inx
   cpx #$5c

@@ -24,4 +24,4 @@ loop:
     rol CONADDR ;our carry bit will be shifted into our controller memory address by shifting the data to the left, and shifting our bit in on the right.
     ;this in turn shifts the leftmost bit into the carry, whilst simultaneously shifting in the carry in on the right.
     bcc loop ;and as long as the carry is clear (so the bit is 0) we jump back to loop
-    rts ;and once we read in all 8 bits we jump back 
+rts ;and once we read in all 8 bits we jump back 

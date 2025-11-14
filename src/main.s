@@ -5,11 +5,12 @@
 .include "./boot/boot.s"
 .include "nmi.s"
 .include "controller/inputs.s"
+.include "controller/CommandSelect.s"
 .include "interpreter/MainInterpreter.s"
 
 main:
     ;jsr ParseInstruction
 
-    ;jsr ReadJoy
+    jsr HandleHorizontal
     
     jmp main
