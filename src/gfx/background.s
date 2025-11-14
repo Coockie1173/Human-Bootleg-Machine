@@ -13,39 +13,62 @@ load_background:
 
 loadBackgroundLoop:
     lda canvas, x
-    sta $2007         ; Write to PPU
+    sta $2007         
     inx
-    cpx #80           ;compare x to dec 128
-    bne loadBackgroundLoop       ; 256 bytes
-  
+    bne loadBackgroundLoop       ; Loop 256 times (first page)
+    
+; Second loop:
+loadBackgroundLoop2:
+    lda canvas+256, y
+    sta $2007
+    iny
+    bne loadBackgroundLoop2
+
+ ; Third loop 
+    ldx #$00
+loadBackgroundLoop3:
+    lda canvas+512, x
+    sta $2007
+    inx
+    bne loadBackgroundLoop3
+
+; Fourth loop 
+	ldy #$00
+loadBackgroundLoop4:
+	lda canvas+768, y
+	sta $2007
+	iny
+	bne loadBackgroundLoop4
+
+
 loadAttributes:
-    lda $2002 ; read PPU status
+    lda $2002       ; read PPU status
     lda #$23
-    sta $2006   ;high byte
+    sta $2006       ; high byte
     lda #$c0
-    sta $2006   ;low byte
-    ldx #$00  ;start at 0
+    sta $2006       ; low byte
+    ldx #$00        ; start at 0
 
 loadAttributesLoop:
     lda attributes, X
     sta $2007
     inx
-    cpx #$40  ; Load all 64 bytes
+    cpx #$40        ; Load all 64 bytes
     bne loadAttributesLoop
 
-  rts
+    rts
 
 canvas:
 	.byte $05,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-	.byte $00,$00,$00,$00,$00,$00,$04,$03,$1a,$03,$03,$03,$03,$03,$03,$03
+	.byte $00,$00,$00,$00,$00,$00,$04,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.byte $00,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06
-	.byte $06,$06,$06,$06,$06,$06,$00,$03,$13,$14,$16,$17,$28,$24,$27,$03
+	.byte $06,$06,$06,$06,$06,$06,$00,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.byte $00,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06
-	.byte $06,$06,$06,$06,$06,$06,$00,$1f,$11,$12,$03,$03,$03,$03,$26,$03
+	.byte $06,$06,$06,$06,$06,$06,$00,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.byte $00,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06
-	.byte $06,$06,$06,$06,$06,$06,$00,$03,$03,$03,$03,$03,$03,$03,$26,$03
+	.byte $06,$06,$06,$06,$06,$06,$00,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.byte $00,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06
-	.byte $06,$06,$06,$06,$06,$06,$00,$03,$21,$22,$23,$23,$23,$23,$25,$03
+	.byte $06,$06,$06,$06,$06,$06,$00,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.byte $00,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06
 	.byte $06,$06,$06,$06,$06,$06,$00,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.byte $00,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06
