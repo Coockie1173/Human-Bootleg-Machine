@@ -57,7 +57,7 @@ reset:
   enable_rendering:
     lda #%10000000	; Enable NMI
     sta $2000
-    lda #%00110000	; Enable Background AND Sprites
+    lda #%00011110	; Enable rendering: show background, show sprites, show left 8 pixels
     sta $2001
 
     jmp main ;start main game loop

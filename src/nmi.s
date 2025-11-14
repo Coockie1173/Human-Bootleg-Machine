@@ -5,13 +5,21 @@ nmi:
   PHA
   PHX
   PHY
-  ldx #$00 	; Set SPR-RAM address to 0
-  stx $2003
-@loop:	lda testsprites, x 	; Load the sprites into SPR-RAM
-  sta $2004
-  inx
-  cpx #$5c
-  bne @loop
+
+
+  ;ldx #$00 	; Set SPR-RAM address to 0
+  ;stx $2003
+;@loop:	lda testsprites, x 	; Load the sprites into SPR-RAM
+  ;sta $2004
+  ;inx
+  ;cpx #$5c
+  ;bne @loop
+
+; RESET SCROLL POSITION EVERY FRAME!
+  lda #$00
+  sta $2005  ; X scroll = 0
+  sta $2005  ; Y scroll = 0
+
   PLY
   PLX
   PLA

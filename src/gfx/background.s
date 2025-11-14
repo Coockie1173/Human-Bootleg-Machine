@@ -30,7 +30,7 @@ loadAttributesLoop:
     lda attributes, X
     sta $2007
     inx
-    cpx #$08
+    cpx #$40  ; Load all 64 bytes
     bne loadAttributesLoop
 
   rts
@@ -103,3 +103,4 @@ canvas:
 
 attributes:
 ;attributes
+ .res 64, $00
