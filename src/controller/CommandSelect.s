@@ -3,7 +3,7 @@ HandleHorizontal:
     ;when player presses left or right, the command index changes to next command
     
     ;Read the inputs first
-    JSR ReadJoy
+    ;JSR ReadJoy
 
     JSR HandleBPress
 RTS

@@ -33,11 +33,11 @@
 .define OUTBOXLOCHI #$00
 .define OUTBOXLOCLO #$00
 
-.define BUTTON_A       %10000000 
-.define BUTTON_B       %01000000
-.define BUTTON_SELECT  %00100000
-.define BUTTON_START   %00010000
-.define BUTTON_UP      %00001000
-.define BUTTON_DOWN    %00000100
-.define BUTTON_LEFT    %00000010
-.define BUTTON_RIGHT   %00000001
+.define BUTTON_A       #%10000000 
+.define BUTTON_B       #%01000000
+.define BUTTON_SELECT  #%00100000
+.define BUTTON_START   #%00010000
+.define BUTTON_UP      #%00001000
+.define BUTTON_DOWN    #%00000100
+.define BUTTON_LEFT    #%00000010
+.define BUTTON_RIGHT   #%00000001

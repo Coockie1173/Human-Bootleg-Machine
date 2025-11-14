@@ -8,9 +8,16 @@
 .include "controller/CommandSelect.s"
 .include "interpreter/MainInterpreter.s"
 
+WaitForNMI:
+    LDA NMIFLAG
+    BEQ WaitForNMI
+    LDA #$00
+    STA NMIFLAG
+    jmp main
+
 main:
     ;jsr ParseInstruction
 
     jsr HandleHorizontal
     
-    jmp main
+    jmp WaitForNMI

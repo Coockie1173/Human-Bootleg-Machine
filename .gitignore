@@ -7,3 +7,4 @@
 *.kate-swp
 Build/*
 .vscode/*.*
+.vscode/launch.json

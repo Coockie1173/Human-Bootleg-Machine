@@ -17,6 +17,7 @@
 
 .define CONADDR $10 ;controller input buffer
 .define CONADDRPREV $11 ;previous controller input buffer
+.define NMIFLAG $12 ;onlly run main once NMI happened
 
 .define STACK $0100 ;size 0xFF DO NOT TOUCH THIS RANGE
 
