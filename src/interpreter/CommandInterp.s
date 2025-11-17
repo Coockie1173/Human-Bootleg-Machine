@@ -131,7 +131,26 @@ BumpDownCommand:
 
 JumpCommand:
     LDA VAR0
-    STA INTERPTR
+    LDX #$00
+    JumpCommLoop:
+        PHA
+        LDA TestInstructions,x
+        CMP JUMP
+        BEQ :+
+        CMP JUMPZERO
+        BEQ :+
+        CMP JUMPNEGATIVE
+        BEQ :+
+            INX
+            JMP JumpCommLoop
+        :
+        PLA
+        CMP TestVars,x
+        BEQ :+
+            INX
+            BNE JumpCommLoop
+    :
+    STX INTERPTR
     CLC
 RTS
 
@@ -149,4 +168,11 @@ JumpNegativeCommand:
         JMP JumpCommand
     :
     CLC
+RTS
+
+LabelCommand: ;save some cycles, force run the next instruction in the list by jumping back
+    CLC
+    PLA ;clear the last RTS from the chain
+    PLA
+    JMP ParseInstruction
 RTS

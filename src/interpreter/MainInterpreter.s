@@ -3,11 +3,12 @@
 CommandJumpTable:
     .dbyt InboxCommand - 1, OutboxCommand - 1, CopyFromCommand - 1, CopyToCommand - 1, AddCommand - 1
     .dbyt SubCommand - 1, BumpUpCommand - 1, BumpDownCommand - 1, JumpCommand - 1, JumpZeroCommand - 1, JumpNegativeCommand - 1
+    .dbyt LabelCommand - 1
 
 TestInstructions:
-.byte $00,$03,$06,$02,$01,$08,$FF
+.byte JUMPEMPTY, INBOX,COPYTO,BUMPUP,COPYFROM,OUTBOX,JUMP,$FF
 TestVars:
-.byte $00,$01,$01,$01,$00,$00
+.byte $01,       $00,  $01,   $01,   $01,     $00,   $01
 
 ;set INTERPTR to 0 to jump to the start of the interpreter
 ;assumes INTERPTR is the position within the solution, will increment during runtime

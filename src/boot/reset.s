@@ -56,4 +56,4 @@ reset:
     lda #%00010000	; Enable Sprites
     sta $2001
     
-    jmp main ;start main game loop
+    jmp WaitForNMI ;start main game loop

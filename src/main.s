@@ -19,11 +19,9 @@ WaitForNMI:
     jmp main
 
 main:
-    ;LDX #$00
-    ;jsr CheckAllSolutions
-    jmp main
+    LDX #$00
+    jsr CheckAllSolutions
     ;jsr ParseInstruction
 
-    jsr HandleHorizontal
-    
+    jsr HandleHorizontal    
     jmp WaitForNMI
