@@ -34,6 +34,9 @@ PushCurrentCommand:
 RTS
 
 HandleHorizontal:
+    LDA #10 ;amount of commands
+    STA VAR0
+
     LDA CONADDR
     AND INPUT_RIGHT
     BNE :+
@@ -45,12 +48,34 @@ HandleHorizontal:
     INC CURRCOMMAND
 
     LDA CURRCOMMAND
-    CMP #10
+    CMP VAR0 ;compare with size
     BNE:+
 
     ;current command is incremented and exceeds over valid indeces
     ;set it to zero
     LDA #$00
+    STA CURRCOMMAND
+    :
+
+    LDA CONADDR
+    AND INPUT_LEFT
+    BNE :+
+    LDA CONADDRPREV
+    AND INPUT_LEFT
+    BEQ :+
+
+    ;release detected
+    DEC CURRCOMMAND
+
+    LDA CURRCOMMAND
+    CMP #$FF
+    BNE:+
+
+    ;current command is decremented and underflows over valid indeces
+    ;set it to size -1
+    LDA VAR0
+    SEC ;set carry to 1
+    SBC #1
     STA CURRCOMMAND
     :
 RTS
