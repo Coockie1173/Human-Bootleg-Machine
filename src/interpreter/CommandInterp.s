@@ -130,23 +130,26 @@ BumpDownCommand:
     JMP SetTileDest
 
 JumpCommand:
-    LDA VAR0
-    LDX #$00
+    LDX #$00 ;loop through all instructions to find the matching label
     JumpCommLoop:
-        PHA
-        LDA TestInstructions,x
-        CMP #LABEL
-        BEQ :+
-            INX
+        LDA TestInstructions,x ;load instruction
+        CMP #LABEL ;check if the instr is a label
+        BEQ :++
+            CMP #$FF
+            BNE :+
+                SEC ;no attached label found, return prematurely
+                RTS
+            :
+            INX ;not a label, continue
             JMP JumpCommLoop
         :
-        PLA
-        CMP TestVars,x
+        LDA VAR0 ;load in label ID from the jump
+        CMP TestVars,x ;and compare it to the actual label ID
         BEQ :+
             INX
-            BNE JumpCommLoop
+            BNE JumpCommLoop ;not the correct label? go back and try again
     :
-    STX INTERPTR
+    STX INTERPTR ;if we finally find the label in the list, set X and return
     CLC
 RTS
 
