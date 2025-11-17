@@ -19,6 +19,7 @@
 .define CONADDRPREV $11
 .define INBOXPTR $12 ;size 0x02
 .define CHECKSOLPTR $14 ;size 0x02
+.define NMIFLAG $16 ;onlly run main once NMI happened
 
 .define STACK $0100 ;size 0xFF DO NOT TOUCH THIS RANGE
 
@@ -28,6 +29,9 @@
 .define HANDMEM $0409 ;size 0x01
 .define DEDSTINATIONPLAYERX $040A ;size 0x02
 .define DEDSTINATIONPLAYERY $040C ;size 0x02
+
+.define CURRCOMMAND $0448 ;size 0x01
+.define COMMANDCURSOR $0449 ;size 0x01
 
 .define SOLUTION $0450 ;size 0x20
 .define INBOXIDX $0471 ;size 0x01

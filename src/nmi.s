@@ -5,6 +5,7 @@ nmi:
   PHA
   PHX
   PHY
+  jsr ReadJoy
   ldx #$00 	; Set SPR-RAM address to 0
   stx $2003
 @loop:	lda hello, x 	; Load the hello message into SPR-RAM
@@ -12,6 +13,9 @@ nmi:
   inx
   cpx #$5c
   bne @loop
+
+  LDA #$01
+  STA NMIFLAG
   PLY
   PLX
   PLA

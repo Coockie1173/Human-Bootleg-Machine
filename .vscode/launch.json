@@ -8,7 +8,7 @@
       "name": "Debug ROM with Mesen",
       "romPath": "${workspaceFolder}/Build/HRS.nes",
       "dbgPath": "${workspaceFolder}/Build/HRS.dbg",
-      "program": "C:\\Users\\rudje\\Documents\\School\\jaar2\\retro\\Emulator\\Mesen.exe",
+      "program": "C:\\Program Files\\_retro\\Mesen.exe",
       "sourcePath": "${workspaceFolder}/",
       "stopOnEntry": false,
       "resetOnEntry": true
