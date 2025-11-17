@@ -32,3 +32,8 @@
 
 .define OUTBOXLOCHI #$00
 .define OUTBOXLOCLO #$00
+
+;graphics
+.define YARR $20
+.define COMMANDOPTIONSY $15
+.define CURRENTCOMY $20
