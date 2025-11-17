@@ -135,11 +135,7 @@ JumpCommand:
     JumpCommLoop:
         PHA
         LDA TestInstructions,x
-        CMP JUMP
-        BEQ :+
-        CMP JUMPZERO
-        BEQ :+
-        CMP JUMPNEGATIVE
+        CMP #LABEL
         BEQ :+
             INX
             JMP JumpCommLoop
@@ -170,9 +166,6 @@ JumpNegativeCommand:
     CLC
 RTS
 
-LabelCommand: ;save some cycles, force run the next instruction in the list by jumping back
+LabelCommand:
     CLC
-    PLA ;clear the last RTS from the chain
-    PLA
-    JMP ParseInstruction
 RTS

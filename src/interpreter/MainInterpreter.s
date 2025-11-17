@@ -6,9 +6,9 @@ CommandJumpTable:
     .dbyt LabelCommand - 1
 
 TestInstructions:
-.byte JUMPEMPTY, INBOX,COPYTO,BUMPUP,COPYFROM,OUTBOX,JUMP,$FF
+.byte LABEL,INBOX,COPYTO,BUMPUP,COPYFROM,OUTBOX,JUMP,$FF
 TestVars:
-.byte $01,       $00,  $01,   $01,   $01,     $00,   $01
+.byte $01,$00,$03,$03,$03,$00,$01
 
 ;set INTERPTR to 0 to jump to the start of the interpreter
 ;assumes INTERPTR is the position within the solution, will increment during runtime
@@ -28,14 +28,11 @@ ParseInstruction:
         RTS ;tell the program and leave the list
     :
 
+    INX ;increase pointer
+    STX INTERPTR
+
     ASL ;adjust for 16 bits to index the CommandJumpTable
     TAX ;move it to X so we can index with it later
-
-    ;now increment INTERPTR here so we don't need to waste space doing it later
-    LDA INTERPTR
-    CLC
-    ADC #$01
-    STA INTERPTR
 
     LDA CommandJumpTable,x ;now we build a trampoline by pushing the address of the correct command onto the stack
     PHA ;this effectively works as a jump rather than a return now

@@ -9,5 +9,5 @@
 .define JUMP            $08
 .define JUMPZERO        $09
 .define JUMPNEGATIVE    $0A
-.define JUMPEMPTY       $0B
+.define LABEL       $0B
 .define EOL             $FF
