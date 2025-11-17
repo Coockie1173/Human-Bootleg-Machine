@@ -9,7 +9,7 @@ nmi:
 
   ldx #$00 	; Set SPR-RAM address to 0
   stx $2003
-@loop:	lda testsprites, x 	; Load the sprites into SPR-RAM
+@loop:	lda arrow, x 	; Load the sprites into SPR-RAM
   sta $2004
   inx
   cpx #$5c
@@ -41,3 +41,22 @@ testsprites:
   ; pad remaining space
   .res 256 - (* - testsprites), $00
 
+arrow: 
+; only scrolls up and down depending on arrow input (ONLY MODIFY Y VALUE)
+; up = decrease Y value until max commands pos; down = increase Y value until min commands pos
+; Scrolling > if arrow is at top of screen but there are more commands in list, scroll the commands list down
+; > same with bottom of screen
+  .byte $00, $00, $00, $00 	; Dummy
+  .byte $00, $00, $00, $00
+
+  .byte $18, $1F, $00, $B8
+
+  .res 256 - (* - arrow), $00
+
+com_Add:
+  .byte $00, $00, $00, $00 	; Dummy
+  .byte $00, $00, $00, $00
+
+  ;.byte 
+
+  .res 256 - (* - com_Add), $00
