@@ -18,6 +18,6 @@ WaitForNMI:
 main:
     ;jsr ParseInstruction
 
-    jsr HandleHorizontal
+    jsr HandleInputs
     
     jmp WaitForNMI

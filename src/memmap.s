@@ -28,6 +28,7 @@
 .define DEDSTINATIONPLAYERX $040A ;size 0x02
 .define DEDSTINATIONPLAYERY $040C ;size 0x02
 
+.define PLAYERCURSOR $0447 ;size 0x01
 .define CURRCOMMAND $0448 ;size 0x01
 .define COMMANDCURSOR $0449 ;size 0x01
 
