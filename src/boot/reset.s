@@ -38,6 +38,15 @@ reset:
   bit $2002
   bpl vblankwait2
 
+   ; Initialize arrow at top of brown area
+  lda #$03          ; row 3
+  sta arrow_row
+  lda #$77          ; column 23, row 3 → 3*32+23
+  sta arrow_position
+  lda #$00
+  sta arrow_visible
+
+
   load_palettes:
     lda $2002
     lda #$3f

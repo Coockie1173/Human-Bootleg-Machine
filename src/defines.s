@@ -37,3 +37,10 @@
 .define YARR $20
 .define COMMANDOPTIONSY $15
 .define CURRENTCOMY $20
+
+; Memory locations
+controller_state = $00
+previous_controller = $01
+arrow_position = $02
+arrow_visible = $03
+arrow_row = $04

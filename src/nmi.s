@@ -1,91 +1,185 @@
-;all NMI code goes here
-;to do > figure out where how to load the background/nametables
 nmi:
   PHP
   PHA
   PHX
   PHY
 
+  ; Disable rendering FIRST
+  lda #%00000000
+  sta $2001             ; Turn off rendering
 
-  ldx #$00 	; Set SPR-RAM address to 0
-  stx $2003
-@loop:	lda testsprites, x 	; Load the sprites into SPR-RAM
-  sta $2004
-  inx
-  cpx #$5C
-  bne @loop
+  ; Read controller input
+  lda #$01
+  sta $4016
+  lda #$00
+  sta $4016
+  
+  ldx #$08
+@read_controller:
+  lda $4016
+  lsr a
+  rol controller_state
+  dex
+  bne @read_controller
 
+  ; Check A button (toggle arrow visibility)
+  lda controller_state
+  and #%10000000        ; A button mask
+  beq @no_a_button
+  
+  lda previous_controller
+  and #%10000000
+  bne @no_a_button
+  
+  lda arrow_visible
+  eor #$01
+  sta arrow_visible
+  
+  lda arrow_visible
+  beq @erase_arrow
+  
+  ; Draw arrow
+  lda $2002
+  lda #$20
+  sta $2006
+  lda arrow_position
+  sta $2006
+  lda #$1F
+  sta $2007
+  jmp @no_a_button
+  
+@erase_arrow:
+  lda $2002
+  lda #$20
+  sta $2006
+  lda arrow_position
+  sta $2006
+  lda #$03
+  sta $2007
 
+@no_a_button:
+
+  ; Check DOWN button
+  lda arrow_visible
+  beq @skip_down
+  
+  lda controller_state
+  and #%00000100
+  beq @skip_down
+  
+  lda previous_controller
+  and #%00000100
+  bne @skip_down
+  
+  ; Erase old arrow
+  lda $2002
+  lda #$20
+  sta $2006
+  lda arrow_position
+  sta $2006
+  lda #$03
+  sta $2007
+  
+  ; Move down
+ lda arrow_row
+cmp #$0B         ; 3 + 8 = 11 max
+bcs @skip_down
+clc
+adc #$01         ; move down 1 row
+sta arrow_row
+
+; Update arrow_position
+lda arrow_row
+asl a
+asl a
+asl a
+asl a
+asl a           ; multiply by 32
+clc
+adc #$17        ; add column 23
+sta arrow_position
+  
+  ; Draw new arrow
+  lda $2002
+  lda #$20
+  sta $2006
+  lda arrow_position
+  sta $2006
+  lda #$1F
+  sta $2007
+
+@skip_down:
+
+  ; Check UP button
+  lda arrow_visible
+  beq @skip_up
+  
+  lda controller_state
+  and #%00001000
+  beq @skip_up
+  
+  lda previous_controller
+  and #%00001000
+  bne @skip_up
+  
+  ; Erase old arrow
+  lda $2002
+  lda #$20
+  sta $2006
+  lda arrow_position
+  sta $2006
+  lda #$03
+  sta $2007
+  
+  ; Move up
+  lda arrow_row
+cmp #$03          ; stop at row 3
+beq @skip_up
+sec
+sbc #$01          ; move up 1 row
+sta arrow_row
+
+; Update arrow_position
+lda arrow_row
+asl a
+asl a
+asl a
+asl a
+asl a           ; multiply by 32
+clc
+adc #$17        ; add column 23
+sta arrow_position
+  
+  ; Draw new arrow
+  lda $2002
+  lda #$20
+  sta $2006
+  lda arrow_position
+  sta $2006
+  lda #$1F
+  sta $2007
+
+@skip_up:
+
+  ; Save controller state
+  lda controller_state
+  sta previous_controller
+
+   ; RESET SCROLL POSITION (add this!)
+  lda $2002             ; Reset PPU address latch
+  lda #$00
+  sta $2005             ; X scroll = 0
+  lda #$00
+  sta $2005             ; Y scroll = 0
+
+  ; Re-enable rendering at the END
+  lda #%10000000        ; Enable NMI
+  sta $2000
+  lda #%00011110        ; Enable rendering
+  sta $2001
 
   PLY
   PLX
   PLA
   PLP
   rti
-
-testsprites:
-
-  ; sprites
-  ;for example:
-  .byte $00, $00, $00, $00 	; Dummy
-  .byte $00, $00, $00, $00
-
-
-  arrow:
-; only scrolls up and down depending on arrow input (ONLY MODIFY Y VALUE)
-; up = decrease Y value until max commands pos; down = increase Y value until min commands pos
-; Scrolling > if arrow is at top of screen but there are more commands in list, scroll the commands list down
-; > same with bottom of screen
-    ;LDA $20
-    ;STA YARR
-    ;.byte YARR, $1F, $00, $B8
-
-  com_Options:
-  ;Position where the commands to choose from are shown, between two arrows, right > next command, left > previous command, select > add command to list
-
-  ;placeholder tile
-    ;LDA $15
-    ;STA COMMANDOPTIONSY
-    .byte COMMANDOPTIONSY, $1A, $00, $C8
-
-  coms: ;commands
-  ;depending on where the arrow is, only modify Y value
-  ;first command is on top of list, if command is added > increment Y value
-  ;top of list = Y > $20
-    com_Add:
-      .byte $20, $11, $00, $C0
-      .byte $20, $12, $00, $C8
-
-    com_Sub:
-      .byte $28, $18, $00, $C0
-      .byte $28, $19, $00, $C8
-
-    com_Jump:
-      JmpCom:
-      .byte $38, $21, $00, $C0
-      .byte $38, $22, $00, $C8
-      .byte $38, $23, $00, $D0
-      ;.byte $38, $23, $00, $D8
-      ;.byte $38, $23, $00, $E0
-      ;.byte $38, $23, $00, $E8
-      ;.byte $38, $25, $00, $F0
-
-      JmpEmpty:
-      .byte $30, $1A, $00, $C0
-      .byte $30, $24, $00, $B8
-      ;.byte $30, $23, $00, $D0
-      ;.byte $30, $23, $00, $D8
-      ;.byte $30, $23, $00, $E0
-      ;.byte $30, $23, $00, $E8
-      ;.byte $30, $25, $00, $F0
-
-
-
-
-
-  ; pad remaining space
-  .res 256 - (* - testsprites), $00
-
-
-
-
