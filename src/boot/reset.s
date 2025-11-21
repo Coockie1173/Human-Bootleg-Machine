@@ -38,13 +38,6 @@ reset:
   bit $2002
   bpl vblankwait2
 
-   ; Initialize arrow (always visible now)
-  lda #$03
-  sta arrow_row
-  lda #23
-  sta arrow_column
-
-
   load_palettes:
     lda $2002
     lda #$3f
@@ -61,9 +54,8 @@ reset:
 
   jsr load_background
 
-   ; Calculate and draw initial arrow position
-  jsr calc_arrow_address
-  jsr draw_arrow_sprite
+ ; Initialize arrow
+  jsr init_arrow
   
   ; Initialize command selector
   jsr init_command_selector

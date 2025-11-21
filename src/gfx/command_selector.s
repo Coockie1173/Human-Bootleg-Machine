@@ -3,8 +3,8 @@ init_command_selector:
   lda #CMD_ADD
   sta current_command
   
-    ; Calculate PPU address for row 26, col 2
-    ; Address = $2000 + (2 * 32) + 26 = $2000 + 64 + 26 = $205A
+    ; Calculate PPU address for row 25, col 1
+    ; Address = $2000 + (1 * 32) + 25 = $2000 + 32 + 25 = $2039
   lda #$20
   sta command_position_hi
   lda #$39
