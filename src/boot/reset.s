@@ -38,17 +38,11 @@ reset:
   bit $2002
   bpl vblankwait2
 
-   ; Initialize arrow at top of brown area
-  lda #$77
-  sta arrow_position
-  lda #$20
-  sta arrow_position_hi
+   ; Initialize arrow (always visible now)
   lda #$03
   sta arrow_row
   lda #23
-  sta arrow_column 
-  lda #$00
-  sta arrow_visible
+  sta arrow_column
 
 
   load_palettes:
@@ -66,6 +60,13 @@ reset:
     bne @loop
 
   jsr load_background
+
+   ; Calculate and draw initial arrow position
+  jsr calc_arrow_address
+  jsr draw_arrow_sprite
+  
+  ; Initialize command selector
+  jsr init_command_selector
 
   enable_rendering:
     lda #%10000000	; Enable NMI

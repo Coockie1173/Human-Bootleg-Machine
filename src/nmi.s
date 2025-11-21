@@ -1,3 +1,5 @@
+.include "gfx/command_selector.s"
+
 nmi:
   PHP
   PHA
@@ -11,10 +13,10 @@ nmi:
   ; Read controller
   jsr read_controller
 
-  ; Handle A button
-  jsr handle_a_button
+  ; Handle command selector (LEFT/RIGHT)
+  jsr handle_command_selector
 
-  ; Handle arrow movement
+  ; Handle arrow movement (UP/DOWN)
   jsr handle_arrow_movement
 
   ; Reset scroll
@@ -41,7 +43,6 @@ nmi:
   rti
 
 ; READ CONTROLLER SUBROUTINE
-; Sets controller_state
 read_controller:
   lda #$01
   sta $4016
@@ -60,31 +61,8 @@ read_loop:
   bne read_loop
   rts
 
-; HANDLE A BUTTON SUBROUTINE
-handle_a_button:
-  lda controller_state
-  and #%10000000
-  beq a_done
-  lda previous_controller
-  and #%10000000
-  bne a_done
-
-  lda arrow_visible
-  eor #$01
-  sta arrow_visible
-
-  lda arrow_visible
-  beq erase_arrow_sprite
-
-  jsr draw_arrow_sprite
-a_done:
-  rts
-
 ; HANDLE ARROW MOVEMENT (UP/DOWN)
 handle_arrow_movement:
-  lda arrow_visible
-  beq movement_done
-
   ; DOWN
   lda controller_state
   and #%00000100
@@ -93,18 +71,12 @@ handle_arrow_movement:
   and #%00000100
   bne check_up
 
-  ; Check if at max row (22)
   lda arrow_row
   cmp #$16        ; max row 22
-  bcs check_up    ; Don't move if at or past max
+  bcs check_up
 
-  ; Erase at CURRENT position
   jsr erase_arrow_sprite
-  
-  ; Update row
   inc arrow_row
-  
-  ; Calculate NEW address and draw
   jsr calc_arrow_address
   jsr draw_arrow_sprite
 
@@ -116,19 +88,13 @@ check_up:
   and #%00001000
   bne movement_done
 
-  ; Check if at min row (3)
   lda arrow_row
   cmp #$03        ; min row 3
-  bcc movement_done  ; Don't move if below 3
-  beq movement_done  ; Don't move if exactly 3
+  bcc movement_done
+  beq movement_done
 
-  ; Erase at CURRENT position
   jsr erase_arrow_sprite
-  
-  ; Update row
   dec arrow_row
-  
-  ; Calculate NEW address and draw
   jsr calc_arrow_address
   jsr draw_arrow_sprite
 
@@ -136,7 +102,6 @@ movement_done:
   rts
 
 ; DRAW ARROW SUBROUTINE
-; Uses arrow_position, arrow_position_hi
 draw_arrow_sprite:
   lda $2002
   lda arrow_position_hi
@@ -159,33 +124,27 @@ erase_arrow_sprite:
   rts
 
 ; CALCULATE 16-BIT PPU ADDRESS
-; arrow_row, arrow_column -> arrow_position, arrow_position_hi
 calc_arrow_address:
-  ; Calculate $2000 + (row * 32) + column
-  
-  ; Start with base address $2000
   lda #$20
   sta arrow_position_hi
   lda #$00
   sta arrow_position
   
-  ; Add (row * 32) by adding 32 for each row
   ldx arrow_row
-  beq add_column        ; If row is 0, skip to adding column
+  beq add_column
   
 add_row_loop:
   lda arrow_position
   clc
-  adc #32               ; Add 32 to low byte
+  adc #32
   sta arrow_position
   lda arrow_position_hi
-  adc #$00              ; Add carry to high byte
+  adc #$00
   sta arrow_position_hi
   dex
   bne add_row_loop
   
 add_column:
-  ; Add column
   lda arrow_position
   clc
   adc arrow_column
@@ -193,5 +152,4 @@ add_column:
   lda arrow_position_hi
   adc #$00
   sta arrow_position_hi
-  
   rts
