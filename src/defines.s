@@ -33,14 +33,12 @@
 .define OUTBOXLOCHI #$00
 .define OUTBOXLOCLO #$00
 
-;graphics
-.define YARR $20
-.define COMMANDOPTIONSY $15
-.define CURRENTCOMY $20
-
+; Graphics
 ; Memory locations
-controller_state = $00
-previous_controller = $01
-arrow_position = $02
-arrow_visible = $03
-arrow_row = $04
+controller_state      = $00
+previous_controller   = $01
+arrow_position        = $02
+arrow_position_hi     = $03
+arrow_visible         = $04
+arrow_row             = $05
+arrow_column          = $06 

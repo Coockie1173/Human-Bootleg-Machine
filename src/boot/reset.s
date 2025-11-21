@@ -39,10 +39,14 @@ reset:
   bpl vblankwait2
 
    ; Initialize arrow at top of brown area
-  lda #$03          ; row 3
-  sta arrow_row
-  lda #$77          ; column 23, row 3 → 3*32+23
+  lda #$77
   sta arrow_position
+  lda #$20
+  sta arrow_position_hi
+  lda #$03
+  sta arrow_row
+  lda #23
+  sta arrow_column 
   lda #$00
   sta arrow_visible
 
