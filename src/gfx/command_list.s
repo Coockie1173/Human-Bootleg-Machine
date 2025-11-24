@@ -95,14 +95,56 @@ draw_selected_command:
     rts
 
 @try_copyfrom:
-    cmp #CMD_COPYFROM
-    bne @try_jump
-    jsr draw_selected_copyfrom
-    rts
+  cmp #CMD_COPYFROM
+  bne @try_jumpzero
+  jsr draw_selected_copyfrom
+  rts
+
+@try_jumpzero:
+  cmp #CMD_JUMPZERO
+  bne @try_jumpnegative
+  jsr draw_selected_jumpzero
+  rts
+
+@try_jumpnegative:
+  cmp #CMD_JUMPNEGATIVE
+  bne @try_jump
+  jsr draw_selected_jumpnegative
+  rts
 
 @try_jump:
-    jsr draw_selected_jump
-    rts
+  cmp #CMD_JUMP
+  bne @try_inbox
+  jsr draw_selected_jump
+  rts
+
+@try_inbox:
+  cmp #CMD_INBOX
+  bne @try_outbox
+  jsr draw_selected_inbox
+  rts
+
+@try_outbox:
+  cmp #CMD_OUTBOX
+  bne @try_bumpup
+  jsr draw_selected_outbox
+  rts
+
+@try_bumpup:
+  cmp #CMD_BUMPUP
+  bne @try_bumpdown
+  jsr draw_selected_bumpup
+  rts
+
+@try_bumpdown:
+  cmp #CMD_BUMPDOWN
+  bne @try_eol
+  jsr draw_selected_bumpdown
+  rts
+
+@try_eol:
+  jsr draw_selected_eol
+  rts
 
 ; Draw ADD (2 tiles)
 draw_selected_add:
@@ -174,6 +216,115 @@ draw_selected_jump:
     lda #TILE_JUMP_2
     sta $2007
     rts
+
+; Draw JUMPZERO (4 tiles)
+draw_selected_jumpzero:
+  lda $2002
+  lda placeholder_position_hi
+  sta $2006
+  lda placeholder_position
+  sta $2006
+  lda #TILE_JUMPZERO_1
+  sta $2007
+  lda #TILE_JUMPZERO_2
+  sta $2007
+  lda #TILE_JUMPZERO_3
+  sta $2007
+  lda #TILE_JUMPZERO_4
+  sta $2007
+  rts
+
+; Draw JUMPNEGATIVE (4 tiles)
+draw_selected_jumpnegative:
+  lda $2002
+  lda placeholder_position_hi
+  sta $2006
+  lda placeholder_position
+  sta $2006
+  lda #TILE_JUMPNEGATIVE_1
+  sta $2007
+  lda #TILE_JUMPNEGATIVE_2
+  sta $2007
+  lda #TILE_JUMPNEGATIVE_3
+  sta $2007
+  lda #TILE_JUMPNEGATIVE_4
+  sta $2007
+  rts
+
+; Draw INBOX (3 tiles)
+draw_selected_inbox:
+  lda $2002
+  lda placeholder_position_hi
+  sta $2006
+  lda placeholder_position
+  sta $2006
+  lda #TILE_INBOX_1
+  sta $2007
+  lda #TILE_INBOX_2
+  sta $2007
+  lda #TILE_INBOX_3
+  sta $2007
+  rts
+
+; Draw OUTBOX (3 tiles)
+draw_selected_outbox:
+  lda $2002
+  lda placeholder_position_hi
+  sta $2006
+  lda placeholder_position
+  sta $2006
+  lda #TILE_OUTBOX_1
+  sta $2007
+  lda #TILE_OUTBOX_2
+  sta $2007
+  lda #TILE_OUTBOX_3
+  sta $2007
+  rts
+
+; Draw BUMPUP (3 tiles)
+draw_selected_bumpup:
+  lda $2002
+  lda placeholder_position_hi
+  sta $2006
+  lda placeholder_position
+  sta $2006
+  lda #TILE_BUMPUP_1
+  sta $2007
+  lda #TILE_BUMPUP_2
+  sta $2007
+  lda #TILE_BUMPUP_3
+  sta $2007
+  rts
+
+; Draw BUMPDOWN (4 tiles)
+draw_selected_bumpdown:
+  lda $2002
+  lda placeholder_position_hi
+  sta $2006
+  lda placeholder_position
+  sta $2006
+  lda #TILE_BUMPDOWN_1
+  sta $2007
+  lda #TILE_BUMPDOWN_2
+  sta $2007
+  lda #TILE_BUMPDOWN_3
+  sta $2007
+  lda #TILE_BUMPDOWN_4
+  sta $2007
+  rts
+
+; Draw EOL (2 tiles)
+draw_selected_eol:
+  lda $2002
+  lda placeholder_position_hi
+  sta $2006
+  lda placeholder_position
+  sta $2006
+  lda #TILE_EOL_1
+  sta $2007
+  lda #TILE_EOL_2
+  sta $2007
+  rts
 
 ; Calculate 16-bit PPU address for placeholder
 calc_placeholder_address:

@@ -63,9 +63,16 @@ CMD_SUB                 = $01
 CMD_COPYTO              = $02
 CMD_COPYFROM            = $03
 CMD_JUMP                = $04
+CMD_INBOX               = $05
+CMD_OUTBOX              = $06
+CMD_JUMPZERO            = $07
+CMD_JUMPNEGATIVE        = $08
+CMD_BUMPUP              = $09
+CMD_BUMPDOWN            = $0A
+CMD_EOL                 = $0B
 
 ; Placeholder
-PLACEHODLER             = $05
+PLACEHODLER             = $0C
 
 ; Command tile IDs 
 TILE_ADD_1              = $11
@@ -81,6 +88,29 @@ TILE_COPYFROM_3         = $16
 TILE_COPYFROM_4         = $17
 TILE_JUMP_1             = $21
 TILE_JUMP_2             = $22
+TILE_JUMPZERO_1         = $21
+TILE_JUMPZERO_2         = $22
+TILE_JUMPZERO_3         = $38
+TILE_JUMPZERO_4         = $39
+TILE_JUMPNEGATIVE_1     = $21
+TILE_JUMPNEGATIVE_2     = $22
+TILE_JUMPNEGATIVE_3     = $38
+TILE_JUMPNEGATIVE_4     = $20
+TILE_INBOX_1            = $1B
+TILE_INBOX_2            = $1C
+TILE_INBOX_3            = $1D
+TILE_OUTBOX_1           = $30
+TILE_OUTBOX_2           = $31
+TILE_OUTBOX_3           = $32
+TILE_BUMPUP_1           = $33
+TILE_BUMPUP_2           = $34
+TILE_BUMPUP_3           = $35
+TILE_BUMPDOWN_1         = $33
+TILE_BUMPDOWN_2         = $34
+TILE_BUMPDOWN_3         = $36
+TILE_BUMPDOWN_4         = $37
+TILE_EOL_1              = $3A
+TILE_EOL_2              = $3B
 
 ; Placeholder tile ID
 TILE_PLACEHOLDER        = $1A
