@@ -22,6 +22,9 @@ nmi:
   ; Handle arrow movement (UP/DOWN)
   jsr handle_arrow_movement
 
+  ; Handle command list (SELECT)
+  jsr handle_selected_command
+
   ; Reset scroll
   lda $2002
   lda #$00

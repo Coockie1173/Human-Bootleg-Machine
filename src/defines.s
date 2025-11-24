@@ -51,9 +51,11 @@ command_position        = $07
 command_position_hi     = $08
 
 ; Command list variables
-placeholder_position    = $09
-placeholder_position_hi = $0A
-current_cmd_position    = $0B
+placeholder_row = $09
+placeholder_col = $0A
+placeholder_position = $0B
+placeholder_position_hi = $0C
+command_list_count = $0D
 
 ; Command constants
 CMD_ADD                 = $00
