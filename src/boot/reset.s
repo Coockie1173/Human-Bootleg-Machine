@@ -60,6 +60,9 @@ reset:
   ; Initialize command selector
   jsr init_command_selector
 
+  ; Initialize command list
+  jsr init_command_list
+
   enable_rendering:
     lda #%10000000	; Enable NMI
     sta $2000

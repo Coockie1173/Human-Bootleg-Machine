@@ -38,36 +38,47 @@
 
 ; Graphics
 ; Memory locations
-controller_state      = $00
-previous_controller   = $01
-arrow_position        = $02
-arrow_position_hi     = $03
-arrow_row             = $04
-arrow_column          = $05
+controller_state        = $00
+previous_controller     = $01
+arrow_position          = $02
+arrow_position_hi       = $03
+arrow_row               = $04
+arrow_column            = $05
 
 ; Command selector variables
-current_command       = $06
-command_position      = $07
-command_position_hi   = $08
+current_command         = $06
+command_position        = $07
+command_position_hi     = $08
+
+; Command list variables
+placeholder_position    = $09
+placeholder_position_hi = $0A
+current_cmd_position    = $0B
 
 ; Command constants
-CMD_ADD               = $00
-CMD_SUB               = $01
-CMD_COPYTO            = $02
-CMD_COPYFROM          = $03
-CMD_JUMP              = $04
+CMD_ADD                 = $00
+CMD_SUB                 = $01
+CMD_COPYTO              = $02
+CMD_COPYFROM            = $03
+CMD_JUMP                = $04
+
+; Placeholder
+PLACEHODLER             = $05
 
 ; Command tile IDs 
-TILE_ADD_1            = $11
-TILE_ADD_2            = $12
-TILE_SUB_1            = $18
-TILE_SUB_2            = $19
-TILE_COPYTO_1         = $13
-TILE_COPYTO_2         = $14
-TILE_COPYTO_3         = $15
-TILE_COPYFROM_1       = $13
-TILE_COPYFROM_2       = $14
-TILE_COPYFROM_3       = $16
-TILE_COPYFROM_4       = $17
-TILE_JUMP_1           = $21
-TILE_JUMP_2           = $22
+TILE_ADD_1              = $11
+TILE_ADD_2              = $12
+TILE_SUB_1              = $18
+TILE_SUB_2              = $19
+TILE_COPYTO_1           = $13
+TILE_COPYTO_2           = $14
+TILE_COPYTO_3           = $15
+TILE_COPYFROM_1         = $13
+TILE_COPYFROM_2         = $14
+TILE_COPYFROM_3         = $16
+TILE_COPYFROM_4         = $17
+TILE_JUMP_1             = $21
+TILE_JUMP_2             = $22
+
+; Placeholder tile ID
+TILE_PLACEHOLDER        = $1A

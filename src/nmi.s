@@ -1,6 +1,7 @@
 .include "gfx/input_test.s"
 .include "gfx/arrow.s"
 .include "gfx/command_selector.s"
+.include "gfx/command_list.s"
 
 nmi:
   PHP
