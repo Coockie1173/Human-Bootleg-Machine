@@ -156,9 +156,9 @@ player_idle_timer       = $29     ; Frames to wait at destination
 player_facing           = $2A     ; 0=facing right (no flip), 1=facing left (flip)
 
 ; Movement constants
-PLAYER_SPEED            = 2       ; Frames between moves (lower = faster)
+PLAYER_SPEED            = 1       ; Frames between moves (lower = faster)
 ANIM_SPEED              = 8       ; Frames between animation frames
-IDLE_TIME               = 60      ; Frames to wait at each destination (60 = 1 second)
+IDLE_TIME               = 30      ; Frames to wait at each destination (60 = 1 second)
 
 ; Player states
 STATE_IDLE              = 0
