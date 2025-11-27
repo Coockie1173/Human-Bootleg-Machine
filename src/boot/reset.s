@@ -52,9 +52,10 @@ reset:
     cpx #$20
     bne @loop
 
+  ; Initialize background
   jsr load_background
 
- ; Initialize arrow
+  ; Initialize arrow
   jsr init_arrow
   
   ; Initialize command selector
@@ -62,6 +63,9 @@ reset:
 
   ; Initialize command list
   jsr init_command_list
+
+  ; Initialize player
+  jsr init_player
 
   enable_rendering:
     lda #%10000000	; Enable NMI

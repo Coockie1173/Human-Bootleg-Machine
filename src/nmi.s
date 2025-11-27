@@ -2,6 +2,7 @@
 .include "gfx/arrow.s"
 .include "gfx/command_selector.s"
 .include "gfx/command_list.s"
+.include "gfx/player.s"
 
 nmi:
   PHP
@@ -25,12 +26,21 @@ nmi:
   ; Handle command list (SELECT)
   jsr handle_selected_command
 
+  ; Player movement
+  jsr update_player
+
   ; Reset scroll
   lda $2002
   lda #$00
   sta $2005
   lda #$00
   sta $2005
+
+  ; DMA transfer sprites to PPU
+  lda #$00
+  sta $2003           ; Set OAM address to 0
+  lda #$02
+  sta $4014           ; Start DMA transfer from $0200
 
   ; Re-enable rendering
   lda #%10000000

@@ -2,41 +2,50 @@
 .define MAXSOLUTIONSIZE #$20
 
 ;USED IN TABLES
-.define TILE0LOCHI $00
-.define TILE0LOCLO $00
+; Pos: 8,7 = $20E8
+.define TILE0LOCHI $20
+.define TILE0LOCLO $E8
 
-.define TILE1LOCHI $00
-.define TILE1LOCLO $00
+; Pos: 12,7 = $20EC
+.define TILE1LOCHI $20
+.define TILE1LOCLO $EC
 
-.define TILE2LOCHI $00
-.define TILE2LOCLO $00
+; Pos: 8,10 = $2148
+.define TILE2LOCHI $21
+.define TILE2LOCLO $48
 
-.define TILE3LOCHI $00
-.define TILE3LOCLO $00
+; Pos: 12,10 = $214C
+.define TILE3LOCHI $21
+.define TILE3LOCLO $4C
 
-.define TILE4LOCHI $00
-.define TILE4LOCLO $00
+; Pos: 8, 13 = $21A8
+.define TILE4LOCHI $21
+.define TILE4LOCLO $A8
 
-.define TILE5LOCHI $00
-.define TILE5LOCLO $00
+; Pos: 12,13 = $21AC
+.define TILE5LOCHI $21
+.define TILE5LOCLO $AC
 
-.define TILE6LOCHI $00
-.define TILE6LOCLO $00
+; Pos: 8,16 = $2208
+.define TILE6LOCHI $22
+.define TILE6LOCLO $08
 
-.define TILE7LOCHI $00
-.define TILE7LOCLO $00
+; Pos: 12,16 = $220C
+.define TILE7LOCHI $22
+.define TILE7LOCLO $0C
 ;END TABLE USE
 
-.define INBOXLOCHI #$00
-.define INBOXLOCLO #$00
+; Inbox on pos 2,8 = $2102
+.define INBOXLOCHI $21
+.define INBOXLOCLO $02
 
-.define OUTBOXLOCHI #$00
-.define OUTBOXLOCLO #$00
+; Outbox on pos 19, 8 = $2123
+.define OUTBOXLOCHI $21
+.define OUTBOXLOCLO $13
 
 
 ; GRAPHICS
 
-; Graphics
 ; Memory locations
 controller_state        = $00
 previous_controller     = $01
@@ -51,11 +60,11 @@ command_position        = $07
 command_position_hi     = $08
 
 ; Command list variables
-placeholder_row = $09
-placeholder_col = $0A
-placeholder_position = $0B
+placeholder_row         = $09
+placeholder_col         = $0A
+placeholder_position    = $0B
 placeholder_position_hi = $0C
-command_list_count = $0D
+command_list_count      = $0D
 
 ; Command constants
 CMD_ADD                 = $00
@@ -115,7 +124,9 @@ TILE_EOL_2              = $3B
 ; Placeholder tile ID
 TILE_PLACEHOLDER        = $1A
 
+
 ; PLAYER
+; Player sprite tiles
 TILE_PLAYER_IDLE_1      = $3C
 TILE_PLAYER_IDLE_2      = $3D
 TILE_PLAYER_IDLE_3      = $4C
@@ -124,9 +135,87 @@ TILE_PLAYER_IDLE_4      = $4D
 TILE_PLAYER_WALK1_1     = $3C
 TILE_PLAYER_WALK1_2     = $3D
 TILE_PLAYER_WALK1_3     = $3E
-TILE_PLAYER_WALK1_4     = $3f
+TILE_PLAYER_WALK1_4     = $3F
 
 TILE_PLAYER_WALK2_1     = $3C
 TILE_PLAYER_WALK2_2     = $3D
 TILE_PLAYER_WALK2_3     = $4E
 TILE_PLAYER_WALK2_4     = $4F
+
+; Player state variables
+player_state            = $20     ; 0=idle, 1=walking
+player_destination      = $21     ; Current destination index (0-9)
+player_x                = $22     ; Current X pixel position
+player_y                = $23     ; Current Y pixel position
+player_target_x         = $24     ; Target X pixel position
+player_target_y         = $25     ; Target Y pixel position
+player_anim_frame       = $26     ; Animation frame (0-3)
+player_anim_timer       = $27     ; Frames until next animation
+player_move_timer       = $28     ; Frames until next move
+player_idle_timer       = $29     ; Frames to wait at destination
+player_facing           = $2A     ; 0=facing right (no flip), 1=facing left (flip)
+
+; Movement constants
+PLAYER_SPEED            = 2       ; Frames between moves (lower = faster)
+ANIM_SPEED              = 8       ; Frames between animation frames
+IDLE_TIME               = 60      ; Frames to wait at each destination (60 = 1 second)
+
+; Player states
+STATE_IDLE              = 0
+STATE_WALKING           = 1
+
+; Destination constants (10 total locations) [TEST]
+DEST_INBOX              = 0
+DEST_TILE0              = 1
+DEST_TILE1              = 2
+DEST_TILE2              = 3
+DEST_TILE3              = 4
+DEST_TILE4              = 5
+DEST_TILE5              = 6
+DEST_TILE6              = 7
+DEST_TILE7              = 8
+DEST_OUTBOX             = 9
+
+
+
+; Destination positions (pixel coordinates)
+; Format: Column * 8, Row * 8
+; Inbox: tile (5, 8) = pixel (40, 64)
+INBOX_X                 = 40
+INBOX_Y                 = 64
+
+; Tile 0: tile (6, 7) = pixel (48, 56)
+TILE0_X                 = 48
+TILE0_Y                 = 56
+
+; Tile 1: tile (10, 7) = pixel (80, 56)
+TILE1_X                 = 80
+TILE1_Y                 = 56
+
+; Tile 2: tile (6, 10) = pixel (48, 80)
+TILE2_X                 = 48
+TILE2_Y                 = 80
+
+; Tile 3: tile (10, 10) = pixel (80, 80)
+TILE3_X                 = 80
+TILE3_Y                 = 80
+
+; Tile 4: tile (6, 13) = pixel (48, 104)
+TILE4_X                 = 48
+TILE4_Y                 = 104
+
+; Tile 5: tile (10, 13) = pixel (80, 104)
+TILE5_X                 = 80
+TILE5_Y                 = 104
+
+; Tile 6: tile (6, 16) = pixel (48, 128)
+TILE6_X                 = 48
+TILE6_Y                 = 128
+
+; Tile 7: tile (10, 16) = pixel (80, 128)
+TILE7_X                 = 80
+TILE7_Y                 = 128
+
+; Outbox: tile (16, 8) = pixel (128, 64)
+OUTBOX_X                = 128
+OUTBOX_Y                = 64

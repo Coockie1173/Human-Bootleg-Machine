@@ -1,6 +1,4 @@
-; background.s
 ; Background loading routine
-
 .include "resources/canvas.asm"
 
 load_background:
