@@ -1,6 +1,8 @@
 ;reset/pre-boot code
 ;this sets everything required up PPU wise and sets the program up to work
 
+.include "../gfx/background.s"
+
 reset:
   sei		; disable IRQs
   cld		; disable decimal mode
@@ -50,10 +52,25 @@ reset:
     cpx #$20
     bne @loop
 
+  ; Initialize background
+  jsr load_background
+
+  ; Initialize arrow
+  jsr init_arrow
+  
+  ; Initialize command selector
+  jsr init_command_selector
+
+  ; Initialize command list
+  jsr init_command_list
+
+  ; Initialize player
+  jsr init_player
+
   enable_rendering:
     lda #%10000000	; Enable NMI
     sta $2000
-    lda #%00010000	; Enable Sprites
+    lda #%00011110	; Enable rendering: show background, show sprites, show left 8 pixels
     sta $2001
     
     jmp WaitForNMI ;start main game loop
