@@ -67,6 +67,8 @@ reset:
   ; Initialize player
   jsr init_player
 
+  jsr ResetCommandList ;make sure command list is filled with NOTHING
+
   enable_rendering:
     lda #%10000000	; Enable NMI
     sta $2000

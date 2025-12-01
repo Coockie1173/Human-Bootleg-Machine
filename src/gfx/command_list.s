@@ -18,39 +18,55 @@ init_command_list:
 
 ; Check controller state > is SELECT pressed?
 handle_selected_command:
-    ; Check SELECT button
-    lda controller_state
-    and #%00100000          ; SELECT is bit 5
-    beq @done               ; If not pressed, exit
-    
-    ; Check if it was already pressed last frame
-    lda previous_controller
-    and #%00100000
-    bne @done               ; If already pressed, don't repeat
-    
-    ; Check if we've hit the max number of commands (22 - 3 = 19 rows available)
-    lda command_list_count
-    cmp #19
-    bcs @done               ; If at max, don't add more
-    
-    ; Erase the placeholder from current position
-    jsr erase_placeholder
-    
-    ; Draw the selected command at current position
-    jsr draw_selected_command
-    
-    ; Increment row for next command/placeholder
-    inc placeholder_row
-    inc command_list_count
-    
-    ; Calculate new placeholder address
-    jsr calc_placeholder_address
-    
-    ; Draw placeholder at new position
-    jsr draw_placeholder
-    
+
+    LDA #$00
+    STA VAR0               ;EOL flag
+
+    ; Restore rendering cursor
+    LDA update_idx
+    BNE :+
+      LDA #$03
+      STA placeholder_row
+      LDA #24
+      STA placeholder_col
+      JSR calc_placeholder_address
+      LDA update_idx
+    :
+    TAX
+
+    LDY #3                 ; *** LIMIT TO 3 ROWS PER FRAME ***
+@loopStart:
+    CPY #0
+    BEQ @done              ; stop if we drew 3
+
+    LDA update_rows_left
+    BEQ @done              ; stop if full list already processed
+
+    PHX                    ; preserve X (command index)
+
+    LDA COMMANDS,x
+    CMP #CMD_EOL
+    BNE :+
+      PLX
+      JMP @done
+    :
+    STA VAR1
+    JSR draw_selected_command
+
+    ; advance visual cursor
+    INC placeholder_row
+    JSR calc_placeholder_address
+
+    PLX
+    INX                    ; advance command index
+    DEC update_rows_left   ; one fewer row left
+    STX update_idx         ; save progress
+
+    DEY                    ; one of the 3 slots used
+    BNE @loopStart
+
 @done:
-    rts
+    RTS
 
 ; Erase placeholder (draw background tile)
 erase_placeholder:
@@ -74,77 +90,26 @@ draw_placeholder:
     sta $2007
     rts
 
-; Draw the currently selected command at placeholder position
+DrawCommandList:
+  .dbyt draw_selected_inbox - 1, draw_selected_outbox - 1
+  .dbyt draw_selected_copyfrom - 1, draw_selected_copyto - 1
+  .dbyt draw_selected_add - 1, draw_selected_sub - 1
+  .dbyt draw_selected_bumpup - 1, draw_selected_bumpdown - 1
+  .dbyt draw_selected_jump - 1
+  .dbyt draw_selected_jumpzero - 1
+  .dbyt draw_selected_jumpnegative - 1
+  .dbyt draw_selected_eol - 1
+
+; tramampoline
 draw_selected_command:
-    lda current_command
-    cmp #CMD_ADD
-    bne @try_sub
-    jsr draw_selected_add
-    rts
-
-@try_sub:
-    cmp #CMD_SUB
-    bne @try_copyto
-    jsr draw_selected_sub
-    rts
-
-@try_copyto:
-    cmp #CMD_COPYTO
-    bne @try_copyfrom
-    jsr draw_selected_copyto
-    rts
-
-@try_copyfrom:
-  cmp #CMD_COPYFROM
-  bne @try_jumpzero
-  jsr draw_selected_copyfrom
-  rts
-
-@try_jumpzero:
-  cmp #CMD_JUMPZERO
-  bne @try_jumpnegative
-  jsr draw_selected_jumpzero
-  rts
-
-@try_jumpnegative:
-  cmp #CMD_JUMPNEGATIVE
-  bne @try_jump
-  jsr draw_selected_jumpnegative
-  rts
-
-@try_jump:
-  cmp #CMD_JUMP
-  bne @try_inbox
-  jsr draw_selected_jump
-  rts
-
-@try_inbox:
-  cmp #CMD_INBOX
-  bne @try_outbox
-  jsr draw_selected_inbox
-  rts
-
-@try_outbox:
-  cmp #CMD_OUTBOX
-  bne @try_bumpup
-  jsr draw_selected_outbox
-  rts
-
-@try_bumpup:
-  cmp #CMD_BUMPUP
-  bne @try_bumpdown
-  jsr draw_selected_bumpup
-  rts
-
-@try_bumpdown:
-  cmp #CMD_BUMPDOWN
-  bne @try_eol
-  jsr draw_selected_bumpdown
-  rts
-
-@try_eol:
-  jsr draw_selected_eol
-  rts
+    LDA VAR1
+    ASL
+    TAX
+    LDA DrawCommandList,x
+    PHA
+    LDA DrawCommandList+1,x
+    PHA
+    RTS
 
 ; Draw CMD_ADD (2 tiles)
 draw_selected_add:

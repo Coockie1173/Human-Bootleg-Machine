@@ -7,6 +7,7 @@
 .include "controller/inputs.s"
 .include "interpreter/MainInterpreter.s"
 .include "interpreter/Puzzles.s"
+.include "interpreter/ListGenerator.s"
 
 ;TODO: CMD_ADD LOAD LEVEL THING
 
@@ -19,7 +20,8 @@ WaitForNMI:
 
 main:
     LDX #$00
-    jsr CheckAllSolutions
+    ;jsr CheckAllSolutions
     ;jsr ParseInstruction
 
+    jsr GenerateCommandList
     jmp WaitForNMI

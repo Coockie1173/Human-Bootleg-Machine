@@ -23,7 +23,6 @@
 
 .define STACK $0100 ;size 0xFF DO NOT TOUCH THIS RANGE
 
-.define COMMANDS $0200 ;size 0xFF
 .define VARIABLES $0300 ;size 0xFF
 .define GAMEMMEM $0400 ;size 0x08
 .define HANDMEM $0409 ;size 0x01
@@ -57,6 +56,10 @@ placeholder_row         = $0509
 placeholder_col         = $050A
 placeholder_position    = $050B
 placeholder_position_hi = $050C
+command_list_count      = $050D
+scrollIDX               = $050E
+update_idx              = $050F
+update_rows_left        = $0510
 ; Player state variables
 player_state            = $0520     ; 0=idle, 1=walking
 player_destination      = $0521     ; Current destination index (0-9)
@@ -69,4 +72,4 @@ player_anim_timer       = $0527     ; Frames until next animation
 player_move_timer       = $0528     ; Frames until next move
 player_idle_timer       = $0529     ; Frames to wait at destination
 player_facing           = $052A     ; 0=facing right (no flip), 1=facing left (flip)
-command_list_count      = $050D
+.define COMMANDS $0600 ;size 0xFF

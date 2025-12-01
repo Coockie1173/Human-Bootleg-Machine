@@ -9,5 +9,5 @@
 .define CMD_JUMP            $08
 .define CMD_JUMPZERO        $09
 .define CMD_JUMPNEGATIVE    $0A
-.define CMD_LABEL       $0B
+.define CMD_LABEL           $0B
 .define CMD_EOL             $FF

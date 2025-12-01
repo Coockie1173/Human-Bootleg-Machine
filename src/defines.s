@@ -179,3 +179,5 @@ OUTBOX_Y                = 64
 .define BUTTON_DOWN #%00000100
 .define BUTTON_LEFT #%00000010
 .define BUTTON_RIGHT #%00000001
+
+.define MAXLINES 19
