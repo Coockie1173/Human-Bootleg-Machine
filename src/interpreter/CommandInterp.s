@@ -1,31 +1,19 @@
 ;ALL OF THESE EXPECT THEIR "argument" TO COME IN VAR0
 
-TileLocationsHiX:
-    .byte TILE0LOCHIX, TILE1LOCHIX, TILE2LOCHIX, TILE3LOCHIX
-    .byte TILE4LOCHIX, TILE5LOCHIX, TILE6LOCHIX, TILE7LOCHIX
+TileLocationsX:
+    .byte TILE0_X, TILE1_X, TILE2_X, TILE3_X
+    .byte TILE4_X, TILE5_X, TILE6_X, TILE7_X
 
-TileLocationsLoX:
-    .byte TILE0LOCLOX, TILE1LOCLOX, TILE2LOCLOX, TILE3LOCLOX
-    .byte TILE4LOCLOX, TILE5LOCLOX, TILE6LOCLOX, TILE7LOCLOX
-
-TileLocationsHiY:
-    .byte TILE0LOCHIY, TILE1LOCHIY, TILE2LOCHIY, TILE3LOCHIY
-    .byte TILE4LOCHIY, TILE5LOCHIY, TILE6LOCHIY, TILE7LOCHIY
-
-TileLocationsLoY:
-    .byte TILE0LOCLOY, TILE1LOCLOY, TILE2LOCLOY, TILE3LOCLOY
-    .byte TILE4LOCLOY, TILE5LOCLOY, TILE6LOCLOY, TILE7LOCLOY
+TileLocationsY:
+    .byte TILE0_Y, TILE1_Y, TILE2_Y, TILE3_Y
+    .byte TILE4_Y, TILE5_Y, TILE6_Y, TILE7_Y
 
 SetTileDest:
-    LDA TileLocationsHiX,x ;set destination per tile
+    LDA TileLocationsX,x ;set destination per tile
     STA DEDSTINATIONPLAYERX
-    LDA TileLocationsLoX,x
-    STA DEDSTINATIONPLAYERX + 1 ;set player destination low
 
-    LDA TileLocationsHiY,x ;set destination per tile
+    LDA TileLocationsY,x ;set destination per tile
     STA DEDSTINATIONPLAYERY
-    LDA TileLocationsLoY,x
-    STA DEDSTINATIONPLAYERY + 1 ;set player destination low
     CLC
 RTS
 
@@ -46,15 +34,11 @@ InboxCommand:
     ADC #$00
     STA INBOXPTR + 1
 
-    LDA INBOXLOCHIX
+    LDA INBOX_X
     STA DEDSTINATIONPLAYERX ;set player destination high
-    LDA INBOXLOCLOX
-    STA DEDSTINATIONPLAYERX + 1 ;set player destination low
 
-    LDA INBOXLOCHIY
+    LDA INBOX_Y
     STA DEDSTINATIONPLAYERY ;set player destination high
-    LDA INBOXLOCLOY
-    STA DEDSTINATIONPLAYERY + 1 ;set player destination low
     CLC
 RTS
 
@@ -73,15 +57,11 @@ OutboxCommand:
     INX
     STX SOLPTR
 
-    LDA OUTBOXLOCHIX
+    LDA OUTBOX_X
     STA DEDSTINATIONPLAYERX ;set player destination high
-    LDA OUTBOXLOCLOX
-    STA DEDSTINATIONPLAYERX + 1 ;set player destination low    
     
-    LDA OUTBOXLOCHIY
+    LDA OUTBOX_Y
     STA DEDSTINATIONPLAYERY ;set player destination high
-    LDA OUTBOXLOCLOY
-    STA DEDSTINATIONPLAYERY + 1 ;set player destination low
     CLC
 RTS
 
