@@ -8,6 +8,7 @@
 .include "interpreter/MainInterpreter.s"
 .include "interpreter/Puzzles.s"
 .include "interpreter/ListGenerator.s"
+.include "controller/cursor.s"
 
 ;TODO: CMD_ADD LOAD LEVEL THING
 
@@ -24,4 +25,5 @@ main:
     ;jsr ParseInstruction
 
     jsr GenerateCommandList
+    jsr handle_cursor
     jmp WaitForNMI

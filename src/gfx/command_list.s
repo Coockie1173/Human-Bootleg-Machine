@@ -34,7 +34,7 @@ handle_selected_command:
     :
     TAX
 
-    LDY #3                 ; *** LIMIT TO 3 ROWS PER FRAME ***
+    LDY #3                 ; *** LIMIT TO 3 ROWS PER FRAME *** it'll still flicker BUT not as bad. 1 doesn't flicker but is unbearable
 @loopStart:
     CPY #0
     BEQ @done              ; stop if we drew 3

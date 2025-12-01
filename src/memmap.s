@@ -60,6 +60,9 @@ command_list_count      = $050D
 scrollIDX               = $050E
 update_idx              = $050F
 update_rows_left        = $0510
+arrow_position_old          = $0511
+arrow_position_hi_old       = $0512
+arrow_update_flag       = $0513
 ; Player state variables
 player_state            = $0520     ; 0=idle, 1=walking
 player_destination      = $0521     ; Current destination index (0-9)
