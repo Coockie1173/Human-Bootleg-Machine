@@ -76,75 +76,60 @@ draw_placeholder:
 
 ; Draw the currently selected command at placeholder position
 draw_selected_command:
-    lda current_command
-    cmp #CMD_ADD
-    bne @try_sub
-    jsr draw_selected_add
-    rts
-
+  lda current_command
+  cmp #CMD_ADD
+  bne @try_sub
+  jsr draw_selected_add
+  rts
 @try_sub:
-    cmp #CMD_SUB
-    bne @try_copyto
-    jsr draw_selected_sub
-    rts
-
+  cmp #CMD_SUB
+  bne @try_copyto
+  jsr draw_selected_sub
+  rts
 @try_copyto:
-    cmp #CMD_COPYTO
-    bne @try_copyfrom
-    jsr draw_selected_copyto
-    rts
-
+  cmp #CMD_COPYTO
+  bne @try_copyfrom
+  jsr draw_selected_copyto
+  rts
 @try_copyfrom:
   cmp #CMD_COPYFROM
   bne @try_jumpzero
   jsr draw_selected_copyfrom
   rts
-
 @try_jumpzero:
   cmp #CMD_JUMPZERO
   bne @try_jumpnegative
   jsr draw_selected_jumpzero
   rts
-
 @try_jumpnegative:
   cmp #CMD_JUMPNEGATIVE
   bne @try_jump
   jsr draw_selected_jumpnegative
   rts
-
 @try_jump:
   cmp #CMD_JUMP
   bne @try_inbox
   jsr draw_selected_jump
   rts
-
 @try_inbox:
   cmp #CMD_INBOX
   bne @try_outbox
   jsr draw_selected_inbox
   rts
-
 @try_outbox:
   cmp #CMD_OUTBOX
   bne @try_bumpup
   jsr draw_selected_outbox
   rts
-
 @try_bumpup:
   cmp #CMD_BUMPUP
   bne @try_bumpdown
   jsr draw_selected_bumpup
   rts
-
 @try_bumpdown:
-  cmp #CMD_BUMPDOWN
-  bne @try_eol
   jsr draw_selected_bumpdown
   rts
 
-@try_eol:
-  jsr draw_selected_eol
-  rts
 
 ; Draw CMD_ADD (2 tiles)
 draw_selected_add:
@@ -313,18 +298,6 @@ draw_selected_bumpdown:
   sta $2007
   rts
 
-; Draw CMD_EOL (2 tiles)
-draw_selected_eol:
-  lda $2002
-  lda placeholder_position_hi
-  sta $2006
-  lda placeholder_position
-  sta $2006
-  lda #TILE_EOL_1
-  sta $2007
-  lda #TILE_EOL_2
-  sta $2007
-  rts
 
 ; Calculate 16-bit PPU address for placeholder
 calc_placeholder_address:
