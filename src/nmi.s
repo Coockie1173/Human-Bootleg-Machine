@@ -3,6 +3,7 @@
 .include "gfx/command_selector.s"
 .include "gfx/command_list.s"
 .include "gfx/player.s"
+.include "gfx/game_state.s"
 
 nmi:
   PHP
@@ -18,30 +19,35 @@ nmi:
   ; Read controller
   jsr read_controller
 
-  ; Handle command selector (LEFT/RIGHT)
+  ; Check game state and handle accordingly
+  lda game_state
+  cmp #STATE_MENU
+  beq @menu_mode
+  
+  ; Game mode - run all game logic
   jsr handle_command_selector
-
-  ; Handle arrow movement (UP/DOWN)
   jsr handle_arrow_movement
-
-  ; Handle command list (SELECT)
   jsr handle_selected_command
-
-  ; Player movement
   jsr update_player
+  
+  ; DMA transfer sprites
+  lda #$00
+  sta $2003
+  lda #$02
+  sta $4014
+  
+  jmp @finish
 
+@menu_mode:
+  ; Menu mode - only check for start
+  jsr check_start_button
+
+@finish:
   ; Reset scroll
   lda $2002
   lda #$00
   sta $2005
-  lda #$00
   sta $2005
-
-  ; DMA transfer sprites to PPU
-  lda #$00
-  sta $2003           ; Set OAM address to 0
-  lda #$02
-  sta $4014           ; Start DMA transfer from $0200
 
   ; Re-enable rendering
   lda #%10000000
@@ -50,9 +56,8 @@ nmi:
   sta $2001
 
   ; Save controller state
-  ;lda controller_state
-  ;sta previous_controller
-
+  lda controller_state
+  sta previous_controller
 
   LDA #$01
   STA NMIFLAG

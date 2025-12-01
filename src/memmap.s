@@ -47,6 +47,8 @@ arrow_position_hi       = $0503
 arrow_row               = $0504
 arrow_column            = $0505
 
+game_state = $052B  ; Game state variable
+
 ; Command selector variables
 current_command         = $0506
 command_position        = $0507
