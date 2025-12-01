@@ -299,7 +299,7 @@ draw_selected_bumpdown:
   rts
 
 
-; Calculate 16-bit PPU address for placeholder
+; Calculate PPU address for placeholder
 calc_placeholder_address:
     lda #$20
     sta placeholder_position_hi
