@@ -5,7 +5,6 @@
 .include "./boot/boot.s"
 .include "nmi.s"
 .include "controller/inputs.s"
-.include "controller/CommandSelect.s"
 .include "interpreter/MainInterpreter.s"
 .include "interpreter/Puzzles.s"
 
@@ -23,5 +22,4 @@ main:
     jsr CheckAllSolutions
     ;jsr ParseInstruction
 
-    jsr HandleHorizontal    
     jmp WaitForNMI
