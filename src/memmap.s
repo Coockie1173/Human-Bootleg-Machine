@@ -37,3 +37,36 @@
 .define INBOXIDX $0471 ;size 0x01
 .define INTERPTR $0472 ;size 0x01
 .define SOLPTR $0473 ;size 0x01
+
+; Player state variables
+player_state            = $0520     ; 0=idle, 1=walking
+player_destination      = $0521     ; Current destination index (0-9)
+player_x                = $0522     ; Current X pixel position
+player_y                = $0523     ; Current Y pixel position
+player_target_x         = $0524     ; Target X pixel position
+player_target_y         = $0525     ; Target Y pixel position
+player_anim_frame       = $0526     ; Animation frame (0-3)
+player_anim_timer       = $0527     ; Frames until next animation
+player_move_timer       = $0528     ; Frames until next move
+player_idle_timer       = $0529     ; Frames to wait at destination
+player_facing           = $052A     ; 0=facing right (no flip), 1=facing left (flip)
+
+; Memory locations
+controller_state        = CONADDR
+previous_controller     = CONADDRPREV
+arrow_position          = $0502
+arrow_position_hi       = $0503
+arrow_row               = $0504
+arrow_column            = $0505
+
+; Command selector variables
+current_command         = $0506
+command_position        = $0507
+command_position_hi     = $0508
+
+; Command list variables
+placeholder_row         = $0509
+placeholder_col         = $050A
+placeholder_position    = $050B
+placeholder_position_hi = $050C
+command_list_count      = $050D

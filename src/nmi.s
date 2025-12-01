@@ -50,8 +50,8 @@ nmi:
   sta $2001
 
   ; Save controller state
-  lda controller_state
-  sta previous_controller
+  ;lda controller_state
+  ;sta previous_controller
 
 
   LDA #$01

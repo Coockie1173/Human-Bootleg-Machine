@@ -24,7 +24,7 @@ HandleBPress:
 RTS
 
 PushCurrentCommand:
-    LDA JUMP
+    LDA CMD_JUMP
     STA CURRCOMMAND
 
     LDA CURRCOMMAND     ;load in current command

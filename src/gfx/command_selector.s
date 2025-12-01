@@ -145,7 +145,7 @@ erase_current_command:
   lda command_position
   sta $2006
   
-  ; Erase 4 tiles (COPYFROM is the longest)
+  ; Erase 4 tiles (CMD_COPYFROM is the longest)
   lda #$03              ; Gray background tile
   sta $2007
   sta $2007
@@ -153,7 +153,7 @@ erase_current_command:
   sta $2007
   rts
 
-; Draw ADD (2 tiles)
+; Draw CMD_ADD (2 tiles)
 draw_add:
   lda $2002
   lda command_position_hi
@@ -166,7 +166,7 @@ draw_add:
   sta $2007
   rts
 
-; Draw SUB (2 tiles)
+; Draw CMD_SUB (2 tiles)
 draw_sub:
   lda $2002
   lda command_position_hi
@@ -179,7 +179,7 @@ draw_sub:
   sta $2007
   rts
 
-; Draw COPYTO (3 tiles)
+; Draw CMD_COPYTO (3 tiles)
 draw_copyto:
   lda $2002
   lda command_position_hi
@@ -194,7 +194,7 @@ draw_copyto:
   sta $2007
   rts
 
-; Draw COPYFROM (4 tiles)
+; Draw CMD_COPYFROM (4 tiles)
 draw_copyfrom:
   lda $2002
   lda command_position_hi
@@ -211,7 +211,7 @@ draw_copyfrom:
   sta $2007
   rts
 
-; Draw JUMP (2 tiles)
+; Draw CMD_JUMP (2 tiles)
 draw_jump:
   lda $2002
   lda command_position_hi
@@ -224,7 +224,7 @@ draw_jump:
   sta $2007
   rts
 
-; Draw JUMPZERO (4 tiles)
+; Draw CMD_JUMPZERO (4 tiles)
 draw_jumpzero:
   lda $2002
   lda command_position_hi
@@ -241,7 +241,7 @@ draw_jumpzero:
   sta $2007
   rts
 
-; Draw JUMPNEGATIVE (4 tiles)
+; Draw CMD_JUMPNEGATIVE (4 tiles)
 draw_jumpnegative:
   lda $2002
   lda command_position_hi
@@ -258,7 +258,7 @@ draw_jumpnegative:
   sta $2007
   rts
 
-; Draw INBOX (3 tiles)
+; Draw CMD_INBOX (3 tiles)
 draw_inbox:
   lda $2002
   lda command_position_hi
@@ -273,7 +273,7 @@ draw_inbox:
   sta $2007
   rts
 
-; Draw OUTBOX (3 tiles)
+; Draw CMD_OUTBOX (3 tiles)
 draw_outbox:
   lda $2002
   lda command_position_hi
@@ -288,7 +288,7 @@ draw_outbox:
   sta $2007
   rts
 
-; Draw BUMPUP (3 tiles)
+; Draw CMD_BUMPUP (3 tiles)
 draw_bumpup:
   lda $2002
   lda command_position_hi
@@ -303,7 +303,7 @@ draw_bumpup:
   sta $2007
   rts
 
-; Draw BUMPDOWN (4 tiles)
+; Draw CMD_BUMPDOWN (4 tiles)
 draw_bumpdown:
   lda $2002
   lda command_position_hi
@@ -320,7 +320,7 @@ draw_bumpdown:
   sta $2007
   rts
 
-; Draw EOL (2 tiles)
+; Draw CMD_EOL (2 tiles)
 draw_eol:
   lda $2002
   lda command_position_hi

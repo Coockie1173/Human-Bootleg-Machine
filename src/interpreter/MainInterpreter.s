@@ -6,7 +6,7 @@ CommandJumpTable:
     .dbyt LabelCommand - 1
 
 TestInstructions:
-.byte LABEL,INBOX,COPYTO,BUMPUP,COPYFROM,OUTBOX,JUMP,$FF
+.byte CMD_LABEL,CMD_INBOX,CMD_COPYTO,CMD_BUMPUP,CMD_COPYFROM,CMD_OUTBOX,CMD_JUMP,$FF
 TestVars:
 .byte $01,$00,$03,$03,$03,$00,$01
 

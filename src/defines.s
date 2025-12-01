@@ -46,40 +46,6 @@
 
 ; GRAPHICS
 
-; Memory locations
-controller_state        = $00
-previous_controller     = $01
-arrow_position          = $02
-arrow_position_hi       = $03
-arrow_row               = $04
-arrow_column            = $05
-
-; Command selector variables
-current_command         = $06
-command_position        = $07
-command_position_hi     = $08
-
-; Command list variables
-placeholder_row         = $09
-placeholder_col         = $0A
-placeholder_position    = $0B
-placeholder_position_hi = $0C
-command_list_count      = $0D
-
-; Command constants
-CMD_ADD                 = $00
-CMD_SUB                 = $01
-CMD_COPYTO              = $02
-CMD_COPYFROM            = $03
-CMD_JUMP                = $04
-CMD_INBOX               = $05
-CMD_OUTBOX              = $06
-CMD_JUMPZERO            = $07
-CMD_JUMPNEGATIVE        = $08
-CMD_BUMPUP              = $09
-CMD_BUMPDOWN            = $0A
-CMD_EOL                 = $0B
-
 ; Placeholder
 PLACEHODLER             = $0C
 
@@ -142,19 +108,6 @@ TILE_PLAYER_WALK2_2     = $3D
 TILE_PLAYER_WALK2_3     = $4E
 TILE_PLAYER_WALK2_4     = $4F
 
-; Player state variables
-player_state            = $20     ; 0=idle, 1=walking
-player_destination      = $21     ; Current destination index (0-9)
-player_x                = $22     ; Current X pixel position
-player_y                = $23     ; Current Y pixel position
-player_target_x         = $24     ; Target X pixel position
-player_target_y         = $25     ; Target Y pixel position
-player_anim_frame       = $26     ; Animation frame (0-3)
-player_anim_timer       = $27     ; Frames until next animation
-player_move_timer       = $28     ; Frames until next move
-player_idle_timer       = $29     ; Frames to wait at destination
-player_facing           = $2A     ; 0=facing right (no flip), 1=facing left (flip)
-
 ; Movement constants
 PLAYER_SPEED            = 1       ; Frames between moves (lower = faster)
 ANIM_SPEED              = 8       ; Frames between animation frames
@@ -175,8 +128,6 @@ DEST_TILE5              = 6
 DEST_TILE6              = 7
 DEST_TILE7              = 8
 DEST_OUTBOX             = 9
-
-
 
 ; Destination positions (pixel coordinates)
 ; Format: Column * 8, Row * 8

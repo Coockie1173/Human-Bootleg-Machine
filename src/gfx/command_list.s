@@ -146,7 +146,7 @@ draw_selected_command:
   jsr draw_selected_eol
   rts
 
-; Draw ADD (2 tiles)
+; Draw CMD_ADD (2 tiles)
 draw_selected_add:
     lda $2002
     lda placeholder_position_hi
@@ -159,7 +159,7 @@ draw_selected_add:
     sta $2007
     rts
 
-; Draw SUB (2 tiles)
+; Draw CMD_SUB (2 tiles)
 draw_selected_sub:
     lda $2002
     lda placeholder_position_hi
@@ -172,7 +172,7 @@ draw_selected_sub:
     sta $2007
     rts
 
-; Draw COPYTO (3 tiles)
+; Draw CMD_COPYTO (3 tiles)
 draw_selected_copyto:
     lda $2002
     lda placeholder_position_hi
@@ -187,7 +187,7 @@ draw_selected_copyto:
     sta $2007
     rts
 
-; Draw COPYFROM (4 tiles)
+; Draw CMD_COPYFROM (4 tiles)
 draw_selected_copyfrom:
     lda $2002
     lda placeholder_position_hi
@@ -204,7 +204,7 @@ draw_selected_copyfrom:
     sta $2007
     rts
 
-; Draw JUMP (2 tiles)
+; Draw CMD_JUMP (2 tiles)
 draw_selected_jump:
     lda $2002
     lda placeholder_position_hi
@@ -217,7 +217,7 @@ draw_selected_jump:
     sta $2007
     rts
 
-; Draw JUMPZERO (4 tiles)
+; Draw CMD_JUMPZERO (4 tiles)
 draw_selected_jumpzero:
   lda $2002
   lda placeholder_position_hi
@@ -234,7 +234,7 @@ draw_selected_jumpzero:
   sta $2007
   rts
 
-; Draw JUMPNEGATIVE (4 tiles)
+; Draw CMD_JUMPNEGATIVE (4 tiles)
 draw_selected_jumpnegative:
   lda $2002
   lda placeholder_position_hi
@@ -251,7 +251,7 @@ draw_selected_jumpnegative:
   sta $2007
   rts
 
-; Draw INBOX (3 tiles)
+; Draw CMD_INBOX (3 tiles)
 draw_selected_inbox:
   lda $2002
   lda placeholder_position_hi
@@ -266,7 +266,7 @@ draw_selected_inbox:
   sta $2007
   rts
 
-; Draw OUTBOX (3 tiles)
+; Draw CMD_OUTBOX (3 tiles)
 draw_selected_outbox:
   lda $2002
   lda placeholder_position_hi
@@ -281,7 +281,7 @@ draw_selected_outbox:
   sta $2007
   rts
 
-; Draw BUMPUP (3 tiles)
+; Draw CMD_BUMPUP (3 tiles)
 draw_selected_bumpup:
   lda $2002
   lda placeholder_position_hi
@@ -296,7 +296,7 @@ draw_selected_bumpup:
   sta $2007
   rts
 
-; Draw BUMPDOWN (4 tiles)
+; Draw CMD_BUMPDOWN (4 tiles)
 draw_selected_bumpdown:
   lda $2002
   lda placeholder_position_hi
@@ -313,7 +313,7 @@ draw_selected_bumpdown:
   sta $2007
   rts
 
-; Draw EOL (2 tiles)
+; Draw CMD_EOL (2 tiles)
 draw_selected_eol:
   lda $2002
   lda placeholder_position_hi

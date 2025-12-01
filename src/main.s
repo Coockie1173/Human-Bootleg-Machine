@@ -9,7 +9,7 @@
 .include "interpreter/MainInterpreter.s"
 .include "interpreter/Puzzles.s"
 
-;TODO: ADD LOAD LEVEL THING
+;TODO: CMD_ADD LOAD LEVEL THING
 
 WaitForNMI:
     LDA NMIFLAG

@@ -113,7 +113,7 @@ JumpCommand:
     LDX #$00 ;loop through all instructions to find the matching label
     JumpCommLoop:
         LDA TestInstructions,x ;load instruction
-        CMP #LABEL ;check if the instr is a label
+        CMP #CMD_LABEL ;check if the instr is a label
         BEQ :++
             CMP #$FF
             BNE :+
