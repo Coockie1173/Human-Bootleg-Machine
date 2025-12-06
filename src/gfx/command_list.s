@@ -113,6 +113,10 @@ draw_selected_add:
     sta $2007
     lda #TILE_ADD_2
     sta $2007
+    lda #$03                ; Brown background tile
+    sta $2007
+    lda #$03                ; Brown background tile
+    sta $2007
     rts
 
 ; Draw CMD_SUB (2 tiles)
@@ -125,6 +129,10 @@ draw_selected_sub:
     lda #TILE_SUB_1
     sta $2007
     lda #TILE_SUB_2
+    sta $2007
+    lda #$03                ; Brown background tile
+    sta $2007
+    lda #$03                ; Brown background tile
     sta $2007
     rts
 
@@ -140,6 +148,8 @@ draw_selected_copyto:
     lda #TILE_COPYTO_2
     sta $2007
     lda #TILE_COPYTO_3
+    sta $2007
+    lda #$03                ; Brown background tile
     sta $2007
     rts
 
@@ -170,6 +180,10 @@ draw_selected_jump:
     lda #TILE_JUMP_1
     sta $2007
     lda #TILE_JUMP_2
+    sta $2007
+    lda #$03                ; Brown background tile
+    sta $2007
+    lda #$03                ; Brown background tile
     sta $2007
     rts
 
@@ -220,6 +234,8 @@ draw_selected_inbox:
   sta $2007
   lda #TILE_INBOX_3
   sta $2007
+  lda #$03                ; Brown background tile
+  sta $2007
   rts
 
 ; Draw CMD_OUTBOX (3 tiles)
@@ -235,6 +251,8 @@ draw_selected_outbox:
   sta $2007
   lda #TILE_OUTBOX_3
   sta $2007
+  lda #$03                ; Brown background tile
+  sta $2007
   rts
 
 ; Draw CMD_BUMPUP (3 tiles)
@@ -249,6 +267,8 @@ draw_selected_bumpup:
   lda #TILE_BUMPUP_2
   sta $2007
   lda #TILE_BUMPUP_3
+  sta $2007
+  lda #$03                ; Brown background tile
   sta $2007
   rts
 
@@ -279,6 +299,8 @@ draw_selected_eol:
   lda #TILE_EOL_1
   sta $2007
   lda #TILE_EOL_2
+  sta $2007
+  lda #$03                ; Brown background tile
   sta $2007
   rts
 
