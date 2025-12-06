@@ -7,8 +7,8 @@ handle_cursor:
     bne check_up
 
     lda arrow_row
-    cmp #$FF        ; max row 22
-    bcs check_up
+    cmp #21        ; max row 22
+    bcs check_listlength
 
     inc arrow_row
     jsr calc_arrow_address
@@ -23,8 +23,8 @@ handle_cursor:
 
     lda arrow_row
     cmp #$03        ; min row 3
-    bcc movement_done
-    beq movement_done
+    beq check_listlength_up
+    ;beq movement_done
 
     dec arrow_row
     jsr calc_arrow_address
@@ -32,6 +32,28 @@ handle_cursor:
 movement_done:
     RTS
 
+check_listlength:
+    LDA command_list_count
+    SEC
+    SBC #20
+    SEC
+    SBC scrollIDX
+    BCC :+
+        INC scrollIDX
+        LDA #$01
+        STA update_list
+    :
+    jmp check_up
+
+check_listlength_up:
+    LDA scrollIDX
+    CMP #$00
+    BEQ :+
+        DEC scrollIDX
+        LDA #$01
+        STA update_list
+    :
+    RTS
 
 ; CALCULATE 16-BIT PPU ADDRESS
 calc_arrow_address:

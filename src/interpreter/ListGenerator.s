@@ -45,9 +45,8 @@ GenerateCommandList:
     ;INX
     ;LDA #CMD_EOL
     ;STA COMMANDS,x
-    LDA #$00
-    STA update_idx
-    LDA #19
-    STA update_rows_left
+    
+    LDA #$01
+    STA update_list
     @done:
     rts

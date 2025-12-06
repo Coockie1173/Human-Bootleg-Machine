@@ -18,55 +18,46 @@ init_command_list:
 
 ; Check controller state > is SELECT pressed?
 handle_selected_command:
+    LDA update_list
+    BEQ @end
 
     LDA #$00
-    STA VAR0               ;EOL flag
+    STA VAR0 ;EOL flag
+    
+    lda #$03
+    sta placeholder_row
+    lda #24
+    sta placeholder_col
+    JSR calc_placeholder_address
 
-    ; Restore rendering cursor
-    LDA update_idx
-    BNE :+
-      LDA #$03
-      STA placeholder_row
-      LDA #24
-      STA placeholder_col
-      JSR calc_placeholder_address
-      LDA update_idx
-    :
-    TAX
-
-    LDY #3                 ; *** LIMIT TO 3 ROWS PER FRAME *** it'll still flicker BUT not as bad. 1 doesn't flicker but is unbearable
-@loopStart:
-    CPY #0
-    BEQ @done              ; stop if we drew 3
-
-    LDA update_rows_left
-    BEQ @done              ; stop if full list already processed
-
-    PHX                    ; preserve X (command index)
-
+    LDY #19 ;setup command counter
+    LDX scrollIDX ;setup scroll index in full list
+    @loopStart:
+    PHX
+    
     LDA COMMANDS,x
     CMP #CMD_EOL
     BNE :+
-      PLX
-      JMP @done
+      PLX 
+      JMP @clearflag
     :
     STA VAR1
+
     JSR draw_selected_command
 
-    ; advance visual cursor
-    INC placeholder_row
+    @LoopEnd:
+    inc placeholder_row
     JSR calc_placeholder_address
-
     PLX
-    INX                    ; advance command index
-    DEC update_rows_left   ; one fewer row left
-    STX update_idx         ; save progress
+    INX
+    DEY
+    BNE @loopStart ;keep looping for all rows
+    @clearflag:
+    LDA #$00
+    STA update_list
+    @end:
+RTS
 
-    DEY                    ; one of the 3 slots used
-    BNE @loopStart
-
-@done:
-    RTS
 
 ; Erase placeholder (draw background tile)
 erase_placeholder:
