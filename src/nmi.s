@@ -1,5 +1,6 @@
 .include "gfx/input_test.s"
 .include "gfx/arrow.s"
+.include "gfx/arrow_mainMenu.s"
 .include "gfx/command_selector.s"
 .include "gfx/command_list.s"
 .include "gfx/player.s"
@@ -42,7 +43,8 @@ nmi:
   jmp @finish
 
 @menu_mode:
-  ; Menu mode - only check for start
+  ; Menu mode - handle main menu arrow and check for start
+  jsr handle_MMarrow_movement
   jsr check_start_button
 
 @finish:

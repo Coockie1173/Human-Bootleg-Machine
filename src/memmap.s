@@ -72,3 +72,9 @@ player_move_timer       = $0528     ; Frames until next move
 player_idle_timer       = $0529     ; Frames to wait at destination
 player_facing           = $052A     ; 0=facing right (no flip), 1=facing left (flip)
 command_list_count      = $050D
+
+; Main Menu
+MMarrow_position          = $050E
+MMarrow_position_hi       = $050F
+MMarrow_row               = $0510
+MMarrow_column            = $0511

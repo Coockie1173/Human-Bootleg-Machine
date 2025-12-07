@@ -57,7 +57,7 @@ reset:
   jsr load_background_menu
 
   ; Initialize arrow
-  ;jsr init_arrow
+  jsr init_MMarrow
   
   ; Initialize command selector
   ;jsr init_command_selector
