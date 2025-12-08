@@ -13,8 +13,6 @@
 .include "controller/selector.s"
 .include "player.s"
 
-;TODO: CMD_ADD LOAD LEVEL THING
-
 WaitForNMI:
     LDA NMIFLAG
     BEQ WaitForNMI

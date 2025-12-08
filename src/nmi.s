@@ -34,7 +34,7 @@ nmi:
   ; Game mode - run all game logic
   jsr handle_command_selector_gfx
   jsr handle_arrow_movement
-  jsr handle_selected_command_gfx
+  jsr handle_selected_command
   
   ; NEW: Handle interpreter and player movement together
   jsr game_logic_update

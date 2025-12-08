@@ -17,7 +17,7 @@ init_command_list:
     rts
 
 ; Check controller state > is SELECT pressed?
-handle_selected_command_gfx:
+handle_selected_command:
     LDA update_list
     BEQ @end
 
@@ -300,9 +300,11 @@ draw_selected_eol:
   sta $2007
   lda #TILE_EOL_2
   sta $2007
+  lda #$03                ; Brown background tile
+  sta $2007
   rts
 
-; Calculate PPU address for placeholder
+; Calculate 16-bit PPU address for placeholder
 calc_placeholder_address:
     lda #$20
     sta placeholder_position_hi
