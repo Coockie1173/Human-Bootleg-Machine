@@ -25,8 +25,9 @@ GenerateCommandList:
 
     TAX
     LDA current_command
-    BIT %00001000
-    BEQ @JMPCOMM
+    AND #$08
+    BNE @JMPCOMM
+    LDA current_command
     STA COMMANDS,x
     INX
     STX command_list_count
@@ -54,10 +55,16 @@ GenerateCommandList:
     rts
 
 @JMPCOMM:
+    LDA current_command
     STA COMMANDS,x
+    LDA CURRENTJUMPIDX
+    STA VARIABLES,x
     INX
     LDA #CMD_LABEL
     STA COMMANDS,x
+    LDA CURRENTJUMPIDX
+    STA VARIABLES,x
+    INC CURRENTJUMPIDX
     INX
     STX command_list_count
     INX
