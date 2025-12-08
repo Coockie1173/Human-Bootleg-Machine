@@ -1,19 +1,30 @@
 handle_cursor:
     lda controller_state
     and #%00000100
-    beq check_up
+    beq check_up_cursor
     lda previous_controller
     and #%00000100
-    bne check_up
+    bne check_up_cursor
 
     lda arrow_row
     cmp #21        ; max row 22
     bcs check_listlength
 
+    jsr CalculateItemIDX
     inc arrow_row
+    ;to make sure we don't exceed our list
+    INX
+    LDA COMMANDS,x
+    CMP #$FF
+    BNE :+
+        DEC arrow_row
+        jsr CalculateItemIDX ;to ensure var8 stays correct
+        jmp check_up_cursor
+    :
+
     jsr calc_arrow_address
 
-    check_up:
+    check_up_cursor:
     lda controller_state
     and #%00001000
     beq movement_done
@@ -40,10 +51,9 @@ check_listlength:
     SBC scrollIDX
     BCC :+
         INC scrollIDX
-        LDA #$01
-        STA update_list
+        inc update_list
     :
-    jmp check_up
+    jmp check_up_cursor
 
 check_listlength_up:
     LDA scrollIDX

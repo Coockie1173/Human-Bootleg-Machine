@@ -12,6 +12,7 @@
 .include "controller/menu.s"
 .include "controller/selector.s"
 .include "player.s"
+.include "controller/selectedmode.s"
 
 WaitForNMI:
     LDA NMIFLAG
@@ -22,17 +23,25 @@ WaitForNMI:
 
 main:
     LDA Gamemode
-    BEQ :+
+    BEQ @MainMenu
         LDX #$00
         ;jsr CheckAllSolutions
         ;jsr ParseInstruction
 
-        jsr GenerateCommandList
-        jsr handle_command_selector
-        jsr handle_cursor
         jsr update_player
+
+        LDA CURSORSTATE
+        BNE @SelectMode
+            jsr GenerateCommandList
+            jsr handle_command_selector
+            jsr handle_cursor
         jmp WaitForNMI
-    :   
+
+    @SelectMode:
+        jsr SelectUpDown
+
+        jmp WaitForNMI
+    @MainMenu:   
 
     jsr CheckMainmenuArrow
     jsr CheckMenuStart

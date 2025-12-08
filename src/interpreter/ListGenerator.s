@@ -10,12 +10,22 @@ ResetCommandList:
 
 GenerateCommandList:
     lda controller_state
-    and #%00100000          ; SELECT is bit 5
+    and #%10000000 ;A button
+    beq :+
+    lda previous_controller
+    and #%10000000
+    beq :+
+        inc CURSORSTATE
+        rts
+    :
+
+    lda controller_state
+    and #%01000000          ; B
     beq @done               ; If not pressed, exit
     
     ; Check if it was already pressed last frame
     lda previous_controller
-    and #%00100000
+    and #%01000000
     bne @done               ; If already pressed, don't repeat
     
     ; Check if we've hit the max number of commands (22 - 3 = 19 rows available)
