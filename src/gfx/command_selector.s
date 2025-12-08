@@ -11,125 +11,40 @@ init_command_selector:
   sta command_position
   
   ; Draw initial command
-  jsr draw_current_command
+  inc UPDATECOMMFLAG
+  jsr DrawcommandTrampoline
   rts
 
 ; Handle LEFT/RIGHT for command cycling
-handle_command_selector:
-  ; Check LEFT button
-  lda controller_state
-  and #%00000010
-  beq @check_right
-  lda previous_controller
-  and #%00000010
-  bne @check_right
-  
-  ; Erase current
+handle_command_selector_gfx:
+  LDA UPDATECOMMFLAG
+  BEQ @done
+  LDA #$00
+  STA UPDATECOMMFLAG
   jsr erase_current_command
-  
-  ; Previous command (with wrap)
-  lda current_command
-  beq @wrap_left
-  dec current_command
-  jmp @draw_left
-@wrap_left:
-  lda #CMD_JUMPNEGATIVE       ; Last command
-  sta current_command
-@draw_left:
-  jsr draw_current_command
-
-@check_right:
-  ; Check RIGHT button
-  lda controller_state
-  and #%00000001
-  beq @done
-  lda previous_controller
-  and #%00000001
-  bne @done
-  
-  ; Erase current
-  jsr erase_current_command
-  
-  ; Next command (with wrap)
-  lda current_command
-  cmp #CMD_JUMPNEGATIVE        ; Last command
-  beq @wrap_right
-  inc current_command
-  jmp @draw_right
-@wrap_right:
-  lda #CMD_INBOX        ; First command
-  sta current_command
-@draw_right:
-  jsr draw_current_command
+  jsr DrawcommandTrampoline
 
 @done:
   rts
 
-; Draw current command
-draw_current_command:
-  lda current_command
-  cmp #CMD_ADD
-  bne @try_sub
-  jsr draw_add
-  rts
+DrawCommandListTop:
+  .dbyt draw_inbox - 1, draw_outbox - 1
+  .dbyt draw_copyfrom - 1, draw_copyto - 1
+  .dbyt draw_add - 1, draw_sub - 1
+  .dbyt draw_bumpup - 1, draw_bumpdown - 1
+  .dbyt draw_jump - 1
+  .dbyt draw_jumpzero - 1
+  .dbyt draw_jumpnegative - 1
 
-@try_sub:
-  cmp #CMD_SUB
-  bne @try_copyto
-  jsr draw_sub
-  rts
-
-@try_copyto:
-  cmp #CMD_COPYTO
-  bne @try_copyfrom
-  jsr draw_copyto
-  rts
-
-@try_copyfrom:
-  cmp #CMD_COPYFROM
-  bne @try_jumpzero
-  jsr draw_copyfrom
-  rts
-
-@try_jumpzero:
-  cmp #CMD_JUMPZERO
-  bne @try_jumpnegative
-  jsr draw_jumpzero
-  rts
-
-@try_jumpnegative:
-  cmp #CMD_JUMPNEGATIVE
-  bne @try_jump
-  jsr draw_jumpnegative
-  rts
-
-@try_jump:
-  cmp #CMD_JUMP
-  bne @try_inbox
-  jsr draw_jump
-  rts
-
-@try_inbox:
-  cmp #CMD_INBOX
-  bne @try_outbox
-  jsr draw_inbox
-  rts
-
-@try_outbox:
-  cmp #CMD_OUTBOX
-  bne @try_bumpup
-  jsr draw_outbox
-  rts
-
-@try_bumpup:
-  cmp #CMD_BUMPUP
-  bne @try_bumpdown
-  jsr draw_bumpup
-  rts
-
-@try_bumpdown:
-  jsr draw_bumpdown
-  rts
+DrawcommandTrampoline: ;trampoline§
+  LDA current_command
+  ASL
+  TAX
+  LDA DrawCommandListTop,x
+  PHA
+  LDA DrawCommandListTop+1,x
+  PHA
+  RTS
 
 ; Erase current command
 erase_current_command:

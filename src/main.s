@@ -10,8 +10,8 @@
 .include "interpreter/ListGenerator.s"
 .include "controller/cursor.s"
 .include "controller/menu.s"
-
-;TODO: CMD_ADD LOAD LEVEL THING
+.include "controller/selector.s"
+.include "player.s"
 
 WaitForNMI:
     LDA NMIFLAG
@@ -28,7 +28,9 @@ main:
         ;jsr ParseInstruction
 
         jsr GenerateCommandList
+        jsr handle_command_selector
         jsr handle_cursor
+        jsr update_player
         jmp WaitForNMI
     :   
 

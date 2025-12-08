@@ -118,4 +118,6 @@ number_display_lo           = $0533
 ; $05A2 next
 .define SELECTEDPUZZLE $05A2
 .define CURRENTJUMPIDX $05A3
+.define UPDATECOMMFLAG $05A4
+
 .define COMMANDS $0600 ;size 0xFF

@@ -32,7 +32,7 @@ nmi:
   beq @loading_mode
   
   ; Game mode - run all game logic
-  jsr handle_command_selector
+  jsr handle_command_selector_gfx
   jsr handle_arrow_movement
   jsr handle_selected_command
   
@@ -80,7 +80,7 @@ nmi:
 
 game_logic_update:
   ; Update player first (handles movement)
-  jsr update_player
+  jsr update_player_gfx
   
   ; Check if player is idle and ready for next command
   lda player_state
