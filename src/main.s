@@ -9,6 +9,7 @@
 .include "interpreter/Puzzles.s"
 .include "interpreter/ListGenerator.s"
 .include "controller/cursor.s"
+.include "controller/menu.s"
 
 ;TODO: CMD_ADD LOAD LEVEL THING
 
@@ -20,10 +21,17 @@ WaitForNMI:
     jmp main
 
 main:
-    LDX #$00
-    ;jsr CheckAllSolutions
-    ;jsr ParseInstruction
+    LDA Gamemode
+    BEQ :+
+        LDX #$00
+        ;jsr CheckAllSolutions
+        ;jsr ParseInstruction
 
-    jsr GenerateCommandList
-    jsr handle_cursor
+        jsr GenerateCommandList
+        jsr handle_cursor
+        jmp WaitForNMI
+    :   
+
+    jsr CheckMainmenuArrow
+    jsr CheckMenuStart
     jmp WaitForNMI

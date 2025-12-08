@@ -20,6 +20,7 @@
 .define INBOXPTR $12 ;size 0x02
 .define CHECKSOLPTR $14 ;size 0x02
 .define NMIFLAG $16 ;onlly run main once NMI happened
+.define Gamemode $17
 
 .define STACK $0100 ;size 0xFF DO NOT TOUCH THIS RANGE
 
@@ -46,7 +47,7 @@ arrow_position_hi       = $0503
 arrow_row               = $0504
 arrow_column            = $0505
 
-game_state = $052B  ; Game state variable
+game_state = Gamemode  ; Game state variable
 
 ; Command selector variables
 current_command         = $0506
@@ -76,10 +77,14 @@ player_anim_timer       = $0527     ; Frames until next animation
 player_move_timer       = $0528     ; Frames until next move
 player_idle_timer       = $0529     ; Frames to wait at destination
 player_facing           = $052A     ; 0=facing right (no flip), 1=facing left (flip)
-.define COMMANDS $0600 ;size 0xFF
-
 ; Main Menu
-MMarrow_position          = $050E
-MMarrow_position_hi       = $050F
-MMarrow_row               = $0510
-MMarrow_column            = $0511
+MMarrow_position          = $052B
+MMarrow_position_hi       = $052C
+MMarrow_row               = $052D
+MMarrow_column            = $052E
+MMarrow_position_old            = $052F
+MMarrow_position_old_hi            = $0530
+MMarrow_update = $0531
+
+; $05A2 next
+.define COMMANDS $0600 ;size 0xFF

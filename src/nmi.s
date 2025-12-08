@@ -12,6 +12,9 @@ nmi:
   PHA
   PHX
   PHY
+  ; Save controller state
+  lda controller_state
+  sta previous_controller
   jsr ReadJoy
 
   ; Disable rendering
@@ -25,6 +28,8 @@ nmi:
   lda game_state
   cmp #STATE_MENU
   beq @menu_mode
+  cmp #STATE_LOADING
+  beq @loading_mode
   
   ; Game mode - run all game logic
   jsr handle_command_selector
@@ -45,7 +50,11 @@ nmi:
 @menu_mode:
   ; Menu mode - handle main menu arrow and check for start
   jsr handle_MMarrow_movement
+  jmp @finish
+
+@loading_mode:
   jsr check_start_button
+  jmp @finish
 
 @finish:
   ; Reset scroll
@@ -60,9 +69,6 @@ nmi:
   lda #%00011110
   sta $2001
 
-  ; Save controller state
-  lda controller_state
-  sta previous_controller
 
   LDA #$01
   STA NMIFLAG

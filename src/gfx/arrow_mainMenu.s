@@ -10,46 +10,25 @@ init_MMarrow:
   ; Calculate and draw initial position
   jsr calc_MMarrow_address
   jsr draw_MMarrow_sprite
+
+
+  lda MMarrow_position_hi
+  sta MMarrow_position_old_hi
+  lda MMarrow_position
+  sta MMarrow_position_old
   rts
 
 ; HANDLE ARROW MOVEMENT (UP/DOWN)
 handle_MMarrow_movement:
-  ; DOWN
-  lda controller_state
-  and #%00000100
-  beq @check_up
-  lda previous_controller
-  and #%00000100
-  bne @check_up
-
-  lda MMarrow_row
-  cmp #$13         ; max row 19
-  bcs @check_up
-
-  jsr erase_MMarrow_sprite
-  lda MMarrow_row
-  clc
-  adc #$02          ; Move down 2 rows
-  sta MMarrow_row
-  jsr calc_MMarrow_address
-  jsr draw_MMarrow_sprite
-
-@check_up:
-  lda controller_state
-  and #%00001000
+  lda MMarrow_update
   beq @movement_done
-  lda previous_controller
-  and #%00001000
-  bne @movement_done
 
-  lda MMarrow_row
-  cmp #$0D            ; min row 13
-  bcc @movement_done  ; If at 13, can't go up
-  beq @movement_done  ; If < 13, can't go up
-
+  lda MMarrow_position_hi
+  sta MMarrow_position_old_hi
+  lda MMarrow_position
+  sta MMarrow_position_old
+   
   jsr erase_MMarrow_sprite
-  dec MMarrow_row
-  dec MMarrow_row
   jsr calc_MMarrow_address
   jsr draw_MMarrow_sprite
 
@@ -70,9 +49,9 @@ draw_MMarrow_sprite:
 ; ERASE ARROW SUBROUTINE
 erase_MMarrow_sprite:
   lda $2002
-  lda MMarrow_position_hi
+  lda MMarrow_position_old_hi
   sta $2006
-  lda MMarrow_position
+  lda MMarrow_position_old
   sta $2006
   lda #$00
   sta $2007

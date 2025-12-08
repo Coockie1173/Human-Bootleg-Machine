@@ -48,7 +48,8 @@
 
 ; Game state constants
 STATE_MENU              = $00
-STATE_GAME              = $01
+STATE_LOADING              = $01
+STATE_GAME              = $02
 
 ; Placeholder
 PLACEHODLER             = $0C

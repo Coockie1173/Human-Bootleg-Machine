@@ -1,25 +1,8 @@
 .include "background.s"
 
 check_start_button:
-  ; First check if arrow is at START position (row 13, column 10)
-  lda MMarrow_row
-  cmp #$0D          ; Row 13
-  bne @not_pressed  ; If not at row 13, don't allow start
-  
-  lda MMarrow_column
-  cmp #$0A          ; Column 10
-  bne @not_pressed  ; If not at column 10, don't allow start
-  
-  ; Arrow is at START - now check if SELECT button is pressed
-  lda controller_state
-  and #%00100000    ; SELECT button mask
-  beq @not_pressed
-  
-  ; Check if it wasn't pressed before (edge detection)
-  lda previous_controller
-  and #%00100000
-  bne @not_pressed  ; If it was already pressed, ignore
-  
+  LDA Gamemode
+  BEQ @not_pressed
   ; SELECT was just pressed while at START - transition to game
   jsr transition_to_game
   
@@ -62,7 +45,8 @@ transition_to_game:
   jsr init_player
   
   ; Change game state
-  lda #STATE_GAME
-  sta game_state
+  ;lda #STATE_GAME
+  ;sta game_state
+  inc Gamemode
   
   rts
