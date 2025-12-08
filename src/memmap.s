@@ -87,4 +87,5 @@ MMarrow_position_old_hi            = $0530
 MMarrow_update = $0531
 
 ; $05A2 next
+.define SELECTEDPUZZLE $05A2
 .define COMMANDS $0600 ;size 0xFF
