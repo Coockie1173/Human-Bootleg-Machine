@@ -11,6 +11,7 @@
 .include "controller/cursor.s"
 .include "controller/menu.s"
 .include "controller/selector.s"
+.include "player.s"
 
 ;TODO: CMD_ADD LOAD LEVEL THING
 
@@ -31,6 +32,7 @@ main:
         jsr GenerateCommandList
         jsr handle_command_selector
         jsr handle_cursor
+        jsr update_player
         jmp WaitForNMI
     :   
 

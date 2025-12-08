@@ -80,7 +80,7 @@ nmi:
 
 game_logic_update:
   ; Update player first (handles movement)
-  jsr update_player
+  jsr update_player_gfx
   
   ; Check if player is idle and ready for next command
   lda player_state
