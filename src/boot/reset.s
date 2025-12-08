@@ -1,7 +1,8 @@
 ;reset/pre-boot code
 ;this sets everything required up PPU wise and sets the program up to work
 
-.include "../gfx/background.s"
+.include "../gfx/main_menu.s"
+
 
 reset:
   sei		; disable IRQs
@@ -53,26 +54,30 @@ reset:
     bne @loop
 
   ; Initialize background
-  jsr load_background
+  jsr load_background_menu
 
   ; Initialize arrow
-  jsr init_arrow
+  jsr init_MMarrow
   
   ; Initialize command selector
-  jsr init_command_selector
+  ;jsr init_command_selector
 
   ; Initialize command list
-  jsr init_command_list
+  ;jsr init_command_list
 
   ; Initialize player
-  jsr init_player
+  ;jsr init_player
+
+ ; Set initial game state to MENU
+  lda #STATE_MENU
+  sta game_state
 
   jsr ResetCommandList ;make sure command list is filled with NOTHING
 
   enable_rendering:
-    lda #%10000000	; Enable NMI
+    lda #%10000000
     sta $2000
-    lda #%00011110	; Enable rendering: show background, show sprites, show left 8 pixels
+    lda #%00011110
     sta $2001
     
-    jmp WaitForNMI ;start main game loop
+    jmp WaitForNMI

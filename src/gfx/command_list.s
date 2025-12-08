@@ -304,7 +304,7 @@ draw_selected_eol:
   sta $2007
   rts
 
-; Calculate 16-bit PPU address for placeholder
+; Calculate PPU address for placeholder
 calc_placeholder_address:
     lda #$20
     sta placeholder_position_hi

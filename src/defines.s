@@ -46,6 +46,10 @@
 
 ; GRAPHICS
 
+; Game state constants
+STATE_MENU              = $00
+STATE_GAME              = $01
+
 ; Placeholder
 PLACEHODLER             = $0C
 

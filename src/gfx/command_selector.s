@@ -1,6 +1,6 @@
 ; Initialize command selector - call from reset
 init_command_selector:
-  lda #CMD_ADD
+  lda #CMD_INBOX
   sta current_command
   
     ; Calculate PPU address for row 25, col 1
@@ -33,7 +33,7 @@ handle_command_selector:
   dec current_command
   jmp @draw_left
 @wrap_left:
-  lda #CMD_JUMP        ; Last command
+  lda #CMD_JUMPNEGATIVE       ; Last command
   sta current_command
 @draw_left:
   jsr draw_current_command
@@ -52,12 +52,12 @@ handle_command_selector:
   
   ; Next command (with wrap)
   lda current_command
-  cmp #CMD_EOL        ; Last command
+  cmp #CMD_JUMPNEGATIVE        ; Last command
   beq @wrap_right
   inc current_command
   jmp @draw_right
 @wrap_right:
-  lda #CMD_ADD        ; First command
+  lda #CMD_INBOX        ; First command
   sta current_command
 @draw_right:
   jsr draw_current_command
@@ -128,13 +128,7 @@ draw_current_command:
   rts
 
 @try_bumpdown:
-  cmp #CMD_BUMPDOWN
-  bne @try_eol
   jsr draw_bumpdown
-  rts
-
-@try_eol:
-  jsr draw_eol
   rts
 
 ; Erase current command
@@ -317,18 +311,5 @@ draw_bumpdown:
   lda #TILE_BUMPDOWN_3
   sta $2007
   lda #TILE_BUMPDOWN_4
-  sta $2007
-  rts
-
-; Draw CMD_EOL (2 tiles)
-draw_eol:
-  lda $2002
-  lda command_position_hi
-  sta $2006
-  lda command_position
-  sta $2006
-  lda #TILE_EOL_1
-  sta $2007
-  lda #TILE_EOL_2
   sta $2007
   rts

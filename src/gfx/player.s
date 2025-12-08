@@ -3,7 +3,6 @@
 ; Sprites 0-3 reserved for player (OAM $0200-$020F)
 
 
-; Initialize player system
 init_player:
   ; Start at inbox position
   lda #INBOX_X
@@ -35,14 +34,18 @@ init_player:
   lda #$01
   sta player_facing
   
-  ; Set target to first destination (tile 0)
+  ; Clear destination markers (so interpreter can set them)
+  lda #$FF
+  sta DEDSTINATIONPLAYERX
+  sta DEDSTINATIONPLAYERY
+  
+  ; Set target to first destination (tile 0) - for testing
   lda #TILE0_X
   sta player_target_x
   lda #TILE0_Y
   sta player_target_y
   
   rts
-
 
 ; Update player
 update_player:
@@ -66,6 +69,42 @@ update_player:
 
 ; Handle idle state 
 update_idle_state:
+  ; Check if interpreter has set a new destination
+  lda DEDSTINATIONPLAYERX
+  cmp #$FF                   ; Check if destination is set (use $FF as "no destination")
+  beq @normal_idle           ; If no destination set, continue normal idle behavior
+  
+; New destination from interpreter! Set it as target
+  sta player_target_x
+  lda DEDSTINATIONPLAYERY
+  sta player_target_y
+  
+  ; Clear the destination so we don't re-read it
+  lda #$FF
+  sta DEDSTINATIONPLAYERX
+  sta DEDSTINATIONPLAYERY
+  
+  ; Determine facing direction
+  jsr set_facing_direction
+  
+  ; Switch to walking state
+  lda #STATE_WALKING
+  sta player_state
+  
+  ; Reset animation
+  lda #$00
+  sta player_anim_frame
+  lda #ANIM_SPEED
+  sta player_anim_timer
+  
+  ; Reset movement timer
+  lda #PLAYER_SPEED
+  sta player_move_timer
+  
+  rts
+
+@normal_idle:
+  ; Original idle behavior (your test loop)
   ; Set facing based on current destination
   lda player_destination
   cmp #DEST_INBOX
@@ -75,6 +114,7 @@ update_idle_state:
   lda #$01
   sta player_facing
   jmp @check_timer
+
   
 @face_right_idle:
   ; At any other location - face right

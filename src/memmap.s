@@ -46,6 +46,8 @@ arrow_position_hi       = $0503
 arrow_row               = $0504
 arrow_column            = $0505
 
+game_state = $052B  ; Game state variable
+
 ; Command selector variables
 current_command         = $0506
 command_position        = $0507
@@ -75,3 +77,9 @@ player_move_timer       = $0528     ; Frames until next move
 player_idle_timer       = $0529     ; Frames to wait at destination
 player_facing           = $052A     ; 0=facing right (no flip), 1=facing left (flip)
 .define COMMANDS $0600 ;size 0xFF
+
+; Main Menu
+MMarrow_position          = $050E
+MMarrow_position_hi       = $050F
+MMarrow_row               = $0510
+MMarrow_column            = $0511
