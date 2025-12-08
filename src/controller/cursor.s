@@ -32,6 +32,8 @@ handle_cursor:
     and #%00001000
     bne movement_done
 
+    jsr CalculateItemIDX
+
     lda arrow_row
     cmp #$03        ; min row 3
     beq check_listlength_up
