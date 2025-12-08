@@ -10,6 +10,7 @@
 .include "interpreter/ListGenerator.s"
 .include "controller/cursor.s"
 .include "controller/menu.s"
+.include "controller/selector.s"
 
 ;TODO: CMD_ADD LOAD LEVEL THING
 
@@ -28,6 +29,7 @@ main:
         ;jsr ParseInstruction
 
         jsr GenerateCommandList
+        jsr handle_command_selector
         jsr handle_cursor
         jmp WaitForNMI
     :   

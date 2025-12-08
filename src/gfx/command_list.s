@@ -17,7 +17,7 @@ init_command_list:
     rts
 
 ; Check controller state > is SELECT pressed?
-handle_selected_command:
+handle_selected_command_gfx:
     LDA update_list
     BEQ @end
 
@@ -299,8 +299,6 @@ draw_selected_eol:
   lda #TILE_EOL_1
   sta $2007
   lda #TILE_EOL_2
-  sta $2007
-  lda #$03                ; Brown background tile
   sta $2007
   rts
 
