@@ -1,3 +1,4 @@
+; Update player logic (call from main loop)
 update_player:
   lda player_state
   cmp #STATE_IDLE
@@ -8,13 +9,16 @@ update_player:
 
 @handle_idle:
   jsr update_idle_state
-  jmp @draw
+  rts
   
 @handle_walking:
   jsr update_walking_state
-  
-@draw:
-rts
+  rts
+
+; Update player graphics (call from NMI only)
+update_player_gfx:
+  jsr draw_player_sprites
+  rts
 
 ; Handle idle state 
 update_idle_state:

@@ -48,9 +48,9 @@ init_player:
   rts
 
 ; Update player
-update_player_gfx:
-  jsr draw_player_sprites
-  rts
+;update_player_gfx:
+  ;jsr draw_player_sprites
+  ;rts
 
 ; Draw player sprites to OAM buffer
 draw_player_sprites:

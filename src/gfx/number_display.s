@@ -1,10 +1,4 @@
 ; Converts numbers [-99 to 99] to tiles
-
-
-draw_number:
-    stx number_display_hi   ; Save to PPU
-    sty number_display_lo
-
 ; DRAW NUMBER TILES IN INBOX
     ; Check numbers on the puzzle > match to tiles:
     ; Check if negative
@@ -23,32 +17,39 @@ draw_number:
                 ; > First set of tiles on row: 8
             ; > Next set of tiles should be drawn UNDER previous > INC Y pos
 
-    sta VAR0                ; input number
+; Converts numbers [-99 to 99] to tiles
 
-; Check if positive
-    bpl positive_number     ; Branch if positive
+draw_number:
+    stx number_display_hi   ; Save PPU address
+    sty number_display_lo
 
-; IF NEGATIVE
+    sta VAR0                ; Save input number
+
+    ; Check if positive
+    bpl positive_number
+
+; NEGATIVE NUMBER
 negative_number:
-    ; Get absolute value > invert the bits > add 1
+    ; Get absolute value > invert bits > add 1
     eor #$FF
     clc
     adc #$01
     sta VAR0
 
-; Check digit amount
-    cmp $10
+    ; Check digit amount
+    cmp #$0A                ; Compare with 10
     bcc negative_single
+    jmp negative_double
 
-; IF POSITIVE
+; POSITIVE NUMBER
 positive_number:
-    ; Immediately check digit amount
-    cmp $10
+    cmp #$0A                ; Compare with 10
     bcc positive_single
+    jmp positive_double
 
-; SINGLE DIGITS:
+; SINGLE NEGATIVE: [-][x]
 negative_single:
-    pha     ; restore digit
+    pha                     ; Save digit
 
     ; Draw left tile (TILE_MINUS)
     lda $2002
@@ -57,30 +58,28 @@ negative_single:
     lda number_display_lo
     sta $2006
 
-    lda TILE_MINUS
+    lda #TILE_MINUS
     sta $2007
 
-    ; Draw the right tile (TILE_NUM_X)
-    pla      ; restore digit
-
-    clc
-    adc #TILE_NUM_0
-    sta VAR1
-
+    ; Draw right tile (TILE_NUM_X)
     lda $2002
     lda number_display_hi
     sta $2006
     lda number_display_lo
+    clc
+    adc #$01                ; Move to next column
     sta $2006
 
-    lda VAR1
+    pla                     ; Restore digit
+    clc
+    adc #TILE_NUM_0
     sta $2007
 
-positive_single:
-    ; left tile = TILE_NUM_0
-    ; right tile = TILE_NUM_X
+    rts
 
-    pha     ; save the digit
+; SINGLE POSITIVE: [0][x]
+positive_single:
+    pha                     ; Save digit
 
     ; Draw left tile (TILE_NUM_0)
     lda $2002
@@ -89,51 +88,44 @@ positive_single:
     lda number_display_lo
     sta $2006
 
-    lda TILE_NUM_0
+    lda #TILE_NUM_0
     sta $2007
 
-    ; Draw the right tile (TILE_NUM_X)
-    pla       ; restore digit
-    
-    clc
-    adc #TILE_NUM_0
-    sta VAR1
-
+    ; Draw right tile (TILE_NUM_X)
     lda $2002
     lda number_display_hi
     sta $2006
     lda number_display_lo
     clc
-    adc #$01
+    adc #$01                ; Move to next column
     sta $2006
 
-    lda VAR1
+    pla                     ; Restore digit
+    clc
+    adc #TILE_NUM_0
     sta $2007
 
     rts
 
-; DOUBLE DIGITS:
+; DOUBLE NEGATIVE: [-x][x]
 negative_double:
-    ; left tile = TILE_NUM_MINUS_X
-    ; right tile = TILE_NUM_X
-
-    ; Check left digit by dividing by 10
-    ldx #$00                ; X = tens counter
-:   cmp #10
-    bcc :+                  ; If < 10, done dividing
-    sbc #10                 ; Subtract 10 (carry already set from CMP)
-    inx                     ; Increment tens
+    ; Divide by 10
+    ldx #$00
+:   cmp #$0A
+    bcc :+
+    sec
+    sbc #$0A
+    inx
     jmp :-
 :
-
-; left digit stored in X, right digit stored in A
-    pha         ; save right digit
+    ; X = tens, A = ones
+    pha                     ; Save ones
 
     ; Draw left tile (TILE_NUM_MINUS_X)
     txa
     clc
     adc #TILE_NUM_MINUS_1
-    sta VAR1
+    pha                     ; Save tile ID
 
     lda $2002
     lda number_display_hi
@@ -141,46 +133,44 @@ negative_double:
     lda number_display_lo
     sta $2006
 
-    lda VAR1
+    pla                     ; Restore tile ID
     sta $2007
 
     ; Draw right tile (TILE_NUM_X)
-    pla         ; restore right digit
-    
-    clc
-    adc #TILE_NUM_0
-    sta VAR1
-
     lda $2002
     lda number_display_hi
     sta $2006
     lda number_display_lo
+    clc
+    adc #$01                ; Move to next column
     sta $2006
 
-    lda VAR1
+    pla                     ; Restore ones
+    clc
+    adc #TILE_NUM_0
     sta $2007
 
-positive_double:
-    ; left tile = TILE_NUM_X
-    ; right tile = TILE_NUM_X
+    rts
 
-    ; Check left digit by dividing by 10
-    ldx #$00                ; X = tens counter
-:   cmp #10
-    bcc :+                  ; If < 10, done dividing
-    sbc #10                 ; Subtract 10 (carry already set from CMP)
-    inx                     ; Increment tens
+; DOUBLE POSITIVE: [x][x]
+positive_double:
+    ; Divide by 10
+    ldx #$00
+:   cmp #$0A
+    bcc :+
+    sec
+    sbc #$0A
+    inx
     jmp :-
 :
-
-; left digit stored in X, right digit stored in A
-    pha         ; save right digit
+    ; X = tens, A = ones
+    pha                     ; Save ones
 
     ; Draw left tile (TILE_NUM_X)
     txa
     clc
     adc #TILE_NUM_0
-    sta VAR1
+    pha                     ; Save tile ID
 
     lda $2002
     lda number_display_hi
@@ -188,24 +178,38 @@ positive_double:
     lda number_display_lo
     sta $2006
 
-    lda VAR1
+    pla                     ; Restore tile ID
     sta $2007
 
     ; Draw right tile (TILE_NUM_X)
-    pla         ; restore right digit
+    lda $2002
+    lda number_display_hi
+    sta $2006
+    lda number_display_lo
+    clc
+    adc #$01                ; Move to next column
+    sta $2006
 
+    pla                     ; Restore ones
     clc
     adc #TILE_NUM_0
-    sta VAR1
+    sta $2007
 
+    rts
+
+; Erase a number (2 tiles)
+erase_number:
+    stx number_display_hi
+    sty number_display_lo
+    
     lda $2002
     lda number_display_hi
     sta $2006
     lda number_display_lo
     sta $2006
-
-    lda VAR1
+    
+    lda #TILE_NUM_0         ; Use 0 as blank
     sta $2007
-
-
-
+    sta $2007
+    
+    rts
