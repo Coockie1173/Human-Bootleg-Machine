@@ -12,17 +12,27 @@ init_arrow:
   jsr draw_arrow_sprite
   rts
 
-; HANDLE ARROW MOVEMENT (UP/DOWN)
+
 handle_arrow_movement:
-  ; DOWN
   lda arrow_update_flag
-  beq :+
+  beq @NoMove
     jsr erase_arrow_sprite
     jsr draw_arrow_sprite
     lda #$00
     sta arrow_update_flag
+
+  @NoMove:
+
+  lda CURSORSTATE
+  bne :+
+    rts
   :
-  rts
+  lda CURSORBLINKTIMER
+  and #%00010000
+  bne @DontDisp
+    jmp draw_arrow_sprite
+  @DontDisp:
+    jmp blink_arrow_sprite
 
 ; DRAW ARROW SUBROUTINE
 draw_arrow_sprite:
@@ -32,6 +42,16 @@ draw_arrow_sprite:
   lda arrow_position
   sta $2006
   lda #$1F
+  sta $2007
+  rts
+
+blink_arrow_sprite: ;clears out the arrow sprite when it's in blinky mode
+  lda $2002
+  lda arrow_position_hi
+  sta $2006
+  lda arrow_position
+  sta $2006
+  lda #$03
   sta $2007
   rts
 

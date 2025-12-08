@@ -12,9 +12,6 @@ nmi:
   PHA
   PHX
   PHY
-  ; Save controller state
-  lda controller_state
-  sta previous_controller
   jsr ReadJoy
 
   ; Disable rendering

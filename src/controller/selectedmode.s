@@ -2,14 +2,22 @@
 ;left & right : increase/variable
 
 SelectUpDown:
+
+    dec CURSORBLINKTIMER
+    bpl :+
+        lda #$1F
+        sta CURSORBLINKTIMER
+    :
+
     lda controller_state
     and #%10000000 ;A button
     beq :+
     lda previous_controller
     and #%10000000
-    beq :+
+    bne :+
         LDA #$00
         STA CURSORSTATE
+        inc arrow_update_flag
         rts
     :
 

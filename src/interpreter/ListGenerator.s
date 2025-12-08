@@ -14,7 +14,7 @@ GenerateCommandList:
     beq :+
     lda previous_controller
     and #%10000000
-    beq :+
+    bne :+
         inc CURSORSTATE
         rts
     :
