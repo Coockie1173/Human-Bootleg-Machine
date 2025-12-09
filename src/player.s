@@ -28,10 +28,14 @@ update_player_gfx:
 
 ; Handle idle state 
 update_idle_state:
-  ; Check if interpreter has set a new destination
+ ; Check if interpreter has set a new destination
   lda DEDSTINATIONPLAYERX
-  cmp #$FF                   ; Check if destination is set (use $FF as "no destination")
-  beq @normal_idle           ; If no destination set, continue normal idle behavior
+  cmp #$FF                   ; $FF = no destination
+  beq @normal_idle
+
+  ; Extra sanity: if destination byte is zero (0), treat as no destination
+  cmp #$00
+  beq @normal_idle
   
 ; New destination from interpreter! Set it as target
   sta player_target_x
