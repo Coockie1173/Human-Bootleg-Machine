@@ -7,6 +7,8 @@
 .include "gfx/game_state.s"
 .include "gfx/interpreter_bridge.s"
 .include "gfx/number_system.s"   
+.include "gfx/hand_sprites.s"   
+
 
 nmi:
   PHP
@@ -108,4 +110,5 @@ game_logic_update:
 @draw_player:
   ; Always draw player sprites in NMI
   jsr update_player_gfx
+  jsr draw_hand_sprites
   rts

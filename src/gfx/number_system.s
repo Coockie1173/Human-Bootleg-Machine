@@ -20,7 +20,7 @@ init_number_displays:
     lda #$00
 @clear_loop:
     sta GAMEMMEM, x
-    sta last_tile_values, x    ; NEW: Track last known values
+    sta last_tile_values, x
     inx
     cpx #$08
     bcc @clear_loop
@@ -33,12 +33,14 @@ init_number_displays:
     lda #$01
     sta hand_value_dirty
     sta inbox_value_dirty
+    sta outbox_value_dirty
     
     ; Clear last known special values
     lda #$00
     sta last_hand_value
     lda #$FF
-    sta last_inbox_value    ; $FF = empty initially
+    sta last_inbox_value
+    sta last_outbox_value
 
     rts
 
@@ -105,11 +107,40 @@ check_inbox_change:
 @no_change:
     rts
 
+; check_outbox_change - Check if outbox value changed
+check_outbox_change:
+    ldx SOLPTR
+    cpx #$00
+    beq @empty              ; No solution items yet
+    
+    dex                     ; Get last item index
+    lda SOLUTION, x
+    cmp last_outbox_value
+    beq @no_change
+    
+    ; Changed!
+    sta last_outbox_value
+    lda #$01
+    sta outbox_value_dirty
+    rts
+    
+@empty:
+    lda #$FF
+    cmp last_outbox_value
+    beq @no_change
+    sta last_outbox_value
+    lda #$01
+    sta outbox_value_dirty
+    
+@no_change:
+    rts
+
 ; update_number_displays - Check all values and mark changes
 update_number_displays:
     jsr check_tile_changes
     jsr check_hand_change
     jsr check_inbox_change
+    jsr check_outbox_change 
     rts
 
 ; draw_pending_numbers - Draw only dirty numbers
@@ -121,6 +152,8 @@ draw_pending_numbers:
     bne @do_hand
     lda inbox_value_dirty
     bne @do_inbox
+    lda outbox_value_dirty
+    bne @do_outbox
     rts                     ; Nothing to do
 
 @do_tiles:
@@ -170,10 +203,17 @@ draw_pending_numbers:
 
 @do_inbox:
     lda inbox_value_dirty
-    beq @done
+    beq @do_outbox
     jsr draw_inbox_front_now
     lda #$00
     sta inbox_value_dirty
+
+@do_outbox:
+    lda outbox_value_dirty
+    beq @done
+    jsr draw_outbox_front_now
+    lda #$00
+    sta outbox_value_dirty
 
 @done:
     rts
@@ -261,5 +301,26 @@ draw_inbox_front_now:
     ; Inbox is empty - erase display
     ldx #INBOXLOCHI
     ldy #INBOXLOCLO
+    jsr erase_number
+    rts
+
+; draw_outbox_front_now - Draw outbox last value
+draw_outbox_front_now:
+    ldx SOLPTR
+    cpx #$00
+    beq @empty_outbox
+    
+    ; Draw the last value
+    dex
+    lda SOLUTION, x
+    ldx #OUTBOXLOCHI
+    ldy #OUTBOXLOCLO
+    jsr draw_number
+    rts
+    
+@empty_outbox:
+    ; Outbox is empty - erase display
+    ldx #OUTBOXLOCHI
+    ldy #OUTBOXLOCLO
     jsr erase_number
     rts

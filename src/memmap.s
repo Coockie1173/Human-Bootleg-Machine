@@ -126,8 +126,9 @@ inbox_value_dirty           = $0539
 last_tile_values        = $0573     ; 8 bytes (one per tile)
 last_hand_value         = $057B     ; 1 byte
 last_inbox_value        = $057C     ; 1 byte
+last_outbox_value       = $057D     ; 1 byte  
+outbox_value_dirty      = $057E     ; 1 byte  
 
-; $05A2 next
 .define SELECTEDPUZZLE $05A2
 .define CURRENTJUMPIDX $05A3
 .define UPDATECOMMFLAG $05A4
