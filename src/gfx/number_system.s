@@ -148,8 +148,8 @@ draw_pending_numbers:
     ; Quick-check if any work needed
     lda tile_values_dirty
     bne @do_tiles
-    lda hand_value_dirty
-    bne @do_hand
+    ;lda hand_value_dirty
+    ;bne @do_hand
     lda inbox_value_dirty
     bne @do_inbox
     lda outbox_value_dirty
@@ -194,12 +194,6 @@ draw_pending_numbers:
     cpx #$08
     bcc @tile_loop
 
-@do_hand:
-    lda hand_value_dirty
-    beq @do_inbox
-    jsr draw_hand_value_now
-    lda #$00
-    sta hand_value_dirty
 
 @do_inbox:
     lda inbox_value_dirty
