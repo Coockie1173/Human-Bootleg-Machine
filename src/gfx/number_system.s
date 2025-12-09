@@ -95,7 +95,7 @@ check_hand_change:
 ; check_inbox_change - Check if inbox front value changed
 check_inbox_change:
     ldy #$00
-    lda (INBOXPTR), y
+    lda (INBOXPTR), y       ; Get current front value
     cmp last_inbox_value
     beq @no_change
     

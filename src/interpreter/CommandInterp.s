@@ -57,6 +57,10 @@ OutboxCommand:
     INX
     STX SOLPTR
 
+    ; CLEAR THE HAND AFTER OUTBOX
+    LDA #$FF
+    STA HANDMEM
+
     LDA OUTBOX_X
     STA DEDSTINATIONPLAYERX ;set player destination high
     
