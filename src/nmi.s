@@ -98,6 +98,7 @@ game_logic_update:
   
   ; NEW: Mark numbers as dirty (will be drawn in NMI)
   jsr update_number_displays
+  ;jsr set_tile_dirty
   
   jmp @draw_player
   

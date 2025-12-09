@@ -114,11 +114,18 @@ TILE_NUM_MINUS_9            = $69
 
 number_display_hi           = $0532
 number_display_lo           = $0533
+number_display_hi2          = $0534
+number_display_lo2          = $0535
 
-number_update_flag          = $0534     ; Set to 1 when numbers need redrawing
-tile_values_dirty           = $0535     ; Bitfield: which tiles need update (bits 0-7)
-hand_value_dirty            = $0536     ; Set to 1 when hand needs update
-inbox_value_dirty           = $0537     ; Set to 1 when inbox needs update
+number_update_flag          = $0536
+tile_values_dirty           = $0537    ; <-- IMPORTANT: bitmask byte
+hand_value_dirty            = $0538
+inbox_value_dirty           = $0539
+
+; Last known values for change detection
+last_tile_values        = $0573     ; 8 bytes (one per tile)
+last_hand_value         = $057B     ; 1 byte
+last_inbox_value        = $057C     ; 1 byte
 
 ; $05A2 next
 .define SELECTEDPUZZLE $05A2

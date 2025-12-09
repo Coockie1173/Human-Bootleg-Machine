@@ -186,3 +186,5 @@ OUTBOX_Y                = 64
 .define BUTTON_RIGHT #%00000001
 
 .define MAXLINES 19
+
+.define NUM_TILES #$08

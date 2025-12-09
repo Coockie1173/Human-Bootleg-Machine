@@ -22,7 +22,17 @@
 draw_number:
     stx number_display_hi   ; Save PPU address
     sty number_display_lo
-
+    
+    ; Calculate second column address NOW
+    iny                     ; Y = second column
+    bne @no_overflow
+    inx                     ; Handle overflow to next page
+@no_overflow:
+    stx number_display_hi2  ; Save second address
+    sty number_display_lo2
+    dey                     ; Restore Y
+    dex                     ; Restore X (if needed)
+    
     sta VAR0                ; Save input number
 
     ; Check if positive
@@ -61,13 +71,11 @@ negative_single:
     lda #TILE_MINUS
     sta $2007
 
-    ; Draw right tile (TILE_NUM_X)
+    ; Draw right tile (TILE_NUM_X) — use precomputed second-column address
     lda $2002
-    lda number_display_hi
+    lda number_display_hi2
     sta $2006
-    lda number_display_lo
-    clc
-    adc #$01                ; Move to next column
+    lda number_display_lo2
     sta $2006
 
     pla                     ; Restore digit
@@ -93,14 +101,12 @@ positive_single:
 
     ; Draw right tile (TILE_NUM_X)
     lda $2002
-    lda number_display_hi
+    lda number_display_hi2
     sta $2006
-    lda number_display_lo
-    clc
-    adc #$01                ; Move to next column
+    lda number_display_lo2
     sta $2006
 
-    pla                     ; Restore digit
+    pla
     clc
     adc #TILE_NUM_0
     sta $2007
@@ -138,19 +144,19 @@ negative_double:
 
     ; Draw right tile (TILE_NUM_X)
     lda $2002
-    lda number_display_hi
+    lda number_display_hi2
     sta $2006
-    lda number_display_lo
-    clc
-    adc #$01                ; Move to next column
+    lda number_display_lo2
     sta $2006
 
-    pla                     ; Restore ones
+    ; restore ones in A/stack as you already do, then write tile id:
+    pla                     ; Restore ones (or tile ID, as your routine expects)
     clc
     adc #TILE_NUM_0
     sta $2007
 
     rts
+
 
 ; DOUBLE POSITIVE: [x][x]
 positive_double:
@@ -181,16 +187,15 @@ positive_double:
     pla                     ; Restore tile ID
     sta $2007
 
-    ; Draw right tile (TILE_NUM_X)
+   ; Draw right tile (TILE_NUM_X)
     lda $2002
-    lda number_display_hi
+    lda number_display_hi2
     sta $2006
-    lda number_display_lo
-    clc
-    adc #$01                ; Move to next column
+    lda number_display_lo2
     sta $2006
 
-    pla                     ; Restore ones
+    ; restore ones in A/stack as you already do, then write tile id:
+    pla                     ; Restore ones (or tile ID, as your routine expects)
     clc
     adc #TILE_NUM_0
     sta $2007
