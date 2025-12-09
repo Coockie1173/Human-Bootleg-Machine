@@ -28,6 +28,14 @@ draw_hand_sprites:
     bcc @negative_single_sprite
     jmp @negative_double_sprite
 
+@hide_hand:
+    ; Hide both hand sprites by moving them off-screen
+    lda #$FF
+    sta $0210               ; Y position sprite 4
+    sta $0214               ; Y position sprite 5
+    rts
+
+
 @positive_hand:
     ; Check if single or double digit
     cmp #$0A
@@ -73,12 +81,6 @@ draw_hand_sprites:
     sta $0217
     jmp @done
 
-@hide_hand:
-    ; Hide both hand sprites by moving them off-screen
-    lda #$FF
-    sta $0210               ; Y position sprite 4
-    sta $0214               ; Y position sprite 5
-    rts
 
 ; POSITIVE SINGLE: [0][x]
 @positive_single_sprite:

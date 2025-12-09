@@ -3,7 +3,7 @@
 .include "gfx/arrow_mainMenu.s"
 .include "gfx/command_selector.s"
 .include "gfx/command_list.s"
-.include "gfx/player.s"
+.include "gfx/player_sprites.s"
 .include "gfx/game_state.s"
 .include "gfx/interpreter_bridge.s"
 .include "gfx/number_system.s"   
