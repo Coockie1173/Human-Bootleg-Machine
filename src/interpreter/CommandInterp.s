@@ -43,6 +43,10 @@ InboxCommand:
 RTS
 
 ReachedEnd:
+    ; Signal the player to stop by changing state
+    lda #STATE_STOP
+    sta player_state
+    
     SEC
 RTS
 

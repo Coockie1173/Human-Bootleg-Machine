@@ -26,6 +26,8 @@ init_player:
   lda #IDLE_TIME
   sta player_idle_timer
   
+  
+
   ; Start facing left at inbox
   lda #$01
   sta player_facing

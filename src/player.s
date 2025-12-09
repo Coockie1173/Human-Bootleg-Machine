@@ -5,6 +5,8 @@ update_player:
   beq @handle_idle
   cmp #STATE_WALKING
   beq @handle_walking
+  cmp #STATE_STOP
+  beq @handle_stop 
   rts
 
 @handle_idle:
@@ -13,6 +15,10 @@ update_player:
   
 @handle_walking:
   jsr update_walking_state
+  rts
+
+@handle_stop:
+  ; Do nothing - player is stopped
   rts
 
 ; Update player graphics (call from NMI only)

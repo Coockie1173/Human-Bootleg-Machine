@@ -48,7 +48,7 @@
 
 ; Game state constants
 STATE_MENU              = $00
-STATE_LOADING              = $01
+STATE_LOADING           = $01
 STATE_GAME              = $02
 
 ; Placeholder
@@ -121,6 +121,7 @@ IDLE_TIME               = 30      ; Frames to wait at each destination (60 = 1 s
 ; Player states
 STATE_IDLE              = 0
 STATE_WALKING           = 1
+STATE_STOP              = 2        
 
 ; Destination constants (10 total locations) [TEST]
 DEST_INBOX              = 0
