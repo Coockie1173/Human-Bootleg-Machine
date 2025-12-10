@@ -15,8 +15,8 @@ SelectUpDown:
     lda previous_controller
     and #%10000000
     bne :+
-        LDA #$00
-        STA CURSORSTATE
+        lda #$00
+        sta CURSORSTATE
         inc arrow_update_flag
         rts
     :
@@ -28,32 +28,32 @@ SelectUpDown:
     and #%00000100
     bne @check_up
     jsr handle_cursor
-    LDA VAR8
-    STA VAR7
+    lda VAR8
+    sta VAR7
 
-    JSR CalculateItemIDX
+    jsr CalculateItemIDX
     CPX VAR7
-    BEQ @end
+    beq @end
 
-    LDA VARIABLES,x
+    lda VARIABLES,x
     PHA
-    LDA COMMANDS,x
+    lda COMMANDS,x
     PHA
-    LDA COMMANDS-1,x
+    lda COMMANDS-1,x
     TAY
     PLA
-    STA COMMANDS-1,x
+    sta COMMANDS-1,x
     TYA
-    STA COMMANDS,x
-    LDA VARIABLES-1,x
+    sta COMMANDS,x
+    lda VARIABLES-1,x
     TAY
     PLA
-    STA VARIABLES-1,x
+    sta VARIABLES-1,x
     TAY
-    STA VARIABLES,x
+    sta VARIABLES,x
 
-    LDA #$01
-    STA update_list
+    lda #$01
+    sta update_list
     rts
 
 @check_up:
@@ -64,43 +64,43 @@ SelectUpDown:
     and #%00001000
     bne @end
     jsr handle_cursor
-    LDA VAR8
-    STA VAR7
+    lda VAR8
+    sta VAR7
 
 
-    JSR CalculateItemIDX
+    jsr CalculateItemIDX
     CPX VAR7
-    BEQ @end
+    beq @end
 
-    LDA VARIABLES,x
+    lda VARIABLES,x
     PHA
-    LDA COMMANDS,x
+    lda COMMANDS,x
     PHA
-    LDA COMMANDS+1,x
+    lda COMMANDS+1,x
     TAY
     PLA
-    STA COMMANDS+1,x
+    sta COMMANDS+1,x
     TYA
-    STA COMMANDS,x
-    LDA VARIABLES+1,x
+    sta COMMANDS,x
+    lda VARIABLES+1,x
     TAY
     PLA
-    STA VARIABLES+1,x
+    sta VARIABLES+1,x
     TAY
-    STA VARIABLES,x
+    sta VARIABLES,x
 
-    LDA #$01
-    STA update_list
+    lda #$01
+    sta update_list
 
 @end:
 rts
 
 CalculateItemIDX:
-    LDA arrow_row
+    lda arrow_row
     SEC
     SBC #$03
-    CLC
-    ADC scrollIDX
+    clc
+    adc scrollIDX
     TAX
-    STA VAR8
+    sta VAR8
 rts

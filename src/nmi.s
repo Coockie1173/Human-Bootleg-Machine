@@ -1,3 +1,4 @@
+.include "gfx/font.s"
 .include "gfx/input_test.s"
 .include "gfx/arrow.s"
 .include "gfx/arrow_mainMenu.s"
@@ -6,6 +7,7 @@
 .include "gfx/player.s"
 .include "gfx/game_state.s"
 .include "gfx/interpreter_bridge.s"
+.include "gfx/argument.s"
 
 nmi:
   PHP
@@ -29,6 +31,7 @@ nmi:
   beq @loading_mode
   
   ; Game mode - run all game logic
+  jsr Show_Argument
   jsr handle_command_selector_gfx
   jsr handle_arrow_movement
   jsr handle_selected_command
@@ -67,8 +70,8 @@ nmi:
   sta $2001
 
 
-  LDA #$01
-  STA NMIFLAG
+  lda #$01
+  sta NMIFLAG
   PLY
   PLX
   PLA

@@ -1,11 +1,11 @@
 ResetCommandList:
-    LDX #$00
-    LDA #$FF
+    ldx #$00
+    lda #$FF
     @loop:
-        STA COMMANDS,x
-        INX
+        sta COMMANDS,x
+        inx
         CPX #$FF
-    BNE @loop
+    bne @loop
     RTS
 
 GenerateCommandList:
@@ -34,56 +34,56 @@ GenerateCommandList:
     bcs @done               ; If at max, don't add more
 
     TAX
-    LDA current_command
+    lda current_command
     AND #$08
-    BNE @JMPCOMM
-    LDA current_command
-    STA COMMANDS,x
-    INX
-    STX command_list_count
-    INX
+    bne @JMPCOMM
+    lda current_command
+    sta COMMANDS,x
+    inx
+    stx command_list_count
+    inx
     CPX #$00
-    BEQ @done
-    LDA #$FF    
-    STA COMMANDS,x
-    ;LDA current_command
+    beq @done
+    lda #$FF    
+    sta COMMANDS,x
+    ;lda current_command
     ;TAX
-    ;STA COMMANDS,x
-    ;STX command_list_count
-    ;CLC
-    ;ADC #$01
+    ;sta COMMANDS,x
+    ;stx command_list_count
+    ;clc
+    ;adc #$01
     ;TAX
     ;CPX #$FF
-    ;BEQ @done
-    ;INX
-    ;LDA #CMD_EOL
-    ;STA COMMANDS,x
+    ;beq @done
+    ;inx
+    ;lda #CMD_EOL
+    ;sta COMMANDS,x
     
-    LDA #$01
-    STA update_list
+    lda #$01
+    sta update_list
     @done:
     rts
 
 @JMPCOMM:
-    LDA current_command
-    STA COMMANDS,x
-    LDA CURRENTJUMPIDX
-    STA VARIABLES,x
-    INX
-    LDA #CMD_LABEL
-    STA COMMANDS,x
-    LDA CURRENTJUMPIDX
-    STA VARIABLES,x
-    INC CURRENTJUMPIDX
-    INX
-    STX command_list_count
-    INX
+    lda current_command
+    sta COMMANDS,x
+    lda CURRENTJUMPIDX
+    sta VARIABLES,x
+    inx
+    lda #CMD_LABEL
+    sta COMMANDS,x
+    lda CURRENTJUMPIDX
+    sta VARIABLES,x
+    inc CURRENTJUMPIDX
+    inx
+    stx command_list_count
+    inx
 
     CPX #$00
-    BEQ @done
-    LDA #$FF    
-    STA COMMANDS,x
+    beq @done
+    lda #$FF    
+    sta COMMANDS,x
 
-    LDA #$01
-    STA update_list
+    lda #$01
+    sta update_list
     rts

@@ -17,10 +17,10 @@ init_command_selector:
 
 ; Handle LEFT/RIGHT for command cycling
 handle_command_selector_gfx:
-  LDA UPDATECOMMFLAG
-  BEQ @done
-  LDA #$00
-  STA UPDATECOMMFLAG
+  lda UPDATECOMMFLAG
+  beq @done
+  lda #$00
+  sta UPDATECOMMFLAG
   jsr erase_current_command
   jsr DrawcommandTrampoline
 
@@ -37,12 +37,12 @@ DrawCommandListTop:
   .dbyt draw_jumpnegative - 1
 
 DrawcommandTrampoline: ;trampoline§
-  LDA current_command
+  lda current_command
   ASL
   TAX
-  LDA DrawCommandListTop,x
+  lda DrawCommandListTop,x
   PHA
-  LDA DrawCommandListTop+1,x
+  lda DrawCommandListTop+1,x
   PHA
   RTS
 

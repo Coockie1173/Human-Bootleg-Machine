@@ -92,5 +92,6 @@ MMarrow_update = $0531
 .define UPDATECOMMFLAG $05A4
 .define CURSORSTATE $05A5
 .define CURSORBLINKTIMER $05A6
+.define force_update_arg $05A7
 
 .define COMMANDS $0600 ;size 0xFF

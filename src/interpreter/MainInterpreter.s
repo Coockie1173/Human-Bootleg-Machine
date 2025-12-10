@@ -14,28 +14,28 @@ TestVars:
 ;assumes INTERPTR is the position within the solution, will increment during runtime
 ;if CARRY is set, we have reached the end of our list
 ParseInstruction:
-    LDX INTERPTR ;load our cursor within the solution
+    ldx INTERPTR ;load our cursor within the solution
     ;store var first so we don't need to access X again later
-    ;LDA VARIABLES,x ;load in the command's var
-    LDA TestVars,x
-    STA VAR0 ;store it in 0 for access later
+    ;lda VARIABLES,x ;load in the command's var
+    lda TestVars,x
+    sta VAR0 ;store it in 0 for access later
 
-    ;LDA COMMANDS,x ;load the command in the list
-    LDA TestInstructions,x
-    CMP #$FF ;end of list?
-    BNE :+
+    ;lda COMMANDS,x ;load the command in the list
+    lda TestInstructions,x
+    cmp #$FF ;end of list?
+    bne :+
         SEC
         RTS ;tell the program and leave the list
     :
 
-    INX ;increase pointer
-    STX INTERPTR
+    inx ;increase pointer
+    stx INTERPTR
 
     ASL ;adjust for 16 bits to index the CommandJumpTable
     TAX ;move it to X so we can index with it later
 
-    LDA CommandJumpTable,x ;now we build a trampoline by pushing the address of the correct command onto the stack
+    lda CommandJumpTable,x ;now we build a trampoline by pushing the address of the correct command onto the stack
     PHA ;this effectively works as a jump rather than a return now
-    LDA CommandJumpTable+1,x ;no need to increase X if we can just increase the raw addr
+    lda CommandJumpTable+1,x ;no need to increase X if we can just increase the raw addr
     PHA
     RTS

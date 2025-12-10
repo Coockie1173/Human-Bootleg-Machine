@@ -18,44 +18,52 @@ init_command_list:
 
 ; Check controller state > is SELECT pressed?
 handle_selected_command:
-    LDA update_list
-    BEQ @end
+    lda update_list
+    beq @end
 
-    LDA #$00
-    STA VAR0 ;EOL flag
+    lda #$00
+    sta VAR0 ;EOL flag
     
     lda #$03
     sta placeholder_row
     lda #24
     sta placeholder_col
-    JSR calc_placeholder_address
+    jsr calc_placeholder_address
 
     LDY #19 ;setup command counter
-    LDX scrollIDX ;setup scroll index in full list
+    ldx scrollIDX ;setup scroll index in full list
     @loopStart:
     PHX
     
-    LDA COMMANDS,x
-    CMP #CMD_EOL
-    BNE :+
+    lda COMMANDS,x
+    cmp #CMD_EOL
+    bne :+
       PLX 
-      JMP @clearflag
+      jmp @clearflag
     :
-    STA VAR1
+    sta VAR1
 
-    JSR draw_selected_command
+    jsr draw_selected_command
 
     @LoopEnd:
     inc placeholder_row
-    JSR calc_placeholder_address
+    jsr calc_placeholder_address
     PLX
-    INX
+    inx
     DEY
-    BNE @loopStart ;keep looping for all rows
+    bne @loopStart ;keep looping for all rows
     @clearflag:
-    LDA #$00
-    STA update_list
+    lda #$00
+    sta update_list
     @end:
+
+    lda $2002 ;limit the weird janky movement
+    lda #$20
+    sta $2006
+    lda #$00
+    sta $2006
+    lda #$05
+    sta $2007
 RTS
 
 
@@ -93,12 +101,12 @@ DrawCommandList:
 
 ; tramampoline
 draw_selected_command:
-    LDA VAR1
+    lda VAR1
     ASL
     TAX
-    LDA DrawCommandList,x
+    lda DrawCommandList,x
     PHA
-    LDA DrawCommandList+1,x
+    lda DrawCommandList+1,x
     PHA
     RTS
 
@@ -301,6 +309,7 @@ draw_selected_eol:
   lda #TILE_EOL_2
   sta $2007
   lda #$03                ; Brown background tile
+  sta $2007
   sta $2007
   rts
 

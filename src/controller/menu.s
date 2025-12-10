@@ -58,18 +58,18 @@ CheckMenuStart:
   inc Gamemode
 
     ldx SELECTEDPUZZLE
-    LDA FullPuzzleList,x ;grab pointer to puzzlelist from the full list
-    STA VAR1
-    INX
-    LDA FullPuzzleList,x
-    STA VAR0 ;and store the pointer in VAR0 so we can access it later (below)
+    lda FullPuzzleList,x ;grab pointer to puzzlelist from the full list
+    sta VAR1
+    inx
+    lda FullPuzzleList,x
+    sta VAR0 ;and store the pointer in VAR0 so we can access it later (below)
 
     LDY VARF
-    LDA (VAR0),y ;setup inbox pointer
-    STA INBOXPTR+1
+    lda (VAR0),y ;setup inbox pointer
+    sta INBOXPTR+1
     INY
-    LDA (VAR0),y
-    STA INBOXPTR ;setup our inbox pointer for our interpreter
+    lda (VAR0),y
+    sta INBOXPTR ;setup our inbox pointer for our interpreter
 
   @not_pressed:
 rts

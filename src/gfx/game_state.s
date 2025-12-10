@@ -1,9 +1,9 @@
 .include "background.s"
 
 check_start_button:
-  LDA Gamemode
-  BEQ @not_pressed
-  ; SELECT was just pressed while at START - transition to game
+  lda Gamemode
+  beq @not_pressed
+  ; SELECT was just pressed while at staRT - transition to game
   jsr transition_to_game
   
 @not_pressed:

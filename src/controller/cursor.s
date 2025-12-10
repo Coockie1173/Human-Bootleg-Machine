@@ -6,6 +6,8 @@ handle_cursor:
     and #%00000100
     bne check_up_cursor
 
+    inc force_update_arg
+
     lda arrow_row
     cmp #21        ; max row 22
     bcs check_listlength
@@ -13,10 +15,10 @@ handle_cursor:
     jsr CalculateItemIDX
     inc arrow_row
     ;to make sure we don't exceed our list
-    INX
-    LDA COMMANDS,x
-    CMP #$FF
-    BNE :+
+    inx
+    lda COMMANDS,x
+    cmp #$FF
+    bne :+
         DEC arrow_row
         jsr CalculateItemIDX ;to ensure var8 stays correct
         jmp check_up_cursor
@@ -32,6 +34,7 @@ handle_cursor:
     and #%00001000
     bne movement_done
 
+    inc force_update_arg
     jsr CalculateItemIDX
 
     lda arrow_row
@@ -46,24 +49,24 @@ movement_done:
     RTS
 
 check_listlength:
-    LDA command_list_count
+    lda command_list_count
     SEC
     SBC #20
     SEC
     SBC scrollIDX
     BCC :+
-        INC scrollIDX
+        inc scrollIDX
         inc update_list
     :
     jmp check_up_cursor
 
 check_listlength_up:
-    LDA scrollIDX
-    CMP #$00
-    BEQ :+
+    lda scrollIDX
+    cmp #$00
+    beq :+
         DEC scrollIDX
-        LDA #$01
-        STA update_list
+        lda #$01
+        sta update_list
     :
     RTS
 

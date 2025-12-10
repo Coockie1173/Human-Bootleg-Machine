@@ -9,37 +9,37 @@ TileLocationsY:
     .byte TILE4_Y, TILE5_Y, TILE6_Y, TILE7_Y
 
 SetTileDest:
-    LDA TileLocationsX,x ;set destination per tile
-    STA DEDSTINATIONPLAYERX
+    lda TileLocationsX,x ;set destination per tile
+    sta DEDSTINATIONPLAYERX
 
-    LDA TileLocationsY,x ;set destination per tile
-    STA DEDSTINATIONPLAYERY
-    CLC
+    lda TileLocationsY,x ;set destination per tile
+    sta DEDSTINATIONPLAYERY
+    clc
 RTS
 
 InboxCommand:
     LDY #$00
-    LDA (INBOXPTR),y
+    lda (INBOXPTR),y
 
-    CMP #$FF
-    BEQ ReachedEnd ;FF indicates end of list   
-    STA HANDMEM
+    cmp #$FF
+    beq ReachedEnd ;FF indicates end of list   
+    sta HANDMEM
 
-    LDA INBOXPTR
-    CLC
-    ADC #$01
-    STA INBOXPTR
+    lda INBOXPTR
+    clc
+    adc #$01
+    sta INBOXPTR
 
-    LDA INBOXPTR + 1 ;handle overflow
-    ADC #$00
-    STA INBOXPTR + 1
+    lda INBOXPTR + 1 ;handle overflow
+    adc #$00
+    sta INBOXPTR + 1
 
-    LDA INBOX_X
-    STA DEDSTINATIONPLAYERX ;set player destination high
+    lda INBOX_X
+    sta DEDSTINATIONPLAYERX ;set player destination high
 
-    LDA INBOX_Y
-    STA DEDSTINATIONPLAYERY ;set player destination high
-    CLC
+    lda INBOX_Y
+    sta DEDSTINATIONPLAYERY ;set player destination high
+    clc
 RTS
 
 ReachedEnd:
@@ -47,108 +47,108 @@ ReachedEnd:
 RTS
 
 OutboxCommand:
-    LDX SOLPTR
+    ldx SOLPTR
     CPX MAXSOLUTIONSIZE
-    BEQ :+
-        LDA HANDMEM
-        STA SOLUTION,x
+    beq :+
+        lda HANDMEM
+        sta SOLUTION,x
     :
 
-    INX
-    STX SOLPTR
+    inx
+    stx SOLPTR
 
-    LDA OUTBOX_X
-    STA DEDSTINATIONPLAYERX ;set player destination high
+    lda OUTBOX_X
+    sta DEDSTINATIONPLAYERX ;set player destination high
     
-    LDA OUTBOX_Y
-    STA DEDSTINATIONPLAYERY ;set player destination high
-    CLC
+    lda OUTBOX_Y
+    sta DEDSTINATIONPLAYERY ;set player destination high
+    clc
 RTS
 
 CopyFromCommand:
-    LDX VAR0
-    LDA GAMEMMEM,x
-    STA HANDMEM
+    ldx VAR0
+    lda GAMEMMEM,x
+    sta HANDMEM
 
-    JMP SetTileDest
+    jmp SetTileDest
 
 CopyToCommand:
-    LDX VAR0
-    LDA HANDMEM
-    STA GAMEMMEM,x
+    ldx VAR0
+    lda HANDMEM
+    sta GAMEMMEM,x
 
-    JMP SetTileDest
+    jmp SetTileDest
 
 AddCommand:
-    LDA HANDMEM
-    LDX VAR0
-    CLC
-    ADC GAMEMMEM,x
-    STA HANDMEM
+    lda HANDMEM
+    ldx VAR0
+    clc
+    adc GAMEMMEM,x
+    sta HANDMEM
 
-    JMP SetTileDest
+    jmp SetTileDest
 
 SubCommand:
-    LDA HANDMEM
-    LDX VAR0
+    lda HANDMEM
+    ldx VAR0
     SEC
     SBC GAMEMMEM,x
-    STA HANDMEM
+    sta HANDMEM
 
-    JMP SetTileDest
+    jmp SetTileDest
 
 BumpUpCommand:
-    LDX VAR0
-    INC GAMEMMEM,x
+    ldx VAR0
+    inc GAMEMMEM,x
 
-    JMP SetTileDest
+    jmp SetTileDest
 
 BumpDownCommand:
-    LDX VAR0
+    ldx VAR0
     DEC GAMEMMEM,x
 
-    JMP SetTileDest
+    jmp SetTileDest
 
 JumpCommand:
-    LDX #$00 ;loop through all instructions to find the matching label
+    ldx #$00 ;loop through all instructions to find the matching label
     JumpCommLoop:
-        LDA TestInstructions,x ;load instruction
-        CMP #CMD_LABEL ;check if the instr is a label
-        BEQ :++
-            CMP #$FF
-            BNE :+
+        lda TestInstructions,x ;load instruction
+        cmp #CMD_LABEL ;check if the instr is a label
+        beq :++
+            cmp #$FF
+            bne :+
                 SEC ;no attached label found, return prematurely
                 RTS
             :
-            INX ;not a label, continue
-            JMP JumpCommLoop
+            inx ;not a label, continue
+            jmp JumpCommLoop
         :
-        LDA VAR0 ;load in label ID from the jump
-        CMP TestVars,x ;and compare it to the actual label ID
-        BEQ :+
-            INX
-            BNE JumpCommLoop ;not the correct label? go back and try again
+        lda VAR0 ;load in label ID from the jump
+        cmp TestVars,x ;and compare it to the actual label ID
+        beq :+
+            inx
+            bne JumpCommLoop ;not the correct label? go back and try again
     :
-    STX INTERPTR ;if we finally find the label in the list, set X and return
-    CLC
+    stx INTERPTR ;if we finally find the label in the list, set X and return
+    clc
 RTS
 
 JumpZeroCommand:
-    LDA HANDMEM
-    BNE :+
-        JMP JumpCommand
+    lda HANDMEM
+    bne :+
+        jmp JumpCommand
     :
-    CLC
+    clc
 RTS
 
 JumpNegativeCommand:
-    LDA HANDMEM
+    lda HANDMEM
     BMI :+
-        JMP JumpCommand
+        jmp JumpCommand
     :
-    CLC
+    clc
 RTS
 
 LabelCommand:
-    CLC
+    clc
 RTS

@@ -15,23 +15,23 @@
 .include "controller/selectedmode.s"
 
 WaitForNMI:
-    LDA NMIFLAG
-    BEQ WaitForNMI
-    LDA #$00
-    STA NMIFLAG
+    lda NMIFLAG
+    beq WaitForNMI
+    lda #$00
+    sta NMIFLAG
     jmp main
 
 main:
-    LDA Gamemode
-    BEQ @MainMenu
-        LDX #$00
+    lda Gamemode
+    beq @MainMenu
+        ldx #$00
         ;jsr CheckAllSolutions
         ;jsr ParseInstruction
 
         jsr update_player
 
-        LDA CURSORSTATE
-        BNE @SelectMode
+        lda CURSORSTATE
+        bne @SelectMode
             jsr GenerateCommandList
             jsr handle_command_selector
             jsr handle_cursor
