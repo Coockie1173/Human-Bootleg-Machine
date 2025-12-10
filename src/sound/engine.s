@@ -1,12 +1,11 @@
-play_sound:
-    jsr init_apu
+init_sound:
+    lda #1
+    ldx #.lobyte(music_data_hmu_play)
+    ldy #.hibyte(music_data_hmu_play)
+    jsr famistudio_init
+rts
 
-    lda #<279
-    sta $4002
-
-    lda #>279
-    sta $4003
-
-    lda #%10111111
-    sta $4000
+play_music:
+    lda #0
+    jsr famistudio_music_play
 rts
