@@ -13,6 +13,8 @@
 .include "controller/selector.s"
 .include "player.s"
 .include "controller/selectedmode.s"
+.include "sound/apu.s"
+.include "sound/engine.s"
 
 WaitForNMI:
     lda NMIFLAG
