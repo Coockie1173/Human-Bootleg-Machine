@@ -7,6 +7,24 @@ CommsWithArg:
 .byte CMD_BUMPUP, CMD_BUMPDOWN
 .byte CMD_EOL ;to signify end of list
 
+DoesCommandHaveArgs:
+    @loop:
+    lda CommsWithArg,x
+    cmp #$FF
+    beq @NoCommands
+    cmp VAR5
+    beq @Commands
+    inx
+    jmp @loop
+
+    @NoCommands:
+    clc
+    rts
+
+    @Commands:
+    sec
+rts
+
 Show_Argument:
     lda force_update_arg
     bne @forcerun
@@ -23,21 +41,15 @@ Show_Argument:
     cmp #$FF
     beq Show_Argument_end
 
-    @loop:
-    lda CommsWithArg,x
-    cmp #$FF
-    beq RemoveDrawArg
-    cmp VAR5
-    beq DrawArg
-    inx
-    jmp @loop
+    jsr DoesCommandHaveArgs
+    bcs DrawArg
+    jmp RemoveDrawArg
 
     DrawArgEnd:
     lda #$00
     sta force_update_arg
     Show_Argument_end:
 rts
-
 
 RemoveDrawArg:
     lda $2002

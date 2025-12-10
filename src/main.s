@@ -39,7 +39,7 @@ main:
 
     @SelectMode:
         jsr SelectUpDown
-
+        jsr SelectLeftRight
         jmp WaitForNMI
     @MainMenu:   
 

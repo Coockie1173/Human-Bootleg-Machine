@@ -95,6 +95,59 @@ SelectUpDown:
 @end:
 rts
 
+SelectLeftRight:
+    jsr CalculateItemIDX
+    stx VAR3
+    lda COMMANDS,x
+    sta VAR5
+
+    jsr DoesCommandHaveArgs
+    bcc ChangeArg
+rts
+
+ChangeArg:
+    lda controller_state
+    and #%00000001 ;right
+    beq @check_left
+    lda previous_controller
+    and #%00000001
+    bne @check_left
+
+    ldx VAR3
+    lda VARIABLES,x
+    clc
+    adc #$01
+    cmp #$08
+    bne :+
+        lda #$00
+    :
+
+    sta VARIABLES,x
+    inc force_update_arg
+    rts
+
+@check_left:
+    lda controller_state
+    and #%00000010 ;left
+    beq @end
+    lda previous_controller
+    and #%00000010
+    bne @end
+
+    ldx VAR3
+    lda VARIABLES,x
+    sec
+    sbc #$01
+    cmp #$FF
+    bne :+
+        lda #$07
+    :
+
+    sta VARIABLES,x
+    inc force_update_arg
+@end:
+rts
+
 CalculateItemIDX:
     lda arrow_row
     SEC
