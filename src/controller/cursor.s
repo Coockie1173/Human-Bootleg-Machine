@@ -20,7 +20,7 @@ handle_cursor:
     cmp #$FF
     bne :+
         DEC arrow_row
-        jsr play_sfx1
+        jsr play_sfx_steps
         jsr CalculateItemIDX ;to ensure var8 stays correct
         jmp check_up_cursor
     :
