@@ -23,8 +23,6 @@ nmi:
   ; Read controller
   jsr read_controller
 
-  
-
   ; Check game state and handle accordingly
   lda game_state
   cmp #STATE_MENU
