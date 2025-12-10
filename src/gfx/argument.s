@@ -1,6 +1,6 @@
 ;these are hardcoded graphical values, we can just drop them here for ease of access
-.define DRAWstaRTHI $23
-.define DRAWstaRTLO $38
+.define DRAWSTARTHI $23
+.define DRAWSTARTLO $38
 
 CommsWithArg:
 .byte CMD_COPYFROM, CMD_COPYTO, CMD_ADD, CMD_SUB
@@ -41,9 +41,9 @@ rts
 
 RemoveDrawArg:
     lda $2002
-    lda #DRAWstaRTHI
+    lda #DRAWSTARTHI
     sta $2006
-    lda #DRAWstaRTLO
+    lda #DRAWSTARTLO
     sta $2006
 
     ldx #$00
@@ -65,9 +65,9 @@ ArgumentText:
 
 DrawArg:
 ldx #$00
-lda #DRAWstaRTHI
+lda #DRAWSTARTHI
 sta VAR0
-lda #DRAWstaRTLO
+lda #DRAWSTARTLO
 sta VAR1
 
 @Loop:
@@ -91,5 +91,5 @@ jmp DrawArgEnd
 
 
 ;clean up
-.undefine DRAWstaRTHI
-.undefine DRAWstaRTLO
+.undefine DRAWSTARTHI
+.undefine DRAWSTARTLO
