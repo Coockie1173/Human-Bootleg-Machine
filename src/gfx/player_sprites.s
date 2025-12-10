@@ -23,11 +23,9 @@ init_player:
   ; Initialize movement
   lda #PLAYER_SPEED
   sta player_move_timer
-  lda #IDLE_TIME
+  lda #$00              ; ← SET TO 0 SO INTERPRETER RUNS IMMEDIATELY
   sta player_idle_timer
   
-  
-
   ; Start facing left at inbox
   lda #$01
   sta player_facing
@@ -37,11 +35,6 @@ init_player:
   sta DEDSTINATIONPLAYERX
   sta DEDSTINATIONPLAYERY
   
-  ; Set target to first destination (tile 0) - for testing
-  lda #TILE0_X
-  sta player_target_x
-  lda #TILE0_Y
-  sta player_target_y
   
   rts
 

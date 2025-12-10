@@ -85,28 +85,31 @@ nmi:
   rti
 
 game_logic_update:
+  ; Update player movement physics FIRST
+  ; jsr update_player      ; <-- you left this commented out in your code
+
   ; Check if player is idle and ready for next command
   lda player_state
   cmp #STATE_IDLE
   bne @draw_player                  ; Player is still walking, just draw
-  
-  ; Check if player's idle timer is done (waiting at destination)
+
+  ; If idle, count the idle timer down here so NMI can progress it
   lda player_idle_timer
-  bne @draw_player                  ; Still waiting, just draw
-  
-  ; Player is fully idle - execute next command if available
+  beq @ready_for_command           ; zero -> ready to run next command
+
+  dec player_idle_timer            ; still waiting -> decrement
+  bne @draw_player                 ; still non-zero -> skip interpreter this frame
+
+  ; If we fall through here, timer reached 0 this frame -> ready
+@ready_for_command:
   jsr execute_next_command
-  bcs @interpreter_finished         ; Carry set means interpreter is done
-  
-  ; NEW: Mark numbers as dirty (will be drawn in NMI)
+  bcs @interpreter_finished        ; Carry set = finished
   jsr update_number_displays
-  ;jsr set_tile_dirty
-  
   jmp @draw_player
-  
+
 @interpreter_finished:
   ; Interpreter finished all commands
-  
+
 @draw_player:
   ; Always draw player sprites in NMI
   jsr update_player_gfx

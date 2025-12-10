@@ -26,105 +26,66 @@ update_player_gfx:
   jsr draw_player_sprites
   rts
 
-; Handle idle state 
 update_idle_state:
- ; Check if interpreter has set a new destination
+  ; Check if interpreter has set a new destination
   lda DEDSTINATIONPLAYERX
-  cmp #$FF                   ; $FF = no destination
-  beq @normal_idle
-
-  ; Extra sanity: if destination byte is zero (0), treat as no destination
-  cmp #$00
-  beq @normal_idle
+  cmp #$FF
+  beq @no_command
   
-; New destination from interpreter! Set it as target
+  cmp #$00
+  beq @no_command
+  
+  ; NEW DESTINATION RECEIVED!
+  ; Save it as target and clear the destination
   sta player_target_x
   lda DEDSTINATIONPLAYERY
   sta player_target_y
   
-  ; Clear the destination so we don't re-read it
   lda #$FF
   sta DEDSTINATIONPLAYERX
   sta DEDSTINATIONPLAYERY
   
-  ; Determine facing direction
+  ; Check if we're ALREADY at this position
+  lda player_target_x
+  cmp player_x
+  bne @move_to_destination
+  lda player_target_y
+  cmp player_y
+  bne @move_to_destination
+  
+  ; Already at destination - just do idle animation/wait
+  lda #IDLE_TIME
+  sta player_idle_timer
+  lda #$00
+  sta player_anim_frame
+  
+  ; Stay in IDLE state, but timer will count down
+  rts
+  
+@move_to_destination:
+  ; Need to actually move
   jsr set_facing_direction
   
-  ; Switch to walking state
   lda #STATE_WALKING
   sta player_state
   
-  ; Reset animation
   lda #$00
   sta player_anim_frame
   lda #ANIM_SPEED
   sta player_anim_timer
-  
-  ; Reset movement timer
   lda #PLAYER_SPEED
   sta player_move_timer
   
   rts
 
-@normal_idle:
-  ; Original idle behavior (your test loop)
-  ; Set facing based on current destination
-  lda player_destination
-  cmp #DEST_INBOX
-  bne @face_right_idle
-  
-  ; At inbox - face left
-  lda #$01
-  sta player_facing
-  jmp @check_timer
-
-  
-@face_right_idle:
-  ; At any other location - face right
-  lda #$00
-  sta player_facing
-  
-@check_timer:
-  ; Decrement idle timer
+@no_command:
+  ; No command - decrement idle timer if not zero
   lda player_idle_timer
-  beq @start_moving
+  beq @done
   dec player_idle_timer
+@done:
   rts
-
-@start_moving:
-  ; Move to next destination
-  inc player_destination
-  lda player_destination
-  cmp #10                    ; Check if past outbox (destination 9)
-  bcc @valid_destination
   
-  ; Wrap back to inbox
-  lda #DEST_INBOX
-  sta player_destination
-
-@valid_destination:
-  ; Set new target position
-  jsr set_target_position
-  
-  ; Determine facing direction
-  jsr set_facing_direction
-  
-  ; Switch to walking state
-  lda #STATE_WALKING
-  sta player_state
-  
-  ; Reset animation
-  lda #$00
-  sta player_anim_frame
-  lda #ANIM_SPEED
-  sta player_anim_timer
-  
-  ; Reset movement timer
-  lda #PLAYER_SPEED
-  sta player_move_timer
-  
-  rts
-
 
 ; Handle walking state
 update_walking_state:
@@ -169,7 +130,6 @@ update_animation:
   rts
 
 
-; Move one pixel toward target position
 move_toward_target:
   ; Check if arrived at target X
   lda player_x
@@ -181,7 +141,7 @@ move_toward_target:
   cmp player_target_y
   bne @move_vertical
   
-  ; Fully arrived - switch to idle
+  ; *** FULLY ARRIVED - EXECUTE COMMAND LOGIC NOW ***
   lda #STATE_IDLE
   sta player_state
   lda #IDLE_TIME
@@ -189,9 +149,33 @@ move_toward_target:
   lda #$00
   sta player_anim_frame
   
-  ; Set facing based on destination
-  lda player_destination
-  cmp #DEST_INBOX
+  ; Check what command just finished and execute its logic
+  ldx INTERPTR
+  dex                      ; Go back to the command we just finished
+  lda TestInstructions,x   ; Check which command it was
+  
+  cmp #CMD_INBOX
+  beq @execute_inbox
+  cmp #CMD_OUTBOX
+  beq @execute_outbox
+  jmp @set_facing          ; Other commands already executed at tile
+  
+@execute_inbox:
+  jsr InboxLogic           ; NOW read from inbox
+  jmp @set_facing
+  
+@execute_outbox:
+  jsr OutboxLogic          ; NOW write to outbox and clear hand
+  jmp @set_facing
+  
+@set_facing:
+  ; Set facing based on current position
+  ; Check if at inbox position
+  lda player_x
+  cmp #INBOX_X
+  bne @face_right_arrival
+  lda player_y
+  cmp #INBOX_Y
   bne @face_right_arrival
   
   ; At inbox - face left
@@ -200,7 +184,7 @@ move_toward_target:
   rts
   
 @face_right_arrival:
-  ; At any other location - face right
+  ; At any other location (tiles, outbox) - face right
   lda #$00
   sta player_facing
   rts
@@ -239,18 +223,6 @@ move_toward_target:
 @done:
   rts
 
-
-; Set target position based on destination
-set_target_position:
-  ldx player_destination
-  
-  cpx #DEST_INBOX
-  bne @check_tile0
-  lda #INBOX_X
-  sta player_target_x
-  lda #INBOX_Y
-  sta player_target_y
-  rts
   
 @check_tile0:
   cpx #DEST_TILE0

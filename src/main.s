@@ -23,17 +23,19 @@ WaitForNMI:
 main:
     LDA Gamemode
     BEQ :+
-        LDX #$00
-        ;jsr CheckAllSolutions
-        ;jsr ParseInstruction
-
+        ; Handle player MOVEMENT (physics) in main loop
+        jsr update_player          ; ← This moves the player pixel by pixel
+        
+        ; Handle UI/input
         jsr GenerateCommandList
         jsr handle_command_selector
         jsr handle_cursor
-        jsr update_player
+        
+        ; Update number displays for changes
+        jsr update_number_displays
+        
         jmp WaitForNMI
     :   
-
     jsr CheckMainmenuArrow
     jsr CheckMenuStart
     jmp WaitForNMI
