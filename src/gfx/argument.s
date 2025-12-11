@@ -73,7 +73,7 @@ RemoveDrawArg:
 jmp DrawArgEnd
 
 ArgumentText:
-.byte LETTERT, LETTERI, LETTERL, LETTERE, $FF
+STRBYTE "TILE"
 
 DrawArg:
 ldx #$00
