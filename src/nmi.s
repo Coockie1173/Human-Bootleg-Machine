@@ -4,10 +4,13 @@
 .include "gfx/arrow_mainMenu.s"
 .include "gfx/command_selector.s"
 .include "gfx/command_list.s"
-.include "gfx/player.s"
+.include "gfx/player_sprites.s"
 .include "gfx/game_state.s"
 .include "gfx/interpreter_bridge.s"
 .include "gfx/argument.s"
+.include "gfx/number_system.s"   
+.include "gfx/hand_sprites.s"   
+
 
 nmi:
   PHP
@@ -36,7 +39,10 @@ nmi:
   jsr handle_arrow_movement
   jsr handle_selected_command
   
-  ; NEW: Handle interpreter and player movement together
+  ; NEW: Draw any pending numbers BEFORE re-enabling rendering
+  jsr draw_pending_numbers
+  
+  ; Handle interpreter and player movement together
   jsr game_logic_update
   
   ; DMA transfer sprites
@@ -57,16 +63,17 @@ nmi:
   jmp @finish
 
 @finish:
-  ; Reset scroll
-  lda $2002
+  ; Reset scroll BEFORE re-enabling rendering
+  bit $2002           ; Reset PPU address latch
   lda #$00
-  sta $2005
-  sta $2005
+  sta $2005           ; X scroll = 0
+  sta $2005           ; Y scroll = 0
 
-  ; Re-enable rendering
-  lda #%10000000
+  ; Re-enable rendering with safe defaults
+  lda #%10000000      ; NMI enabled, use pattern table 0 for background
   sta $2000
-  lda #%00011110
+  
+  lda #%00011110      ; Show sprites and background, no clipping
   sta $2001
 
 
@@ -79,29 +86,33 @@ nmi:
   rti
 
 game_logic_update:
-  ; Update player first (handles movement)
-  jsr update_player_gfx
-  
+  ; Update player movement physics FIRST
+  ; jsr update_player      ; <-- you left this commented out in your code
+
   ; Check if player is idle and ready for next command
   lda player_state
   cmp #STATE_IDLE
-  bne @done                  ; Player is still walking, don't execute next command
-  
-  ; Check if player's idle timer is done (waiting at destination)
+  bne @draw_player                  ; Player is still walking, just draw
+
+  ; If idle, count the idle timer down here so NMI can progress it
   lda player_idle_timer
-  bne @done                  ; Still waiting, don't execute next command
-  
-  ; Player is fully idle - execute next command if available
+  beq @ready_for_command           ; zero -> ready to run next command
+
+  dec player_idle_timer            ; still waiting -> decrement
+  bne @draw_player                 ; still non-zero -> skip interpreter this frame
+
+  ; If we fall through here, timer reached 0 this frame -> ready
+@ready_for_command:
   jsr execute_next_command
-  bcs @interpreter_finished  ; Carry set means interpreter is done
-  
-  ; Command executed, destination is set, player will start moving next frame
-  jmp @done
-  
+  bcs @interpreter_finished        ; Carry set = finished
+  jsr update_number_displays
+  jmp @draw_player
+
 @interpreter_finished:
   ; Interpreter finished all commands
-  ; You can add code here to handle completion
-  ; For now, just do nothing (could reset, show message, etc.)
-  
-@done:
+
+@draw_player:
+  ; Always draw player sprites in NMI
+  jsr update_player_gfx
+  jsr draw_hand_sprites
   rts

@@ -1,4 +1,6 @@
 .include "background.s"
+.include "level.s"
+
 
 check_start_button:
   lda Gamemode
@@ -14,9 +16,9 @@ transition_to_game:
   jsr erase_MMarrow_sprite
   
   ; Wait for VBlank before changing background
-  ;@wait_vblank:
-  ;  bit $2002
-  ;  bpl @wait_vblank
+  @wait_vblank:
+    bit $2002
+    bpl @wait_vblank
   
   ; Disable rendering for background change
   lda #%00000000
@@ -37,6 +39,9 @@ transition_to_game:
   
   ; Initialize interpreter system
   jsr init_interpreter
+
+  ; Initialize level
+  jsr InitTestLevel
   
   ; Initialize all game sprites
   jsr init_arrow
@@ -44,9 +49,11 @@ transition_to_game:
   jsr init_command_list
   jsr init_player
   
+  ; NEW: Initialize number displays
+  jsr init_number_displays
+  
   ; Change game state
-  ;lda #STATE_GAME
-  ;sta game_state
-  inc Gamemode
+  lda #STATE_GAME
+  sta game_state
   
   rts

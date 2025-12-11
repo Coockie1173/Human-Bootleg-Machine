@@ -1,12 +1,12 @@
-;ALL OF THESE EXPECT THEIR "argument" TO COME IN VAR0
+    ;ALL OF THESE EXPECT THEIR "argument" TO COME IN VAR0
+    
+    TileLocationsX:
+        .byte TILE0_X, TILE1_X, TILE2_X, TILE3_X
+        .byte TILE4_X, TILE5_X, TILE6_X, TILE7_X
 
-TileLocationsX:
-    .byte TILE0_X, TILE1_X, TILE2_X, TILE3_X
-    .byte TILE4_X, TILE5_X, TILE6_X, TILE7_X
-
-TileLocationsY:
-    .byte TILE0_Y, TILE1_Y, TILE2_Y, TILE3_Y
-    .byte TILE4_Y, TILE5_Y, TILE6_Y, TILE7_Y
+    TileLocationsY:
+        .byte TILE0_Y, TILE1_Y, TILE2_Y, TILE3_Y
+        .byte TILE4_Y, TILE5_Y, TILE6_Y, TILE7_Y
 
 SetTileDest:
     lda TileLocationsX,x ;set destination per tile
@@ -18,36 +18,101 @@ SetTileDest:
 RTS
 
 InboxCommand:
+    ; DON'T read from inbox yet - just set destination
+    LDA #INBOX_X
+    STA DEDSTINATIONPLAYERX
+    STA player_target_x
+
+    LDA #INBOX_Y
+    STA DEDSTINATIONPLAYERY
+    STA player_target_y
+    
+    ; FORCE player into walking state
+    LDA #STATE_WALKING
+    STA player_state
+    
+    ; Reset animation
+    LDA #$00
+    STA player_anim_frame
+    LDA #ANIM_SPEED
+    STA player_anim_timer
+    LDA #PLAYER_SPEED
+    STA player_move_timer
+    
+    ; Set facing direction
+    JSR set_facing_direction
+    
+    CLC
+    RTS
+
+OutboxCommand:
+    ; DON'T write to outbox yet - just set destination
+    LDA #OUTBOX_X
+    STA DEDSTINATIONPLAYERX
+    STA player_target_x
+    
+    LDA #OUTBOX_Y
+    STA DEDSTINATIONPLAYERY
+    STA player_target_y
+    
+    ; FORCE player into walking state
+    LDA #STATE_WALKING
+    STA player_state
+    
+    ; Reset animation
+    LDA #$00
+    STA player_anim_frame
+    LDA #ANIM_SPEED
+    STA player_anim_timer
+    LDA #PLAYER_SPEED
+    STA player_move_timer
+    
+    ; Set facing direction
+    JSR set_facing_direction
+    
+    CLC
+    RTS
+
+; Execute inbox logic AFTER player arrives
+InboxLogic:
     LDY #$00
     lda (INBOXPTR),y
 
-    cmp #$FF
-    beq ReachedEnd ;FF indicates end of list   
-    sta HANDMEM
+    CMP #$FF
+    BEQ ReachedEnd_Logic   ; FF indicates end of list   
+    STA HANDMEM
 
-    lda INBOXPTR
-    clc
-    adc #$01
-    sta INBOXPTR
+    ; Move pointer forward
+    LDA INBOXPTR
+    CLC
+    ADC #$01
+    STA INBOXPTR
 
-    lda INBOXPTR + 1 ;handle overflow
-    adc #$00
-    sta INBOXPTR + 1
-
-    lda INBOX_X
-    sta DEDSTINATIONPLAYERX ;set player destination high
-
-    lda INBOX_Y
-    sta DEDSTINATIONPLAYERY ;set player destination high
-    clc
+    LDA INBOXPTR + 1       ; handle overflow
+    ADC #$00
+    STA INBOXPTR + 1
+    
+    ; *** REFRESH THE DISPLAY SLOTS AFTER PICKUP ***
+    JSR refresh_inbox_display_slots
+    
+    ; *** MARK INBOX AS DIRTY SO NMI WILL REDRAW IT ***
+    LDA #$01
+    STA inbox_value_dirty
+    
+    CLC
 RTS
 
-ReachedEnd:
+ReachedEnd_Logic:
+    ; Signal the player to stop by changing state
+    lda #STATE_STOP
+    sta player_state
+    
     SEC
 RTS
 
-OutboxCommand:
-    ldx SOLPTR
+; Execute outbox logic AFTER player arrives
+OutboxLogic:
+    LDX SOLPTR
     CPX MAXSOLUTIONSIZE
     beq :+
         lda HANDMEM
@@ -57,98 +122,100 @@ OutboxCommand:
     inx
     stx SOLPTR
 
-    lda OUTBOX_X
-    sta DEDSTINATIONPLAYERX ;set player destination high
+    ; CLEAR THE HAND AFTER OUTBOX
+    LDA #$FF
+    STA HANDMEM
     
-    lda OUTBOX_Y
-    sta DEDSTINATIONPLAYERY ;set player destination high
-    clc
+    CLC
 RTS
 
-CopyFromCommand:
-    ldx VAR0
-    lda GAMEMMEM,x
-    sta HANDMEM
+    CopyFromCommand:
+        LDX VAR0
+        LDA GAMEMMEM,x
+        STA HANDMEM
 
-    jmp SetTileDest
+        JMP SetTileDest
 
-CopyToCommand:
-    ldx VAR0
-    lda HANDMEM
-    sta GAMEMMEM,x
+    CopyToCommand:
+        LDX VAR0
+        LDA HANDMEM
+        STA GAMEMMEM,x
 
-    jmp SetTileDest
+        JMP SetTileDest
 
-AddCommand:
-    lda HANDMEM
-    ldx VAR0
-    clc
-    adc GAMEMMEM,x
-    sta HANDMEM
+    AddCommand:
+        LDA HANDMEM
+        LDX VAR0
+        CLC
+        ADC GAMEMMEM,x
+        STA HANDMEM
 
-    jmp SetTileDest
+        JMP SetTileDest
 
-SubCommand:
-    lda HANDMEM
-    ldx VAR0
-    SEC
-    SBC GAMEMMEM,x
-    sta HANDMEM
+    SubCommand:
+        LDA HANDMEM
+        LDX VAR0
+        SEC
+        SBC GAMEMMEM,x
+        STA HANDMEM
 
-    jmp SetTileDest
+        JMP SetTileDest
 
-BumpUpCommand:
-    ldx VAR0
-    inc GAMEMMEM,x
+    BumpUpCommand:
+        LDX VAR0
+        INC GAMEMMEM,x
 
-    jmp SetTileDest
+        JMP SetTileDest
 
-BumpDownCommand:
-    ldx VAR0
-    DEC GAMEMMEM,x
+    BumpDownCommand:
+        LDX VAR0
+        DEC GAMEMMEM,x
 
-    jmp SetTileDest
+        JMP SetTileDest
 
-JumpCommand:
-    ldx #$00 ;loop through all instructions to find the matching label
-    JumpCommLoop:
-        lda TestInstructions,x ;load instruction
-        cmp #CMD_LABEL ;check if the instr is a label
-        beq :++
-            cmp #$FF
-            bne :+
-                SEC ;no attached label found, return prematurely
-                RTS
+    JumpCommand:
+        LDX #$00 ;loop through all instructions to find the matching label
+        JumpCommLoop:
+            LDA TestInstructions,x ;load instruction
+            CMP #CMD_LABEL ;check if the instr is a label
+            BEQ :++
+                CMP #$FF
+                BNE :+
+                    SEC ;no attached label found, return prematurely
+                    RTS
+                :
+                INX ;not a label, continue
+                JMP JumpCommLoop
             :
-            inx ;not a label, continue
-            jmp JumpCommLoop
+            LDA VAR0 ;load in label ID from the jump
+            CMP TestVars,x ;and compare it to the actual label ID
+            BEQ :+
+                INX
+                BNE JumpCommLoop ;not the correct label? go back and try again
         :
-        lda VAR0 ;load in label ID from the jump
-        cmp TestVars,x ;and compare it to the actual label ID
-        beq :+
-            inx
-            bne JumpCommLoop ;not the correct label? go back and try again
-    :
-    stx INTERPTR ;if we finally find the label in the list, set X and return
-    clc
-RTS
+        STX INTERPTR ;if we finally find the label in the list, set X and return
+        CLC
+    RTS
 
-JumpZeroCommand:
-    lda HANDMEM
-    bne :+
-        jmp JumpCommand
-    :
-    clc
-RTS
+    JumpZeroCommand:
+        LDA HANDMEM
+        BNE :+
+            JMP JumpCommand
+        :
+        CLC
+    RTS
 
-JumpNegativeCommand:
-    lda HANDMEM
-    BMI :+
-        jmp JumpCommand
-    :
-    clc
-RTS
+    JumpNegativeCommand:
+        LDA HANDMEM
+        BMI :+
+            JMP JumpCommand
+        :
+        CLC
+    RTS
 
-LabelCommand:
-    clc
-RTS
+    LabelCommand:
+    ; Reset idle timer so there's a delay before next command
+        lda #IDLE_TIME
+        sta player_idle_timer
+        CLC
+    RTS

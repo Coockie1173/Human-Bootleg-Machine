@@ -115,6 +115,29 @@ VARE:  .res 1
 VARF:  .res 1
 
 
+number_display_hi           : .res 1
+number_display_lo           : .res 1
+number_display_hi2          : .res 1
+number_display_lo2          : .res 1
+
+number_update_flag          : .res 1
+tile_values_dirty           : .res 1    ; <-- IMPORTANT: bitmask byte
+hand_value_dirty            : .res 1
+inbox_value_dirty           : .res 1
+
+; Last known values for change detection
+last_tile_values        : .res 8     ; 8 bytes (one per tile)
+last_hand_value         : .res 1     ; 1 byte
+last_inbox_value        : .res 1     ; 1 byte
+last_outbox_value       : .res 1     ; 1 byte  
+outbox_value_dirty      : .res 1     ; 1 byte
+
+; INBOX slots
+INBOX_SLOT_1            : .res 1
+INBOX_SLOT_2            : .res 1
+INBOX_SLOT_3            : .res 1
+INBOX_SLOT_4            : .res 1
+
 ; --------------------------------------------------------
 ; Command Buffer
 ; --------------------------------------------------------

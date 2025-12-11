@@ -1,7 +1,3 @@
-; PLAYER SPRITE SYSTEM
-; Uses 4 sprites for a 2x2 character (16x16 pixels)
-; Sprites 0-3 reserved for player (OAM $0200-$020F)
-
 
 init_player:
   ; Start at inbox position
@@ -27,7 +23,7 @@ init_player:
   ; Initialize movement
   lda #PLAYER_SPEED
   sta player_move_timer
-  lda #IDLE_TIME
+  lda #$00              ; ← SET TO 0 SO INTERPRETER RUNS IMMEDIATELY
   sta player_idle_timer
   
   ; Start facing left at inbox
@@ -39,18 +35,13 @@ init_player:
   sta DEDSTINATIONPLAYERX
   sta DEDSTINATIONPLAYERY
   
-  ; Set target to first destination (tile 0) - for testing
-  lda #TILE0_X
-  sta player_target_x
-  lda #TILE0_Y
-  sta player_target_y
   
   rts
 
 ; Update player
-update_player_gfx:
-  jsr draw_player_sprites
-  rts
+;update_player_gfx:
+  ;jsr draw_player_sprites
+  ;rts
 
 ; Draw player sprites to OAM buffer
 draw_player_sprites:

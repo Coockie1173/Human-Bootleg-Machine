@@ -34,6 +34,7 @@ main:
         ;jsr ParseInstruction
 
         jsr update_player
+        jsr update_number_displays
 
         lda CURSORSTATE
         bne @SelectMode
