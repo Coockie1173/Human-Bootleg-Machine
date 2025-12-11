@@ -68,6 +68,12 @@ reset:
   ; Initialize player
   ;jsr init_player
 
+  ; Initalize APU
+  jsr init_sound
+  jsr init_sfx
+
+  jsr play_song_menu
+
  ; Set initial game state to MENU
   lda #STATE_MENU
   sta game_state

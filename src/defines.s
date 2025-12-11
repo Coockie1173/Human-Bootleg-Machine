@@ -186,3 +186,13 @@ OUTBOX_Y                = 64
 .define BUTTON_RIGHT #%00000001
 
 .define MAXLINES 19
+
+; Music and sfx ids
+.define MUSIC_MENU #$00
+.define MUSIC_GAMEPLAY #$01
+.define MUSIC_VICTORY #$02
+.define SFX_CURSOR #$00
+.define SFX_SELECT #$01
+.define SFX_STEPS #$02
+.define SFX_PICK_UP #$03
+.define SFX_PUT_DOWN #$04

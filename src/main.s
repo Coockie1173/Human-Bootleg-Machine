@@ -13,6 +13,10 @@
 .include "controller/selector.s"
 .include "player.s"
 .include "controller/selectedmode.s"
+.include "sound/engine.s"
+.include "sound/songs.s"
+.include "sound/sfx.s"
+.include "sound/famistudio_ca65.s"
 
 WaitForNMI:
     lda NMIFLAG
@@ -22,6 +26,7 @@ WaitForNMI:
     jmp main
 
 main:
+    jsr famistudio_update
     lda Gamemode
     beq @MainMenu
         ldx #$00
