@@ -25,13 +25,13 @@ InitTestLevel:
     STA INTERPTR
 
     ; Load inbox display slots with first 4 values
-    JSR refresh_inbox_display_slots
+    ;JSR refresh_inbox_display_slots
     
     ; Initialize the display system (marks everything dirty)
     JSR init_number_displays
     
     ; Update to detect what changed (redundant but safe)
-    JSR update_number_displays
+    ;JSR update_number_displays
     
     RTS
 

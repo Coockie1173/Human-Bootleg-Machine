@@ -106,6 +106,9 @@ game_logic_update:
   jsr execute_next_command
   bcs @interpreter_finished        ; Carry set = finished
   jsr update_number_displays
+  jsr super_simple_inbox_draw
+  ;jsr draw_inbox_all
+  jsr refresh_inbox_display_slots
   jmp @draw_player
 
 @interpreter_finished:
@@ -116,3 +119,4 @@ game_logic_update:
   jsr update_player_gfx
   jsr draw_hand_sprites
   rts
+

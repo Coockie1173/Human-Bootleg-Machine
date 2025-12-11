@@ -199,7 +199,7 @@ draw_pending_numbers:
     lda inbox_value_dirty
     beq @do_outbox
     ;jsr draw_inbox_front_now
-    jsr draw_inbox_all
+    ;jsr draw_inbox_all
     lda #$00
     sta inbox_value_dirty
 
@@ -299,60 +299,150 @@ draw_hand_value_now:
     ;jsr erase_number
     ;rts
 
-draw_inbox_all:
+;draw_inbox_all:
     ; Reset PPU latch first
-    bit $2002
+    ;bit $2002
     
-    LDX #$00
+    ;LDX #$00
 
-@loop:
-    LDA INBOX_SLOT_1,x
-    CMP #$FF
-    BEQ @draw_empty_tile    ; If FF, draw empty tile ($03)
+;@loop:
+    ;LDA INBOX_SLOT_1,x
+    ;CMP #$FF
+    ;BEQ @draw_empty_tile    ; If FF, draw empty tile ($03)
     
     ; Draw the number
-    PHX                     ; save slot index
-    PHA                     ; save value to draw
+    ;PHX                     ; save slot index
+    ;PHA                     ; save value to draw
     
     ; Get PPU address for this slot
-    TXA                     ; Move slot index to A
-    JSR get_inbox_slot_ppu_address
+    ;TXA                     ; Move slot index to A
+    ;JSR get_inbox_slot_ppu_address
     ; returns X=hi, Y=lo
     
-    PLA                     ; restore number to draw
-    JSR draw_number
+    ;PLA                     ; restore number to draw
+    ;JSR draw_number
     
-    PLX                     ; restore slot index
-    JMP @next_slot
+    ;PLX                     ; restore slot index
+    ;JMP @next_slot
 
-@draw_empty_tile:
-    PHX                     ; save slot index
+;@draw_empty_tile:
+    ;PHX                     ; save slot index
     
     ; Get PPU address for this slot
-    TXA                     ; Move slot index to A
-    JSR get_inbox_slot_ppu_address
+    ;TXA                     ; Move slot index to A
+    ;JSR get_inbox_slot_ppu_address
     ; returns X=hi, Y=lo
     
     ; Draw two $03 tiles (or whatever your empty tile is)
     ; Reset PPU latch
-    bit $2002
-    stx $2006
-    sty $2006
+    ;bit $2002
+    ;stx $2006
+    ;sty $2006
     
-    lda #$00                ; Empty tile
-    sta $2007
-    sta $2007
+    ;lda #$00                ; Empty tile
+   ; sta $2007
+  ;  sta $2007
     
-    PLX                     ; restore slot index
+ ;   PLX                     ; restore slot index
 
-@next_slot:
-    INX
-    CPX #$04
-    BCC @loop
+;@next_slot:
+    ;INX
+    ;CPX #$04
+    ;BCC @loop
 
-@done:
+;@done:
+;    RTS
+
+super_simple_inbox_draw:
+    ; ===== SLOT 0 =====
+    LDA INBOX_SLOT_1
+    CMP #$FF
+    BEQ @slot0_empty
+    
+    ; Draw slot 0 with proper tile conversion
+    LDX #INBOXLOCHI
+    LDY #INBOXLOCLO
+    LDA INBOX_SLOT_1
+    JSR draw_number
+    JMP @slot1
+    
+@slot0_empty:
+    ; Draw empty tiles
+    BIT $2002
+    LDA #INBOXLOCHI
+    STA $2006
+    LDA #INBOXLOCLO
+    STA $2006
+    LDA $00    ; Use your blank tile
+    STA $2007
+    STA $2007
+
+@slot1:
+    ; ===== SLOT 1 =====
+    LDA INBOX_SLOT_1 + 1
+    CMP #$FF
+    BEQ @slot1_empty
+    
+    LDX #INBOX1_HI
+    LDY #INBOX1_LO
+    LDA INBOX_SLOT_1 + 1
+    JSR draw_number
+    JMP @slot2
+    
+@slot1_empty:
+    BIT $2002
+    LDA #INBOX1_HI
+    STA $2006
+    LDA #INBOX1_LO
+    STA $2006
+    LDA $00
+    STA $2007
+    STA $2007
+
+@slot2:
+    ; ===== SLOT 2 =====
+    LDA INBOX_SLOT_1 + 2
+    CMP #$FF
+    BEQ @slot2_empty
+    
+    LDX #INBOX2_HI
+    LDY #INBOX2_LO
+    LDA INBOX_SLOT_1 + 2
+    JSR draw_number
+    JMP @slot3
+    
+@slot2_empty:
+    BIT $2002
+    LDA #INBOX2_HI
+    STA $2006
+    LDA #INBOX2_LO
+    STA $2006
+    LDA $00
+    STA $2007
+    STA $2007
+
+@slot3:
+    ; ===== SLOT 3 =====
+    LDA INBOX_SLOT_1 + 3
+    CMP #$FF
+    BEQ @slot3_empty
+    
+    LDX #INBOX3_HI
+    LDY #INBOX3_LO
+    LDA INBOX_SLOT_1 + 3
+    JSR draw_number
     RTS
-
+    
+@slot3_empty:
+    BIT $2002
+    LDA #INBOX3_HI
+    STA $2006
+    LDA #INBOX3_LO
+    STA $2006
+    LDA $00
+    STA $2007
+    STA $2007
+    RTS
 
 ; draw_outbox_front_now - Draw outbox last value
 draw_outbox_front_now:
