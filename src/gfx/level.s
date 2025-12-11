@@ -45,7 +45,7 @@ refresh_inbox_display_slots:
     BEQ @inbox_empty
 
 @loop:
-    CPX #$04            ; Check if we've filled all 4 slots
+    CPX #$06            ; Check if we've filled all 6 slots
     BEQ @done
     
     LDA (INBOXPTR),y
@@ -64,7 +64,7 @@ refresh_inbox_display_slots:
     ; We hit the end marker (FF)
     ; Fill this slot and all remaining slots with FF
 @fill_rest:
-    CPX #$04
+    CPX #$06
     BCS @done
     
     LDA #$FF

@@ -25,6 +25,8 @@ init_number_displays:
     cpx #$08
     bcc @clear_loop
     
+    jsr refresh_inbox_display_slots
+
     ; Mark all tiles dirty ONCE for initial draw
     lda #$FF
     sta tile_values_dirty
@@ -354,92 +356,116 @@ draw_hand_value_now:
 ;    RTS
 
 super_simple_inbox_draw:
-    ; ===== SLOT 0 =====
+    ; Slot 0
     LDA INBOX_SLOT_1
     CMP #$FF
-    BEQ @slot0_empty
-    
-    ; Draw slot 0 with proper tile conversion
+    BEQ @s0_empty
     LDX #INBOXLOCHI
     LDY #INBOXLOCLO
-    LDA INBOX_SLOT_1
     JSR draw_number
-    JMP @slot1
-    
-@slot0_empty:
-    ; Draw empty tiles
+    JMP @s1
+@s0_empty:
     BIT $2002
     LDA #INBOXLOCHI
     STA $2006
     LDA #INBOXLOCLO
     STA $2006
-    LDA $00    ; Use your blank tile
+    LDA #$00
     STA $2007
     STA $2007
 
-@slot1:
-    ; ===== SLOT 1 =====
+@s1:
+    ; Slot 1
     LDA INBOX_SLOT_1 + 1
     CMP #$FF
-    BEQ @slot1_empty
-    
+    BEQ @s1_empty
     LDX #INBOX1_HI
     LDY #INBOX1_LO
-    LDA INBOX_SLOT_1 + 1
     JSR draw_number
-    JMP @slot2
-    
-@slot1_empty:
+    JMP @s2
+@s1_empty:
     BIT $2002
     LDA #INBOX1_HI
     STA $2006
     LDA #INBOX1_LO
     STA $2006
-    LDA $00
+    LDA #$00
     STA $2007
     STA $2007
 
-@slot2:
-    ; ===== SLOT 2 =====
+@s2:
+    ; Slot 2
     LDA INBOX_SLOT_1 + 2
     CMP #$FF
-    BEQ @slot2_empty
-    
+    BEQ @s2_empty
     LDX #INBOX2_HI
     LDY #INBOX2_LO
-    LDA INBOX_SLOT_1 + 2
     JSR draw_number
-    JMP @slot3
-    
-@slot2_empty:
+    JMP @s3
+@s2_empty:
     BIT $2002
     LDA #INBOX2_HI
     STA $2006
     LDA #INBOX2_LO
     STA $2006
-    LDA $00
+    LDA #$00
     STA $2007
     STA $2007
 
-@slot3:
-    ; ===== SLOT 3 =====
+@s3:
+    ; Slot 3
     LDA INBOX_SLOT_1 + 3
     CMP #$FF
-    BEQ @slot3_empty
-    
+    BEQ @s3_empty
     LDX #INBOX3_HI
     LDY #INBOX3_LO
-    LDA INBOX_SLOT_1 + 3
     JSR draw_number
-    RTS
-    
-@slot3_empty:
+    JMP @s4
+@s3_empty:
     BIT $2002
     LDA #INBOX3_HI
     STA $2006
     LDA #INBOX3_LO
     STA $2006
-    LDA $00
+    LDA #$00
+    STA $2007
+    STA $2007
+
+@s4:
+    ; Slot 4 (NEW)
+    LDA INBOX_SLOT_1 + 4
+    CMP #$FF
+    BEQ @s4_empty
+    LDX #INBOX4_HI
+    LDY #INBOX4_LO
+    JSR draw_number
+    JMP @s5
+@s4_empty:
+    BIT $2002
+    LDA #INBOX4_HI
+    STA $2006
+    LDA #INBOX4_LO
+    STA $2006
+    LDA #$00
+    STA $2007
+    STA $2007
+
+@s5:
+    ; Slot 5 (NEW)
+    LDA INBOX_SLOT_1 + 5
+    CMP #$FF
+    BEQ @s5_empty
+    LDX #INBOX5_HI
+    LDY #INBOX5_LO
+    JSR draw_number
+    RTS
+@s5_empty:
+    BIT $2002
+    LDA #INBOX5_HI
+    STA $2006
+    LDA #INBOX5_LO
+    STA $2006
+    LDA #$00
     STA $2007
     STA $2007
     RTS

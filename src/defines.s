@@ -195,6 +195,14 @@ INBOX3_LO               = $C2
 INBOX4_HI               = $22
 INBOX4_LO               = $02
 
+; 5 = $2242
+INBOX5_HI               = $22
+INBOX5_LO               = $42
+
+; 6 = $2282
+INBOX6_HI               = $22
+INBOX6_LO               = $82
+
 .define BUTTON_A #%1000000
 .define BUTTON_B #%0100000
 .define BUTTON_SELECT #%0010000

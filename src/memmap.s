@@ -137,6 +137,10 @@ INBOX_SLOT_1            : .res 1
 INBOX_SLOT_2            : .res 1
 INBOX_SLOT_3            : .res 1
 INBOX_SLOT_4            : .res 1
+INBOX_SLOT_5            : .res 1
+INBOX_SLOT_6            : .res 1
+
+
 
 ; --------------------------------------------------------
 ; Command Buffer
