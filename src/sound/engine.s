@@ -22,7 +22,7 @@ rts
 
 play_song_menu:
     lda MUSIC_MENU
-    jsr famistudio_music_playg
+    jsr famistudio_music_play
 rts
 
 play_song_gameplay:

@@ -8,6 +8,7 @@
 .include "interpreter/MainInterpreter.s"
 .include "interpreter/Puzzles.s"
 .include "interpreter/ListGenerator.s"
+.include "interpreter/StartInterpreter.s"
 .include "controller/cursor.s"
 .include "controller/menu.s"
 .include "controller/selector.s"
@@ -33,9 +34,14 @@ main:
         ;jsr CheckAllSolutions
         ;jsr ParseInstruction
 
-        jsr update_player
-        jsr update_number_displays
+        lda START_INTERPRETER
+        beq @CheckInputs
+            jsr update_player
+            jsr update_number_displays
+            jmp WaitForNMI
 
+        @CheckInputs:
+        jsr CheckStartInterpreter
         lda CURSORSTATE
         bne @SelectMode
             jsr GenerateCommandList

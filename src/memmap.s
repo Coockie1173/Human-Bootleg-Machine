@@ -138,6 +138,8 @@ INBOX_SLOT_2            : .res 1
 INBOX_SLOT_3            : .res 1
 INBOX_SLOT_4            : .res 1
 
+START_INTERPRETER       : .res 1
+
 ; --------------------------------------------------------
 ; Command Buffer
 ; --------------------------------------------------------
