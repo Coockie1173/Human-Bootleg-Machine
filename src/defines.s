@@ -215,3 +215,28 @@ INBOX4_LO               = $02
 .define SFX_STEPS #$02
 .define SFX_PICK_UP #$03
 .define SFX_PUT_DOWN #$04
+
+
+; Numbers
+TILE_NUM_0                  = $07   ; Also blank tile for SINGLE POSITIVE digits > [0][x]
+TILE_NUM_1                  = $08
+TILE_NUM_2                  = $09
+TILE_NUM_3                  = $0A
+TILE_NUM_4                  = $0B 
+TILE_NUM_5                  = $0C 
+TILE_NUM_6                  = $0D 
+TILE_NUM_7                  = $0E 
+TILE_NUM_8                  = $0F 
+TILE_NUM_9                  = $1E
+
+TILE_MINUS                  = $60   ; For SINGLE digits > [-][x]
+
+TILE_NUM_MINUS_1            = $61   ; For DOUBLE digits
+TILE_NUM_MINUS_2            = $62   ; [-2][x]
+TILE_NUM_MINUS_3            = $63   ; [-3][x]
+TILE_NUM_MINUS_4            = $64   ; [-4][x] ...
+TILE_NUM_MINUS_5            = $65
+TILE_NUM_MINUS_6            = $66
+TILE_NUM_MINUS_7            = $67
+TILE_NUM_MINUS_8            = $68
+TILE_NUM_MINUS_9            = $69

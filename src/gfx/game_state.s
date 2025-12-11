@@ -16,9 +16,9 @@ transition_to_game:
   jsr erase_MMarrow_sprite
   
   ; Wait for VBlank before changing background
-  @wait_vblank:
-    bit $2002
-    bpl @wait_vblank
+  ;@wait_vblank:
+  ;  bit $2002
+  ;  bpl @wait_vblank
   
   ; Disable rendering for background change
   lda #%00000000
