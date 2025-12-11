@@ -16,12 +16,12 @@ TestVars:
 ParseInstruction:
     ldx INTERPTR ;load our cursor within the solution
     ;store var first so we don't need to access X again later
-    ;lda VARIABLES,x ;load in the command's var
-    lda TestVars,x
+    lda VARIABLES,x ;load in the command's var
+    ;lda TestVars,x
     sta VAR0 ;store it in 0 for access later
 
-    ;lda COMMANDS,x ;load the command in the list
-    lda TestInstructions,x
+    lda COMMANDS,x ;load the command in the list
+    ;lda TestInstructions,x
     cmp #$FF ;end of list?
     bne :+
         SEC

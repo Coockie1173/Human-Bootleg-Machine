@@ -7,7 +7,7 @@
 .export _music_data_song_menu:=music_data_song_menu
 
 music_data_song_menu:
-	.byte 1
+	.byte 3
 	.word @instruments
 	.word @samples-4
 ; 00 : Main menu
@@ -16,6 +16,20 @@ music_data_song_menu:
 	.word @song0ch2
 	.word @song0ch3
 	.word @song0ch4
+	.byte .lobyte(@tempo_env_1_mid), .hibyte(@tempo_env_1_mid), 2, 0
+; 01 : Gameplay
+	.word @song1ch0
+	.word @song1ch1
+	.word @song1ch2
+	.word @song1ch3
+	.word @song1ch4
+	.byte .lobyte(@tempo_env_1_mid), .hibyte(@tempo_env_1_mid), 2, 0
+; 02 : Victory
+	.word @song2ch0
+	.word @song2ch1
+	.word @song2ch2
+	.word @song2ch3
+	.word @song2ch4
 	.byte .lobyte(@tempo_env_1_mid), .hibyte(@tempo_env_1_mid), 2, 0
 
 .export music_data_song_menu
@@ -192,3 +206,30 @@ music_data_song_menu:
 	.word @song0ref109
 	.byte $ff, $8f, $ff, $8f, $ff, $8f, $ff, $8f, $ff, $8f, $42
 	.word @song0ch4loop
+@song1ch0:
+@song1ch0loop:
+	.byte $47, .lobyte(@tempo_env_1_mid), .hibyte(@tempo_env_1_mid), $84, $31, $9f, $33, $9d, $34, $9f, $35, $9d, $48, $36, $9f
+	.byte $37, $9d, $38, $9f, $39, $9d, $42
+	.word @song1ch0loop
+@song1ch4:
+@song1ch3:
+@song1ch1:
+@song1ch1loop:
+	.byte $ff, $83, $ff, $83, $42
+	.word @song1ch1loop
+@song1ch2:
+@song1ch2loop:
+	.byte $84, $31, $9f, $32, $9d, $33, $9f, $34, $9d, $35, $9f, $36, $9d, $37, $9f, $38, $9d, $42
+	.word @song1ch2loop
+@song2ch0:
+@song2ch0loop:
+	.byte $47, .lobyte(@tempo_env_1_mid), .hibyte(@tempo_env_1_mid), $84, $3a, $8d, $39, $8b, $38, $8d, $37, $8b, $36, $ff, $b1
+	.byte $48, $36, $8d, $35, $8b, $34, $8d, $33, $8b, $32, $ff, $b1, $42
+	.word @song2ch0loop
+@song2ch4:
+@song2ch3:
+@song2ch2:
+@song2ch1:
+@song2ch1loop:
+	.byte $ff, $ef, $ff, $ef, $42
+	.word @song2ch1loop

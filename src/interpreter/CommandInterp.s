@@ -178,7 +178,7 @@ RTS
     JumpCommand:
         LDX #$00 ;loop through all instructions to find the matching label
         JumpCommLoop:
-            LDA TestInstructions,x ;load instruction
+            LDA COMMANDS,x ;load instruction
             CMP #CMD_LABEL ;check if the instr is a label
             BEQ :++
                 CMP #$FF
@@ -190,7 +190,7 @@ RTS
                 JMP JumpCommLoop
             :
             LDA VAR0 ;load in label ID from the jump
-            CMP TestVars,x ;and compare it to the actual label ID
+            CMP VARIABLES,x ;and compare it to the actual label ID
             BEQ :+
                 INX
                 BNE JumpCommLoop ;not the correct label? go back and try again
