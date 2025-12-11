@@ -1,97 +1,128 @@
-.define VAR0 $00
-.define VAR1 $01
-.define VAR2 $02
-.define VAR3 $03
-.define VAR4 $04
-.define VAR5 $05
-.define VAR6 $06
-.define VAR7 $07
-.define VAR8 $08
-.define VAR9 $09
-.define VARA $0A
-.define VARB $0B
-.define VARC $0C
-.define VARD $0D
-.define VARE $0E
-.define VARF $0F
+; ========================================================
+;  ZERO-PAGE ($0000–00FF)
+; ========================================================
+.segment "ZEROPAGE"
 
-.define CONADDR $10
-.define CONADDRPREV $11
-.define INBOXPTR $12 ;size 0x02
-.define CHECKSOLPTR $14 ;size 0x02
-.define NMIFLAG $16 ;onlly run main once NMI happened
-.define Gamemode $17
+VAR0:  .res 1
+VAR1:  .res 1
+VAR2:  .res 1
+VAR3:  .res 1
+VAR4:  .res 1
+VAR5:  .res 1
+VAR6:  .res 1
 
-.define STACK $0100 ;size 0xFF DO NOT TOUCH THIS RANGE
-
-.define VARIABLES $0300 ;size 0xFF
-.define GAMEMMEM $0400 ;size 0x08
-.define HANDMEM $0409 ;size 0x01
-.define DEDSTINATIONPLAYERX $040A ;size 0x02
-.define DEDSTINATIONPLAYERY $040C ;size 0x02
-
-.define CURRCOMMAND $0448 ;size 0x01
-.define COMMANDCURSOR $0449 ;size 0x01
-
-.define SOLUTION $0450 ;size 0x20
-.define INBOXIDX $0471 ;size 0x01
-.define INTERPTR $0472 ;size 0x01
-.define SOLPTR $0473 ;size 0x01
+CONADDR:        .res 1
+CONADDRPREV:    .res 1
+INBOXPTR:       .res 2
+CHECKSOLPTR:    .res 2
+NMIFLAG:        .res 1
+Gamemode:       .res 1
 
 
-; Memory locations
-controller_state        = CONADDR
-previous_controller     = CONADDRPREV
-arrow_position          = $0502
-arrow_position_hi       = $0503
-arrow_row               = $0504
-arrow_column            = $0505
+; ========================================================
+; MAIN RAM ($0300+) — Everything else goes here
+; ========================================================
+.segment "BSS"
 
-game_state = Gamemode  ; Game state variable
+VARIABLES:              .res $FF
+COMMANDS:               .res $FF
 
-; Command selector variables
-current_command         = $0506
-command_position        = $0507
-command_position_hi     = $0508
+GAMEMMEM:               .res $08
+HANDMEM:                .res $01
+DEDSTINATIONPLAYERX:    .res 2
+DEDSTINATIONPLAYERY:    .res 2
 
-; Command list variables
-placeholder_row         = $0509
-placeholder_col         = $050A
-placeholder_position    = $050B
-placeholder_position_hi = $050C
-command_list_count      = $050D
-scrollIDX               = $050E
-update_list             = $050F
-arrow_position_old          = $0511
-arrow_position_hi_old       = $0512
-arrow_update_flag       = $0513
-; Player state variables
-player_state            = $0520     ; 0=idle, 1=walking
-player_destination      = $0521     ; Current destination index (0-9)
-player_x                = $0522     ; Current X pixel position
-player_y                = $0523     ; Current Y pixel position
-player_target_x         = $0524     ; Target X pixel position
-player_target_y         = $0525     ; Target Y pixel position
-player_anim_frame       = $0526     ; Animation frame (0-3)
-player_anim_timer       = $0527     ; Frames until next animation
-player_move_timer       = $0528     ; Frames until next move
-player_idle_timer       = $0529     ; Frames to wait at destination
-player_facing           = $052A     ; 0=facing right (no flip), 1=facing left (flip)
-; Main Menu
-MMarrow_position          = $052B
-MMarrow_position_hi       = $052C
-MMarrow_row               = $052D
-MMarrow_column            = $052E
-MMarrow_position_old            = $052F
-MMarrow_position_old_hi            = $0530
-MMarrow_update = $0531
+CURRCOMMAND:            .res 1
+COMMANDCURSOR:          .res 1
 
-; $05A2 next
-.define SELECTEDPUZZLE $05A2
-.define CURRENTJUMPIDX $05A3
-.define UPDATECOMMFLAG $05A4
-.define CURSORSTATE $05A5
-.define CURSORBLINKTIMER $05A6
-.define force_update_arg $05A7
+SOLUTION:               .res $20
+INBOXIDX:               .res 1
+INTERPTR:               .res 1
+SOLPTR:                 .res 1
 
-.define COMMANDS $0600 ;size 0xFF
+
+; --------------------------------------------------------
+; UI + Command List
+; --------------------------------------------------------
+arrow_position:         .res 1
+arrow_position_hi:      .res 1
+arrow_row:              .res 1
+arrow_column:           .res 1
+
+current_command:        .res 1
+command_position:       .res 1
+command_position_hi:    .res 1
+
+placeholder_row:        .res 1
+placeholder_col:        .res 1
+placeholder_position:   .res 1
+placeholder_position_hi:.res 1
+command_list_count:     .res 1
+scrollIDX:              .res 1
+update_list:            .res 1
+
+arrow_position_old:     .res 1
+arrow_position_hi_old:  .res 1
+arrow_update_flag:      .res 1
+
+
+; --------------------------------------------------------
+; Player state
+; --------------------------------------------------------
+player_state:       .res 1
+player_destination: .res 1
+player_x:           .res 1
+player_y:           .res 1
+player_target_x:    .res 1
+player_target_y:    .res 1
+player_anim_frame:  .res 1
+player_anim_timer:  .res 1
+player_move_timer:  .res 1
+player_idle_timer:  .res 1
+player_facing:      .res 1
+
+
+; --------------------------------------------------------
+; Main menu
+; --------------------------------------------------------
+MMarrow_position:        .res 1
+MMarrow_position_hi:     .res 1
+MMarrow_row:             .res 1
+MMarrow_column:          .res 1
+MMarrow_position_old:    .res 1
+MMarrow_position_old_hi: .res 1
+MMarrow_update:          .res 1
+
+
+; --------------------------------------------------------
+; Puzzle selection
+; --------------------------------------------------------
+SELECTEDPUZZLE:       .res 1
+CURRENTJUMPIDX:       .res 1
+UPDATECOMMFLAG:       .res 1
+CURSORSTATE:          .res 1
+CURSORBLINKTIMER:     .res 1
+force_update_arg:     .res 1
+
+VAR7:  .res 1
+VAR8:  .res 1
+VAR9:  .res 1
+VARA:  .res 1
+VARB:  .res 1
+VARC:  .res 1
+VARD:  .res 1
+VARE:  .res 1
+VARF:  .res 1
+
+
+; --------------------------------------------------------
+; Command Buffer
+; --------------------------------------------------------
+
+; ========================================================
+; Aliases
+; ========================================================
+
+controller_state    = CONADDR
+previous_controller = CONADDRPREV
+game_state          = Gamemode
