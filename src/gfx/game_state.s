@@ -49,7 +49,7 @@ transition_to_game:
   jsr init_command_list
   jsr init_player
   
-  ; NEW: Initialize number displays
+  ; Initialize number displays
   jsr init_number_displays
   
   ; Change game state

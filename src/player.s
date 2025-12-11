@@ -141,7 +141,7 @@ move_toward_target:
   cmp player_target_y
   bne @move_vertical
   
-  ; *** FULLY ARRIVED - EXECUTE COMMAND LOGIC NOW ***
+  ; *** FULLY ARRIVED ***
   lda #STATE_IDLE
   sta player_state
   lda #IDLE_TIME
@@ -149,7 +149,7 @@ move_toward_target:
   lda #$00
   sta player_anim_frame
   
-  ; Check what command just finished and execute its logic
+  ; Check what command just finished
   ldx INTERPTR
   dex                      ; Go back to the command we just finished
   lda TestInstructions,x   ; Check which command it was
@@ -158,14 +158,30 @@ move_toward_target:
   beq @execute_inbox
   cmp #CMD_OUTBOX
   beq @execute_outbox
-  jmp @set_facing          ; Other commands already executed at tile
+  cmp #CMD_COPYTO
+  beq @execute_tile_modify
+  cmp #CMD_ADD
+  beq @execute_tile_modify
+  cmp #CMD_SUB
+  beq @execute_tile_modify
+  cmp #CMD_BUMPUP
+  beq @execute_tile_modify
+  cmp #CMD_BUMPDOWN
+  beq @execute_tile_modify
+  ; COPYFROM doesn't modify tiles
+  jmp @set_facing
   
 @execute_inbox:
-  jsr InboxLogic           ; NOW read from inbox
+  jsr InboxLogic
   jmp @set_facing
   
 @execute_outbox:
-  jsr OutboxLogic          ; NOW write to outbox and clear hand
+  jsr OutboxLogic
+  jmp @set_facing
+
+@execute_tile_modify:
+  ; These commands already executed, but we need to update displays
+  jsr update_number_displays  ; Mark changed tiles as dirty
   jmp @set_facing
   
 @set_facing:

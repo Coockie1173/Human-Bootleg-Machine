@@ -125,6 +125,8 @@ OutboxLogic:
     ; CLEAR THE HAND AFTER OUTBOX
     LDA #$FF
     STA HANDMEM
+
+    jsr play_sfx_put_down
     
     CLC
 RTS
