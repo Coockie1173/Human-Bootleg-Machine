@@ -1,7 +1,7 @@
 init_sound:
     lda #1
-    ldx #.lobyte(music_data_testsongs)
-    ldy #.hibyte(music_data_testsongs)
+    ldx #.lobyte(music_data_song_menu)
+    ldy #.hibyte(music_data_song_menu)
     jsr famistudio_init
 rts
 
@@ -10,6 +10,10 @@ init_sfx:
     ldx #.lobyte(sounds)
     ldy #.hibyte(sounds)
     jsr famistudio_sfx_init
+rts
+
+toggle_music:
+    ;TODO ask Oumi if she already holds a value for toggle music in memory
 rts
 
 play_song_menu:

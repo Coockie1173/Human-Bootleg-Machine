@@ -14,7 +14,7 @@
 .include "player.s"
 .include "controller/selectedmode.s"
 .include "sound/engine.s"
-.include "sound/test.s"
+.include "sound/songs.s"
 .include "sound/sfx.s"
 .include "sound/famistudio_ca65.s"
 
