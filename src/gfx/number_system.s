@@ -198,7 +198,8 @@ draw_pending_numbers:
 @do_inbox:
     lda inbox_value_dirty
     beq @do_outbox
-    jsr draw_inbox_front_now
+    ;jsr draw_inbox_front_now
+    jsr draw_inbox_all
     lda #$00
     sta inbox_value_dirty
 
@@ -278,25 +279,54 @@ draw_hand_value_now:
     rts
 
 ; draw_inbox_front_now - Draw inbox front value
-draw_inbox_front_now:
-    ldy #$00
-    lda (INBOXPTR), y
+;draw_inbox_front_now:
+    ;ldy #$00
+    ;lda (INBOXPTR), y
     
-    cmp #$FF
-    beq @empty
+    ;cmp #$FF
+    ;beq @empty
     
     ; Draw the value
-    ldx #INBOXLOCHI
-    ldy #INBOXLOCLO
-    jsr draw_number
-    rts
+    ;ldx #INBOXLOCHI
+    ;ldy #INBOXLOCLO
+    ;jsr draw_number
+    ;rts
     
-@empty:
+;@empty:
     ; Inbox is empty - erase display
-    ldx #INBOXLOCHI
-    ldy #INBOXLOCLO
-    jsr erase_number
-    rts
+    ;ldx #INBOXLOCHI
+    ;ldy #INBOXLOCLO
+    ;jsr erase_number
+    ;rts
+
+draw_inbox_all:
+    LDX #$00
+
+@loop:
+    LDA INBOX_SLOT_1,x
+    CMP #$FF
+    BEQ @done               ; stop on FF
+
+    PHX                     ; save index
+    PHA                     ; save value / A
+
+    ; Compute PPU address for this inbox slot
+    ; You must define INBOX_SLOT0_LO/HI etc.
+    TXA
+    JSR get_inbox_slot_ppu_address
+    ; returns X=hi, Y=lo
+
+    PLA                     ; restore number to draw
+    JSR draw_number
+
+    PLX
+    INX
+    CPX #$04
+    BCC @loop
+
+@done:
+    RTS
+
 
 ; draw_outbox_front_now - Draw outbox last value
 draw_outbox_front_now:
@@ -318,3 +348,29 @@ draw_outbox_front_now:
     ldy #OUTBOXLOCLO
     jsr erase_number
     rts
+
+get_inbox_slot_ppu_address:
+    CMP #$00
+    BNE @slot1
+    LDX #INBOXLOCHI
+    LDY #INBOXLOCLO
+    RTS
+
+@slot1:
+    CMP #$01
+    BNE @slot2
+    LDX #INBOX1_HI
+    LDY #INBOX1_LO
+    RTS
+
+@slot2:
+    CMP #$02
+    BNE @slot3
+    LDX #INBOX2_HI
+    LDY #INBOX2_LO
+    RTS
+
+@slot3:
+    LDX #INBOX3_HI
+    LDY #INBOX3_LO
+    RTS

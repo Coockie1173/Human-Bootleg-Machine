@@ -127,7 +127,15 @@ last_tile_values        = $0573     ; 8 bytes (one per tile)
 last_hand_value         = $057B     ; 1 byte
 last_inbox_value        = $057C     ; 1 byte
 last_outbox_value       = $057D     ; 1 byte  
-outbox_value_dirty      = $057E     ; 1 byte  
+outbox_value_dirty      = $057E     ; 1 byte
+
+; INBOX slots
+INBOX_SLOT_1            = $0580
+INBOX_SLOT_2            = $0581
+INBOX_SLOT_3            = $0582
+INBOX_SLOT_4            = $0583
+
+
 
 .define SELECTEDPUZZLE $05A2
 .define CURRENTJUMPIDX $05A3

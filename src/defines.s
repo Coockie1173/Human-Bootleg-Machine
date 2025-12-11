@@ -177,6 +177,24 @@ TILE7_Y                 = 128
 OUTBOX_X                = 128
 OUTBOX_Y                = 64
 
+
+; inbox slot positions
+; 1 = $2142
+INBOX1_HI               = $21
+INBOX1_LO               = $42
+
+; 2 = $2182
+INBOX2_HI               = $21
+INBOX2_LO               = $82
+
+; 3 = $21C2
+INBOX3_HI               = $21
+INBOX3_LO               = $C2
+
+; 4 = $2202
+INBOX4_HI               = $22
+INBOX4_LO               = $02
+
 .define BUTTON_A #%1000000
 .define BUTTON_B #%0100000
 .define BUTTON_SELECT #%0010000
