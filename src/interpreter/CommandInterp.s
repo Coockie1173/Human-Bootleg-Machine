@@ -1,5 +1,5 @@
     ;ALL OF THESE EXPECT THEIR "argument" TO COME IN VAR0
-
+    
     TileLocationsX:
         .byte TILE0_X, TILE1_X, TILE2_X, TILE3_X
         .byte TILE4_X, TILE5_X, TILE6_X, TILE7_X
@@ -73,7 +73,7 @@ OutboxCommand:
     CLC
     RTS
 
-    ; Execute inbox logic AFTER player arrives
+; Execute inbox logic AFTER player arrives
 InboxLogic:
     LDY #$00
     LDA (INBOXPTR),y
@@ -82,6 +82,7 @@ InboxLogic:
     BEQ ReachedEnd_Logic   ; FF indicates end of list   
     STA HANDMEM
 
+    ; Move pointer forward
     LDA INBOXPTR
     CLC
     ADC #$01
@@ -90,6 +91,13 @@ InboxLogic:
     LDA INBOXPTR + 1       ; handle overflow
     ADC #$00
     STA INBOXPTR + 1
+    
+    ; *** REFRESH THE DISPLAY SLOTS AFTER PICKUP ***
+    JSR refresh_inbox_display_slots
+    
+    ; *** MARK INBOX AS DIRTY SO NMI WILL REDRAW IT ***
+    LDA #$01
+    STA inbox_value_dirty
     
     CLC
 RTS

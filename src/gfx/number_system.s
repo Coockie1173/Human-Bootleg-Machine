@@ -300,26 +300,52 @@ draw_hand_value_now:
     ;rts
 
 draw_inbox_all:
+    ; Reset PPU latch first
+    bit $2002
+    
     LDX #$00
 
 @loop:
     LDA INBOX_SLOT_1,x
     CMP #$FF
-    BEQ @done               ; stop on FF
-
-    PHX                     ; save index
-    PHA                     ; save value / A
-
-    ; Compute PPU address for this inbox slot
-    ; You must define INBOX_SLOT0_LO/HI etc.
-    TXA
+    BEQ @draw_empty_tile    ; If FF, draw empty tile ($03)
+    
+    ; Draw the number
+    PHX                     ; save slot index
+    PHA                     ; save value to draw
+    
+    ; Get PPU address for this slot
+    TXA                     ; Move slot index to A
     JSR get_inbox_slot_ppu_address
     ; returns X=hi, Y=lo
-
+    
     PLA                     ; restore number to draw
     JSR draw_number
+    
+    PLX                     ; restore slot index
+    JMP @next_slot
 
-    PLX
+@draw_empty_tile:
+    PHX                     ; save slot index
+    
+    ; Get PPU address for this slot
+    TXA                     ; Move slot index to A
+    JSR get_inbox_slot_ppu_address
+    ; returns X=hi, Y=lo
+    
+    ; Draw two $03 tiles (or whatever your empty tile is)
+    ; Reset PPU latch
+    bit $2002
+    stx $2006
+    sty $2006
+    
+    lda #$00                ; Empty tile
+    sta $2007
+    sta $2007
+    
+    PLX                     ; restore slot index
+
+@next_slot:
     INX
     CPX #$04
     BCC @loop

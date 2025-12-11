@@ -1,4 +1,6 @@
 .include "background.s"
+.include "level.s"
+
 
 check_start_button:
   ; First check if arrow is at START position (row 13, column 10)
@@ -54,6 +56,9 @@ transition_to_game:
   
   ; Initialize interpreter system
   jsr init_interpreter
+
+  ; Initialize level
+  jsr InitTestLevel
   
   ; Initialize all game sprites
   jsr init_arrow
