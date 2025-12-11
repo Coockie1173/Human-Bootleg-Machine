@@ -60,6 +60,9 @@ erase_current_command:
   sta $2007
   sta $2007
   sta $2007
+
+  jsr play_sfx_cursor
+
   rts
 
 ; Draw CMD_ADD (2 tiles)

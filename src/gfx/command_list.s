@@ -116,6 +116,9 @@ draw_selected_command:
     PHA
     lda DrawCommandList+1,x
     PHA
+
+    jsr play_sfx_select
+
     RTS
 
 ; Draw CMD_ADD (2 tiles)

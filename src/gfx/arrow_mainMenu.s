@@ -44,6 +44,9 @@ draw_MMarrow_sprite:
   sta $2006
   lda #$6A
   sta $2007
+
+  jsr play_sfx_cursor
+
   rts
 
 ; ERASE ARROW SUBROUTINE

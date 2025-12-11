@@ -6,6 +6,7 @@ check_start_button:
   lda Gamemode
   beq @not_pressed
   ; SELECT was just pressed while at staRT - transition to game
+  jsr play_sfx_select
   jsr transition_to_game
   
 @not_pressed:

@@ -43,6 +43,9 @@ draw_arrow_sprite:
   sta $2006
   lda #$1F
   sta $2007
+
+  jsr play_sfx_cursor
+
   rts
 
 blink_arrow_sprite: ;clears out the arrow sprite when it's in blinky mode
