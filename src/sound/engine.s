@@ -16,9 +16,13 @@ toggle_music:
     ;TODO ask Oumi if she already holds a value for toggle music in memory
 rts
 
+pause_music:
+    jsr famistudio_music_pause
+rts
+
 play_song_menu:
     lda MUSIC_MENU
-    jsr famistudio_music_play
+    jsr famistudio_music_playg
 rts
 
 play_song_gameplay:
