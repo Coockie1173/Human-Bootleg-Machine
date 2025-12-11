@@ -39,6 +39,8 @@ GenerateCommandList:
     bne @JMPCOMM
     lda current_command
     sta COMMANDS,x
+    lda #$00
+    sta VARIABLES,x
     inx
     stx command_list_count
     inx

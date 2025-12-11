@@ -8,6 +8,7 @@ CommsWithArg:
 .byte CMD_EOL ;to signify end of list
 
 DoesCommandHaveArgs:
+    ldx #$00
     @loop:
     lda CommsWithArg,x
     cmp #$FF
@@ -36,7 +37,6 @@ Show_Argument:
     stx VAR3
     lda COMMANDS,x
     sta VAR5
-    ldx #$00
 
     cmp #$FF
     beq Show_Argument_end

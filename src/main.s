@@ -40,6 +40,7 @@ main:
     @SelectMode:
         jsr SelectUpDown
         jsr SelectLeftRight
+        jsr RemoveCommand
         jmp WaitForNMI
     @MainMenu:   
 

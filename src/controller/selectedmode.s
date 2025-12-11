@@ -49,7 +49,7 @@ SelectUpDown:
     TAY
     PLA
     sta VARIABLES-1,x
-    TAY
+    TYA
     sta VARIABLES,x
 
     lda #$01
@@ -72,22 +72,7 @@ SelectUpDown:
     CPX VAR7
     beq @end
 
-    lda VARIABLES,x
-    PHA
-    lda COMMANDS,x
-    PHA
-    lda COMMANDS+1,x
-    TAY
-    PLA
-    sta COMMANDS+1,x
-    TYA
-    sta COMMANDS,x
-    lda VARIABLES+1,x
-    TAY
-    PLA
-    sta VARIABLES+1,x
-    TAY
-    sta VARIABLES,x
+    jsr SwapData_right
 
     lda #$01
     sta update_list
@@ -102,7 +87,7 @@ SelectLeftRight:
     sta VAR5
 
     jsr DoesCommandHaveArgs
-    bcc ChangeArg
+    bcs ChangeArg
 rts
 
 ChangeArg:
@@ -148,6 +133,25 @@ ChangeArg:
 @end:
 rts
 
+SwapData_right:
+    lda VARIABLES,x
+    PHA
+    lda COMMANDS,x
+    PHA
+    lda COMMANDS+1,x
+    TAY
+    PLA
+    sta COMMANDS+1,x
+    TYA
+    sta COMMANDS,x
+    lda VARIABLES+1,x
+    TAY
+    PLA
+    sta VARIABLES+1,x
+    TYA
+    sta VARIABLES,x
+    rts
+
 CalculateItemIDX:
     lda arrow_row
     SEC
@@ -156,4 +160,44 @@ CalculateItemIDX:
     adc scrollIDX
     TAX
     sta VAR8
+rts
+
+RemoveCommand:
+
+    lda controller_state
+    and #%01000000 ;B button
+    beq :+
+    lda previous_controller
+    and #%01000000
+    bne :+
+        jmp @ActuallyRemove
+    :
+    rts
+@ActuallyRemove:
+
+    ;basically just "shift" the selected command out of the list.
+    ;so from our selected index all the way to the end of list (+1) we shift our data
+    jsr CalculateItemIDX ;grab our index of the command, we'll be (ab)using this to do all the shifting
+
+
+    lda COMMANDS,x
+    cmp #$FF
+    beq @end
+
+    ;so to re-iterate: in the loop we do the following.
+    ;we swap with the next command, then check if commands-1,x == 0xFF
+    ;if it is 0xFF, we've successfully remove the command out of the list, else just keep swapping until it's out of here
+    ;this also ensures the list order stays consistent
+    @loop:
+    jsr SwapData_right
+    inx
+    lda COMMANDS-1,x
+    cmp #$FF
+    beq @loopend
+    jmp @loop
+
+@loopend:
+    dec command_list_count
+    inc update_list
+@end:
 rts

@@ -55,7 +55,12 @@ handle_selected_command:
     @clearflag:
     lda #$00
     sta update_list
+    
+    inc placeholder_row
+    jsr calc_placeholder_address
+    jsr erase_placeholder
     @end:
+
 
     lda $2002 ;limit the weird janky movement
     lda #$20
@@ -75,6 +80,9 @@ erase_placeholder:
     lda placeholder_position
     sta $2006
     lda #$03                ; Brown background tile
+    sta $2007
+    sta $2007
+    sta $2007
     sta $2007
     rts
 
