@@ -1,7 +1,7 @@
-.include "resources/winScreen.asm"
+.include "resources/lossScreen.asm"
 
 
-load_background_win:
+load_background_loss:
     lda $2002       ; Reset PPU address latch
     lda #$20        ; Nametable 0 address $2000
     sta $2006       ; High byte
@@ -11,33 +11,33 @@ load_background_win:
     ldx #$00
     ldy #$00
 
-loadWLoop:
-    lda winScreen, x
+loadLLoop:
+    lda lossScreen, x
     sta $2007         
     inx
-    bne loadWLoop
+    bne loadLLoop
 
-loadWLoop2:
-    lda winScreen + 256, y
+loadLLoop2:
+    lda lossScreen + 256, y
     sta $2007         
     iny
-    bne loadWLoop2
+    bne loadLLoop2
 
     ldx #$00
-loadWLoop3:
-    lda winScreen+512, x
+loadLLoop3:
+    lda lossScreen+512, x
     sta $2007         
     inx
-    bne loadWLoop3
+    bne loadLLoop3
 
     ldy #$00
-loadWLoop4:
-    lda winScreen+768, y
+loadLLoop4:
+    lda lossScreen+768, y
     sta $2007         
     iny
-    bne loadWLoop4
+    bne loadLLoop4
 
-loadAttributesWin:
+loadAttributesLoss:
     lda $2002       ; read PPU status
     lda #$23
     sta $2006       ; high byte
@@ -45,15 +45,15 @@ loadAttributesWin:
     sta $2006       ; low byte
     ldx #$00        ; start at 0
 
-loadAttWinLoop:
-    lda attributesWin, X
+loadAttLossLoop:
+    lda attributesLoss, X
     sta $2007
     inx
     cpx #$40        ; Load all 64 bytes
-    bne loadAttWinLoop
+    bne loadAttLossLoop
     rts
 
-attributesWin:
+attributesLoss:
 ;attributes
- .res 64, $FF
+ .res 64, $AA
 

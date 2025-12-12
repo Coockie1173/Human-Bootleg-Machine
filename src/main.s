@@ -120,7 +120,7 @@ main:
     ; Clear all sprites
     jsr clear_all_sprites
     
-    jsr load_background_win  ; TODO: create load_background_loss
+    jsr load_background_loss  ; 
     
     lda #%10000000
     sta $2000

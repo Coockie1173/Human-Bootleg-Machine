@@ -1,6 +1,7 @@
 ; result_arrow.s - Arrow system for win/loss screens
 ; Separate from main menu to avoid conflicts
 .include "win_Screen.s"
+.include "loss_Screen.s"
 
 ; result_arrow.s - Arrow system for win/loss screens
 ; Separate from main menu to avoid conflicts
@@ -243,26 +244,63 @@ result_select_retry:
 result_select_menu:
     jsr play_sfx_select
     
-    ; Hide result arrow sprite
-    jsr hide_result_arrow
+    ; FORCE HIDE RESULT ARROW IMMEDIATELY
+    lda #$FF
+    sta $0200       ; Y position off-screen
+    sta $0204       ; Hide any other sprites too
+    sta $0208
+    sta $020C
     
-    ; Wait for vblank
+    ; FORCE DMA TRANSFER RIGHT NOW to apply the sprite hide
+    lda #$00
+    sta $2003       ; Set OAM address to 0
+    lda #$02
+    sta $4014       ; DMA transfer from $0200
+    
+    ; NOW wait for vblank
     jsr wait_for_vblank
+    
+    ; IMPORTANT: Reset game mode flag
+    lda #$00
+    sta Gamemode
+    
+    ; Reset command list
+    jsr ResetCommandList
+    
+    ; Clear result arrow flag
+    lda #$00
+    sta result_arrow_update
+    
+    ; Now disable rendering
     lda #%00000000
     sta $2001
     lda #%00000000
     sta $2000
     
-    ; Return to main menu
+    ; Clear ALL sprite memory thoroughly
+    ldx #$00
+    lda #$FF
+@clear_sprites:
+    sta $0200, x
+    inx
+    bne @clear_sprites
+    
+    ; Return to main menu state
     lda #STATE_MENU
     sta game_state
     
-    ; Reset menu arrow
+    ; Reset menu arrow position
     lda #MENU_START_ROW
     sta MMarrow_row
     
+    ; Load menu background
     jsr load_background_menu
+    
+    ; Re-initialize the menu arrow (this draws to nametable, not sprites)
     jsr init_MMarrow
+    
+    ; Play menu music
+    jsr play_song_menu
     
     ; Re-enable rendering
     lda #%10000000
