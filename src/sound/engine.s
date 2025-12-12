@@ -13,32 +13,40 @@ init_sfx:
 rts
 
 toggle_music:
-    LDA sound_enabled
-    BEQ turn_on
+    lda sound_enabled
+    beq turn_on
 
 turn_off:
-    JSR famistudio_music_pause
-    LDA #$00
-    STA sound_enabled
-RTS
+    jsr famistudio_music_pause
+    lda #$00
+    sta sound_enabled
+rts
 
 turn_on:
-    JSR famistudio_music_pause
-    LDA #$01
-    STA sound_enabled
-RTS
+    jsr famistudio_music_pause
+    lda #$01
+    sta sound_enabled
+rts
+
+play_music:
+    lda sound_enabled
+    beq @end
+
+    jsr famistudio_music_play
+@end:
+rts
 
 ;swapped the songs for better UX
 play_song_menu:
     ;lda MUSIC_MENU
     lda MUSIC_GAMEPLAY
-    jsr famistudio_music_play
+    jsr play_music
 rts
 
 play_song_gameplay:
     ;lda MUSIC_GAMEPLAY
     lda MUSIC_MENU
-    jsr famistudio_music_play
+    jsr play_music
 rts
 
 play_sfx_cursor:
