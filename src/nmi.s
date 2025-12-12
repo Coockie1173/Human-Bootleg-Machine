@@ -113,24 +113,21 @@ game_logic_update:
   bne @draw_player
 
 @ready_for_command:
+  ; Execute next command
   jsr execute_next_command
-  bcs @interpreter_finished
+  bcs @interpreter_finished    ; If carry set, interpreter is done
   
   ; UPDATE state, but DON'T DRAW yet
   jsr update_number_displays       ; Just marks things dirty
   jsr refresh_inbox_display_slots  ; Just updates RAM
-  ; REMOVED: jsr super_simple_inbox_draw  ← Don't draw here!
   jmp @draw_player
 
 @interpreter_finished:
-  ; Interpreter finished
+  ; Interpreter finished (this gets hit when reaching $FF or inbox empty)
+  ; Don't do anything here - let the player state machine handle it
   
-
 @draw_player:
   ; Always update player sprites in NMI
   jsr update_player_gfx
   jsr draw_hand_sprites
   rts
-
-  
-

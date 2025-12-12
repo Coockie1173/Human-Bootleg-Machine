@@ -1,8 +1,10 @@
-; Bridge between interpreter and player movement system
-; This handles executing commands and triggering player movement
-
 ; Call this when you want to execute the next command
 execute_next_command:
+  ; SAFETY CHECK: Only run during actual gameplay
+  lda game_state
+  cmp #STATE_GAME
+  bne @not_in_game         ; Don't execute if not in game mode
+  
   ; CRITICAL: Only execute if player is completely idle AND ready
   lda player_state
   cmp #STATE_IDLE
@@ -20,24 +22,24 @@ execute_next_command:
   bcs @interpreter_done    ; If carry set, we're done
   
   ; Command executed successfully
-  ; The destination is now set in DEDSTINATIONPLAYERX/Y
-  ; Your player update will handle the movement
   clc
   rts
 
+@not_in_game:
 @not_ready:
-  ; Player is still busy (walking or waiting)
+  ; Player is still busy (walking or waiting) or not in game
   clc
   rts
 
 @interpreter_stopped:
-  ; Player hit STATE_STOP (e.g., empty inbox)
+  ; Player hit STATE_STOP - just return, don't check solution here
+  ; The solution check happens in update_player.s when STATE_STOP is handled
   sec
   rts
 
 @interpreter_done:
-  ; Interpreter finished (reached $FF or error)
-
+  ; Interpreter finished (reached $FF or error) - just return
+  ; The solution check happens in update_player.s when STATE_STOP is set
   sec
   rts
 

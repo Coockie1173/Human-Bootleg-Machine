@@ -170,7 +170,7 @@ move_toward_target:
   cmp player_target_y
   bne @move_vertical
   
-  ; *** FULLY ARRIVED ***
+; *** FULLY ARRIVED ***
   lda #STATE_IDLE
   sta player_state
   lda #IDLE_TIME
@@ -190,16 +190,28 @@ move_toward_target:
   
   ; For tile operations, execute the pending operation
   jsr execute_pending_tile_operation
-  jmp @set_facing
+  jmp @check_if_last_command
   
 @execute_inbox:
   jsr InboxLogic
-  jmp @set_facing
+  jmp @check_if_last_command
   
 @execute_outbox:
   jsr OutboxLogic
-  jmp @set_facing
+  jmp @check_if_last_command
+
+@check_if_last_command:
+  ; After executing, check if the NEXT command is $FF
+  ldx INTERPTR
+  lda COMMANDS,x
+  cmp #$FF
+  bne @set_facing          ; Not last command, continue normally
   
+  ; This was the last command - set STOP state
+  lda #STATE_STOP
+  sta player_state
+  rts
+
 @set_facing:
   ; Set facing based on current position
   lda player_x
