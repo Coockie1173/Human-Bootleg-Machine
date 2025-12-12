@@ -13,8 +13,20 @@ init_sfx:
 rts
 
 toggle_music:
-    ;TODO ask Oumi if she already holds a value for toggle music in memory
-rts
+    LDA sound_enabled
+    BEQ turn_on
+
+turn_off:
+    JSR pause_music
+    LDA #$00
+    STA sound_enabled
+RTS
+
+turn_on:
+    JSR pause_music
+    LDA #$01
+    STA sound_enabled
+RTS
 
 pause_music:
     jsr famistudio_music_pause
@@ -30,8 +42,8 @@ play_song_gameplay:
     jsr famistudio_music_play
 rts
 
-play_song_victory:
-    lda MUSIC_VICTORY
+play_sfx_victory:
+    lda SFX_VICTORY
     jsr famistudio_music_play
 rts
 
