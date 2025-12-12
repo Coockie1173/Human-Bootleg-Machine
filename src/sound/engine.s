@@ -17,34 +17,35 @@ toggle_music:
     BEQ turn_on
 
 turn_off:
-    JSR pause_music
+    JSR famistudio_music_pause
     LDA #$00
     STA sound_enabled
 RTS
 
 turn_on:
-    JSR pause_music
+    JSR famistudio_music_pause
     LDA #$01
     STA sound_enabled
 RTS
 
-pause_music:
-    jsr famistudio_music_pause
-rts
-
+;swapped the songs for better UX
 play_song_menu:
-    lda MUSIC_MENU
-    jsr famistudio_music_play
-rts
-
-play_song_gameplay:
+    ;lda MUSIC_MENU
     lda MUSIC_GAMEPLAY
     jsr famistudio_music_play
 rts
 
-play_sfx_victory:
-    lda SFX_VICTORY
+play_song_gameplay:
+    ;lda MUSIC_GAMEPLAY
+    lda MUSIC_MENU
     jsr famistudio_music_play
+rts
+
+play_sfx_victory:
+    ; pause music
+    jsr turn_off
+    lda SFX_VICTORY
+    jsr famistudio_sfx_play
 rts
 
 play_sfx_cursor:
