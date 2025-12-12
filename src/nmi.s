@@ -19,7 +19,7 @@ nmi:
   PHY
   jsr ReadJoy
 
-  ; Disable rendering
+  ; Disable rendering FIRST
   lda #%00000000
   sta $2001
 
@@ -39,11 +39,12 @@ nmi:
   jsr handle_arrow_movement
   jsr handle_selected_command
   
-  ; NEW: Draw any pending numbers BEFORE re-enabling rendering
-  jsr draw_pending_numbers
-  
   ; Handle interpreter and player movement together
   jsr game_logic_update
+  
+  ; *** DRAW EVERYTHING AFTER LOGIC, BEFORE RE-ENABLING RENDERING ***
+  jsr draw_pending_numbers        ; Draw number changes
+  jsr super_simple_inbox_draw     ; Draw inbox (MOVE HERE!)
   
   ; DMA transfer sprites
   lda #$00
@@ -86,36 +87,31 @@ nmi:
   rti
 
 game_logic_update:
-  ; Update player movement physics FIRST
-  ; jsr update_player      ; <-- you left this commented out in your code
-
   ; Check if player is idle and ready for next command
   lda player_state
   cmp #STATE_IDLE
-  bne @draw_player                  ; Player is still walking, just draw
+  bne @draw_player
 
-  ; If idle, count the idle timer down here so NMI can progress it
   lda player_idle_timer
-  beq @ready_for_command           ; zero -> ready to run next command
+  beq @ready_for_command
+  dec player_idle_timer
+  bne @draw_player
 
-  dec player_idle_timer            ; still waiting -> decrement
-  bne @draw_player                 ; still non-zero -> skip interpreter this frame
-
-  ; If we fall through here, timer reached 0 this frame -> ready
 @ready_for_command:
   jsr execute_next_command
-  bcs @interpreter_finished        ; Carry set = finished
-  jsr update_number_displays
-  jsr super_simple_inbox_draw
-  ;jsr draw_inbox_all
-  jsr refresh_inbox_display_slots
+  bcs @interpreter_finished
+  
+  ; UPDATE state, but DON'T DRAW yet
+  jsr update_number_displays       ; Just marks things dirty
+  jsr refresh_inbox_display_slots  ; Just updates RAM
+  ; REMOVED: jsr super_simple_inbox_draw  ← Don't draw here!
   jmp @draw_player
 
 @interpreter_finished:
-  ; Interpreter finished all commands
+  ; Interpreter finished
 
 @draw_player:
-  ; Always draw player sprites in NMI
+  ; Always update player sprites in NMI
   jsr update_player_gfx
   jsr draw_hand_sprites
   rts

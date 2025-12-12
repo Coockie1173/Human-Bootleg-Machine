@@ -152,7 +152,7 @@ move_toward_target:
   ; Check what command just finished
   ldx INTERPTR
   dex                      ; Go back to the command we just finished
-  lda TestInstructions,x   ; Check which command it was
+  lda COMMANDS,x           ; Check which command it was
   
   cmp #CMD_INBOX
   beq @execute_inbox
