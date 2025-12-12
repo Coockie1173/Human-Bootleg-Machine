@@ -41,13 +41,6 @@ play_song_gameplay:
     jsr famistudio_music_play
 rts
 
-play_sfx_victory:
-    ; pause music
-    jsr turn_off
-    lda SFX_VICTORY
-    jsr famistudio_sfx_play
-rts
-
 play_sfx_cursor:
     lda SFX_CURSOR
     ldx #FAMISTUDIO_SFX_CH0
@@ -77,3 +70,15 @@ play_sfx_put_down:
     ldx #FAMISTUDIO_SFX_CH0
     jsr famistudio_sfx_play
 rts
+
+play_sfx_victory:
+    lda SFX_VICTORY
+    ldx #FAMISTUDIO_SFX_CH2
+    jsr famistudio_sfx_play
+rts
+
+play_sfx_loose:
+    lda SFX_LOOSE
+    ldx #FAMISTUDIO_SFX_CH2
+    jsr famistudio_sfx_play
+rts 

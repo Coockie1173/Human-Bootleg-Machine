@@ -250,6 +250,7 @@ INBOX6_LO               = $82
 .define SFX_PICK_UP #$03
 .define SFX_PUT_DOWN #$04
 .define SFX_VICTORY #$05
+.define SFX_LOOSE #$06
 
 
 ; Numbers
