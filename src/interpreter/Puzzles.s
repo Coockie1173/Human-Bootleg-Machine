@@ -6,11 +6,11 @@ TestPuzzle3:
 .byte $00,$00,$4C,$3C,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$FF
 
 TestSolution:
-.byte $00,$02,$04,$06,$08
+.byte $00,$02,$04,$06,$08,$FF 
 TestSolution2:
-.byte $0A,$14,$0A,$20,$2A
+.byte $0A,$14,$0A,$20,$2A,$FF 
 TestSolution3:
-.byte $00,$00,$98,$78,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+.byte $00,$00,$98,$78,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$FF 
 
 TestPuzzleList:
 .dbyt TestPuzzle,TestPuzzle2,TestPuzzle3
@@ -85,49 +85,49 @@ CheckAllSolutions:
     CPY #$00
     bne :-- ;if not 0, jump back and check the next solution
 RTS
-
 ; Check if player's solution matches expected solution
 ; Call with X = puzzle index
 ; Returns: Carry clear = correct, Carry set = wrong
 CheckPlayerSolution:
-    ; Get pointer to expected solution
-    txa
-    asl
-    tax
+    TXA
+    ASL
+    TAX
+    
+    ; Get pointer to solution list
     lda FullSolutionList,x
+    sta VAR1
+    inx
+    lda FullSolutionList,x
+    sta VAR0
+    
+    ; Get first solution pointer (index 0)
+    ldy #$00
+    lda (VAR0),y
     sta CHECKSOLPTR
-    lda FullSolutionList+1,x
+    iny
+    lda (VAR0),y
     sta CHECKSOLPTR+1
     
     ; Compare player's solution to expected
     ldy #$00
 @compare_loop:
-    cpy MAXSOLUTIONSIZE
-    beq @solution_correct    ; Reached end, all match
-    
-    ; Load expected value
     lda (CHECKSOLPTR),y
-    cmp #$FF                 ; Check if we've reached end of expected solution
-    beq @check_player_end
-    
-    ; Compare with player's solution
     cmp SOLUTION,y
-    bne @solution_wrong      ; Mismatch!
+    bne @solution_wrong
     
-    iny
-    jmp @compare_loop
-
-@check_player_end:
-    ; Expected solution ended - check if player also ended
-    lda SOLUTION,y
+    ; Check if both ended
     cmp #$FF
     beq @solution_correct
-    ; Player has extra values - wrong!
     
-@solution_wrong:
-    sec                      ; Carry set = wrong
+    iny
+    cpy MAXSOLUTIONSIZE
+    bcc @compare_loop
+    
+@solution_correct:
+    clc
     rts
 
-@solution_correct:
-    clc                      ; Carry clear = correct
+@solution_wrong:
+    sec
     rts
+

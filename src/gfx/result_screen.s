@@ -219,6 +219,8 @@ result_select_retry:
     
     ; Reset and reload current level
     jsr reset_level_state
+
+   
     
     ; Wait for vblank
     jsr wait_for_vblank
@@ -325,6 +327,9 @@ reset_level_state:
     sta command_list_count
     sta CURSORSTATE
     sta START_INTERPRETER
+
+     ; CLEAR THE COMMAND LIST
+    jsr ResetCommandList
     
     ; Reset player
     lda #STATE_IDLE

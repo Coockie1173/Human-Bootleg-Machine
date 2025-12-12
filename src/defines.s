@@ -79,7 +79,7 @@ SOUND_1_LOCLO           = $70
 SOUND_2_LOCLO           = $71
 
 ; Placeholder
-PLACEHODLER             = $0C
+PLACEHODLER             = $1A
 
 ; Command tile IDs 
 TILE_ADD_1              = $11
@@ -116,8 +116,8 @@ TILE_BUMPDOWN_1         = $33
 TILE_BUMPDOWN_2         = $34
 TILE_BUMPDOWN_3         = $36
 TILE_BUMPDOWN_4         = $37
-TILE_EOL_1              = $3A
-TILE_EOL_2              = $3B
+TILE_EOL_1              = $1A
+TILE_EOL_2              = $24
 
 ; Placeholder tile ID
 TILE_PLACEHOLDER        = $1A
