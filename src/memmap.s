@@ -92,6 +92,7 @@ MMarrow_column:          .res 1
 MMarrow_position_old:    .res 1
 MMarrow_position_old_hi: .res 1
 MMarrow_update:          .res 1
+sound_enabled:          .res 1  ; 0 = sound off, 1 = sound on
 
 
 ; --------------------------------------------------------

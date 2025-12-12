@@ -77,6 +77,9 @@ clear_cartram:
   bit $2002
   bpl vblankwait2
 
+  lda #$01                ; Sound starts ON by default
+  sta sound_enabled
+
   load_palettes:
     lda $2002
     lda #$3f
@@ -93,6 +96,9 @@ clear_cartram:
 
   ; Initialize background
   jsr load_background_menu
+  
+  ; Draw initial sound display
+  jsr update_sound_display 
 
   ; Initialize arrow
   jsr init_MMarrow
@@ -115,6 +121,8 @@ clear_cartram:
  ; Set initial game state to MENU
   lda #STATE_MENU
   sta game_state
+
+  
 
   jsr ResetCommandList ;make sure command list is filled with NOTHING
 
