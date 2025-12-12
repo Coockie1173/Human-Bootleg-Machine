@@ -85,6 +85,10 @@
                 .byte LETTERY
             .elseif _c = 'Z'
                 .byte LETTERZ
+            .elseif _c = ' '
+                .byte $01
+            .elseif _c = '|'
+                .byte $00
             .else
                 .error "Unsupported character in STRING_TO_BYTES_FF"
             .endif

@@ -15,6 +15,7 @@ CONADDR:        .res 1
 CONADDRPREV:    .res 1
 INBOXPTR:       .res 2
 CHECKSOLPTR:    .res 2
+PUZZLETEXTPTR:    .res 2
 NMIFLAG:        .res 1
 Gamemode:       .res 1
 

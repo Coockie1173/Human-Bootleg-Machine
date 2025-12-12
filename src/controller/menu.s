@@ -92,11 +92,12 @@ menu_select_start:
     jsr play_sfx_select
     
     ; Set up the selected puzzle
-    ldx SELECTEDPUZZLE
+    lda SELECTEDPUZZLE
+    asl
+    tax
     lda FullPuzzleList,x    ; Grab pointer to puzzlelist from the full list
     sta VAR1
-    inx
-    lda FullPuzzleList,x
+    lda FullPuzzleList+1,x
     sta VAR0                ; Store the pointer in VAR0
 
     ldy VARF
@@ -105,6 +106,11 @@ menu_select_start:
     iny
     lda (VAR0),y
     sta INBOXPTR            ; Setup our inbox pointer for our interpreter
+
+    lda PuzzleTextPtrs,x
+    sta PUZZLETEXTPTR+1,x
+    lda PuzzleTextPtrs+1,x
+    sta PUZZLETEXTPTR,x
 
     ; Set game mode flag
     inc Gamemode

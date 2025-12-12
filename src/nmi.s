@@ -10,6 +10,7 @@
 .include "gfx/argument.s"
 .include "gfx/number_system.s"   
 .include "gfx/hand_sprites.s"   
+.include "gfx/drawpuzzletext.s"   
 
 
 nmi:
@@ -61,6 +62,7 @@ nmi:
 
 @loading_mode:
   jsr check_start_button
+  jsr DrawPuzzleText
   jmp @finish
 
 @finish:
