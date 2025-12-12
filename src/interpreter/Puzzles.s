@@ -85,43 +85,51 @@ CheckAllSolutions:
     CPY #$00
     bne :-- ;if not 0, jump back and check the next solution
 RTS
-; Check if player's solution matches expected solution
-; Call with X = puzzle index
-; Returns: Carry clear = correct, Carry set = wrong
+
+
 CheckPlayerSolution:
     TXA
     ASL
     TAX
     
-    ; Get pointer to solution list
-    lda FullSolutionList,x
-    sta VAR1
-    inx
+    ; Get pointer to solution list pointer
     lda FullSolutionList,x
     sta VAR0
+    inx
+    lda FullSolutionList,x
+    sta VAR0+1
     
-    ; Get first solution pointer (index 0)
+    ; Dereference to get actual solution pointer
     ldy #$00
-    lda (VAR0),y
+    lda (VAR0),y        ; Get LOW byte of TestSolution pointer
     sta CHECKSOLPTR
     iny
-    lda (VAR0),y
+    lda (VAR0),y        ; Get HIGH byte of TestSolution pointer
     sta CHECKSOLPTR+1
     
-    ; Compare player's solution to expected
+    ; Now compare
     ldy #$00
 @compare_loop:
     lda (CHECKSOLPTR),y
+    cmp #$FF
+    beq @check_player_end
+    
     cmp SOLUTION,y
     bne @solution_wrong
-    
-    ; Check if both ended
-    cmp #$FF
-    beq @solution_correct
     
     iny
     cpy MAXSOLUTIONSIZE
     bcc @compare_loop
+    
+    sec
+    rts
+
+@check_player_end:
+    lda SOLUTION,y
+    cmp #$FF
+    beq @solution_correct
+    sec
+    rts
     
 @solution_correct:
     clc
