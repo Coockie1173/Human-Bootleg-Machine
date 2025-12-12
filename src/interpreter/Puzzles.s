@@ -6,22 +6,27 @@ TestPuzzle3:
 .byte $00,$00,$4C,$3C,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$FF
 
 TestSolution:
-.byte $01,$02,$03,$04,$05
+.byte $00,$02,$04,$06,$08
 TestSolution2:
-.byte $06,$0B,$06,$11,$16
+.byte $0A,$14,$0A,$20,$2A
 TestSolution3:
-.byte $01,$01,$4D,$3D,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+.byte $00,$00,$98,$78,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 
 TestPuzzleList:
 .dbyt TestPuzzle,TestPuzzle2,TestPuzzle3
 TestSolutionList:
 .dbyt TestSolution,TestSolution2,TestSolution3
 
+TestPuzzleText:
+STRBYTE "TAKE THE DATA FROM|THE INBOX|DOUBLE IT AND SEND IT|TO THE OUTBOX"
+
 ;we have a max of 255 puzzles
 FullPuzzleList:
 .dbyt TestPuzzleList
 FullSolutionList:
 .dbyt TestSolutionList
+PuzzleTextPtrs:
+.dbyt TestPuzzleText
 
 ;X = current puzzle from full list
 CheckAllSolutions:
