@@ -45,11 +45,38 @@
 
 
 ; GRAPHICS
-
 ; Game state constants
 STATE_MENU              = $00
 STATE_LOADING           = $01
 STATE_GAME              = $02
+STATE_WIN               = $05  ; Changed from $02
+STATE_LOSS              = $06  ; Changed from $03
+STATE_CONTROLS          = $03
+STATE_LEVEL_SELECT      = $04
+
+; Menu option enumeration
+MENU_START      = 0
+MENU_CONTROLS   = 1
+MENU_LEVELS     = 2
+MENU_SOUND      = 3
+
+; Menu row positions
+MENU_START_ROW      = $0D  ; Row 13
+MENU_CONTROLS_ROW   = $0F  ; Row 15
+MENU_LEVELS_ROW     = $11  ; Row 17
+MENU_SOUND_ROW      = $13  ; Row 19
+
+
+; Sound Tiles
+SOUND_ON_1              = $7A   ;Location: $2270
+SOUND_ON_2              = $7B   ;Location: $2271
+
+SOUND_OFF_1             = $7C   ;Location: $2270
+SOUND_OFF_2             = $7D   ;Location: $2271
+
+SOUND_LOCHI             = $22
+SOUND_1_LOCLO           = $70
+SOUND_2_LOCLO           = $71
 
 ; Placeholder
 PLACEHODLER             = $0C
@@ -145,32 +172,12 @@ DEST_TILE6              = 7
 DEST_TILE7              = 8
 DEST_OUTBOX             = 9
 
-; Sound Tiles
-SOUND_ON_1              = $7A   ;Location: $2270
-SOUND_ON_2              = $7B   ;Location: $2271
+; Win/loss
+WIN_NEXT_ROW = $07
+WIN_MENU_ROW = $09
+LOSS_RETRY_ROW = $07
+LOSS_MENU_ROW = $09
 
-SOUND_OFF_1             = $7C   ;Location: $2270
-SOUND_OFF_2             = $7D   ;Location: $2271
-
-SOUND_LOCHI             = $22
-SOUND_1_LOCLO           = $70
-SOUND_2_LOCLO           = $71
-
-
-; Menu option enumeration
-MENU_START      = 0
-MENU_CONTROLS   = 1
-MENU_LEVELS     = 2
-MENU_SOUND      = 3
-
-; Menu row positions
-MENU_START_ROW      = $0D  ; Row 13
-MENU_CONTROLS_ROW   = $0F  ; Row 15
-MENU_LEVELS_ROW     = $11  ; Row 17
-MENU_SOUND_ROW      = $13  ; Row 19
-
-STATE_CONTROLS          = $03
-STATE_LEVEL_SELECT      = $04
 
 ; Destination positions (pixel coordinates)
 ; Format: Column * 8, Row * 8

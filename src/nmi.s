@@ -27,12 +27,16 @@ nmi:
   ; Read controller
   jsr read_controller
 
-  ; Check game state and handle accordingly
+   ; Check game state and handle accordingly
   lda game_state
   cmp #STATE_MENU
   beq @menu_mode
   cmp #STATE_LOADING
   beq @loading_mode
+  cmp #STATE_WIN
+  beq @win_mode
+  cmp #STATE_LOSS
+  beq @loss_mode
   
   ; Game mode - run all game logic
   jsr Show_Argument
@@ -63,6 +67,15 @@ nmi:
 @loading_mode:
   jsr check_start_button
   jsr DrawPuzzleText
+  jmp @finish
+
+@win_mode:
+@loss_mode:
+  ; Result screens - only update sprite DMA, input is handled in main loop
+  lda #$00
+  sta $2003
+  lda #$02
+  sta $4014
   jmp @finish
 
 @finish:
@@ -111,10 +124,13 @@ game_logic_update:
 
 @interpreter_finished:
   ; Interpreter finished
+  
 
 @draw_player:
   ; Always update player sprites in NMI
   jsr update_player_gfx
   jsr draw_hand_sprites
   rts
+
+  
 

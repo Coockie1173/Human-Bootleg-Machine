@@ -85,3 +85,49 @@ CheckAllSolutions:
     CPY #$00
     bne :-- ;if not 0, jump back and check the next solution
 RTS
+
+; Check if player's solution matches expected solution
+; Call with X = puzzle index
+; Returns: Carry clear = correct, Carry set = wrong
+CheckPlayerSolution:
+    ; Get pointer to expected solution
+    txa
+    asl
+    tax
+    lda FullSolutionList,x
+    sta CHECKSOLPTR
+    lda FullSolutionList+1,x
+    sta CHECKSOLPTR+1
+    
+    ; Compare player's solution to expected
+    ldy #$00
+@compare_loop:
+    cpy MAXSOLUTIONSIZE
+    beq @solution_correct    ; Reached end, all match
+    
+    ; Load expected value
+    lda (CHECKSOLPTR),y
+    cmp #$FF                 ; Check if we've reached end of expected solution
+    beq @check_player_end
+    
+    ; Compare with player's solution
+    cmp SOLUTION,y
+    bne @solution_wrong      ; Mismatch!
+    
+    iny
+    jmp @compare_loop
+
+@check_player_end:
+    ; Expected solution ended - check if player also ended
+    lda SOLUTION,y
+    cmp #$FF
+    beq @solution_correct
+    ; Player has extra values - wrong!
+    
+@solution_wrong:
+    sec                      ; Carry set = wrong
+    rts
+
+@solution_correct:
+    clc                      ; Carry clear = correct
+    rts

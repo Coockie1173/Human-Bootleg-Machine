@@ -23,11 +23,24 @@ ParseInstruction:
     lda COMMANDS,x ;load the command in the list
     ;lda TestInstructions,x
     cmp #$FF ;end of list?
-    bne :+
+    bne @continue_execution
         SEC
         RTS ;tell the program and leave the list
-    :
+    
 
+    inx ;increase pointer
+    stx INTERPTR
+
+    ASL ;adjust for 16 bits to index the CommandJumpTable
+    TAX ;move it to X so we can index with it later
+
+    lda CommandJumpTable,x ;now we build a trampoline by pushing the address of the correct command onto the stack
+    PHA ;this effectively works as a jump rather than a return now
+    lda CommandJumpTable+1,x ;no need to increase X if we can just increase the raw addr
+    PHA
+    RTS
+
+@continue_execution:
     inx ;increase pointer
     stx INTERPTR
 

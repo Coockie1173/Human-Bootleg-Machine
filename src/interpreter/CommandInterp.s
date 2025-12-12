@@ -139,11 +139,18 @@ InboxLogic:
     clc
     rts
 
+
 ReachedEnd_Logic:
-    ; Signal the player to stop by changing state
+     ; Signal the player to stop
     lda #STATE_STOP
     sta player_state
-    
+
+    ; Prevent move_toward_target from immediately overwriting state
+    lda #$FF
+    sta player_target_x
+    lda #$FF
+    sta player_target_y
+
     sec
     rts
 

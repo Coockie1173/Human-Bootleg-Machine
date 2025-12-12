@@ -37,6 +37,7 @@ execute_next_command:
 
 @interpreter_done:
   ; Interpreter finished (reached $FF or error)
+
   sec
   rts
 

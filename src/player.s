@@ -1,4 +1,6 @@
 ; Update player logic (call from main loop)
+.include "gfx/result_screen.s"
+
 update_player:
   lda player_state
   cmp #STATE_IDLE
@@ -18,9 +20,36 @@ update_player:
   rts
 
 @handle_stop:
-  ; Do nothing - player is stopped
+  ; Check if solution is correct
+  ldx SELECTEDPUZZLE
+  jsr CheckPlayerSolution
+  bcs @solution_wrong      ; Carry set = wrong solution
+  
+  ; Solution is correct - just set state
+  lda #STATE_WIN
+  sta game_state
+  
+  ; Initialize result arrow
+  jsr init_result_arrow
+  
+  ; Set flag to load background next frame
+  lda #$01
+  sta result_arrow_update
   rts
-
+  
+@solution_wrong:
+  ; Solution is wrong - just set state
+  lda #STATE_LOSS
+  sta game_state
+  
+  ; Initialize result arrow
+  jsr init_result_arrow
+  
+  ; Set flag to load background next frame
+  lda #$01
+  sta result_arrow_update
+  rts
+  
 ; Update player graphics (call from NMI only)
 update_player_gfx:
   jsr draw_player_sprites

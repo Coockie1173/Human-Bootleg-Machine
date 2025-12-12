@@ -99,6 +99,9 @@ MMarrow_position_old_hi: .res 1
 MMarrow_update:          .res 1
 sound_enabled:           .res 1  ; 0 = sound off, 1 = sound on
 
+result_screen_state:     .res 1    ; Which result screen we're on (WIN or LOSS)
+result_arrow_row:        .res 1       ; Arrow position on result screen
+result_arrow_update:     .res 1    ; Flag to redraw arrow
 
 ; --------------------------------------------------------
 ; Puzzle selection
