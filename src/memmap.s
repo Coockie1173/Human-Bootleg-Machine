@@ -81,6 +81,10 @@ player_move_timer:  .res 1
 player_idle_timer:  .res 1
 player_facing:      .res 1
 
+pending_operation:  .res 1  ; Which operation to perform when arriving
+pending_tile_index: .res 1  ; Which tile to operate on
+pending_value:      .res 1  ; Value to use (reserved for future use)
+
 
 ; --------------------------------------------------------
 ; Main menu
@@ -92,7 +96,7 @@ MMarrow_column:          .res 1
 MMarrow_position_old:    .res 1
 MMarrow_position_old_hi: .res 1
 MMarrow_update:          .res 1
-sound_enabled:          .res 1  ; 0 = sound off, 1 = sound on
+sound_enabled:           .res 1  ; 0 = sound off, 1 = sound on
 
 
 ; --------------------------------------------------------

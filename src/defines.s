@@ -96,6 +96,16 @@ TILE_EOL_2              = $3B
 TILE_PLACEHOLDER        = $1A
 
 
+; Operation constants (for pending operations)
+OP_NONE         = $00
+OP_COPYFROM     = $01
+OP_COPYTO       = $02
+OP_ADD          = $03
+OP_SUB          = $04
+OP_BUMPUP       = $05
+OP_BUMPDOWN     = $06
+
+
 ; PLAYER
 ; Player sprite tiles
 TILE_PLAYER_IDLE_1      = $3C

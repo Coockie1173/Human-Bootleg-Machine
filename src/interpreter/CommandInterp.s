@@ -9,13 +9,34 @@
         .byte TILE4_Y, TILE5_Y, TILE6_Y, TILE7_Y
 
 SetTileDest:
-    lda TileLocationsX,x ;set destination per tile
+    lda TileLocationsX,x    ; Set destination per tile
     sta DEDSTINATIONPLAYERX
+    sta player_target_x
 
-    lda TileLocationsY,x ;set destination per tile
+    lda TileLocationsY,x
     sta DEDSTINATIONPLAYERY
+    sta player_target_y
+    
+    ; Store which tile we're going to
+    stx pending_tile_index
+    
+    ; FORCE player into walking state
+    lda #STATE_WALKING
+    sta player_state
+    
+    ; Reset animation   
+    lda #$00
+    sta player_anim_frame
+    lda #ANIM_SPEED
+    sta player_anim_timer
+    lda #PLAYER_SPEED
+    sta player_move_timer
+    
+    ; Set facing direction
+    jsr set_facing_direction
+    
     clc
-RTS
+    rts
 
 InboxCommand:
     ; DON'T read from inbox yet - just set destination
@@ -27,6 +48,11 @@ InboxCommand:
     STA DEDSTINATIONPLAYERY
     STA player_target_y
     
+    ; Mark that we need to do inbox operation on arrival
+    lda #OP_NONE            ; Inbox handled specially
+    sta pending_operation
+    
+
     ; FORCE player into walking state
     LDA #STATE_WALKING
     STA player_state
@@ -54,6 +80,10 @@ OutboxCommand:
     LDA #OUTBOX_Y
     STA DEDSTINATIONPLAYERY
     STA player_target_y
+
+    ; Mark that we need to do outbox operation on arrival
+    lda #OP_NONE            ; Outbox handled specially
+    sta pending_operation
     
     ; FORCE player into walking state
     LDA #STATE_WALKING
@@ -75,45 +105,52 @@ OutboxCommand:
 
 ; Execute inbox logic AFTER player arrives
 InboxLogic:
-    LDY #$00
+    ldy #$00
     lda (INBOXPTR),y
 
-    CMP #$FF
-    BEQ ReachedEnd_Logic   ; FF indicates end of list   
-    STA HANDMEM
+    cmp #$FF
+    beq ReachedEnd_Logic    ; FF indicates end of list   
+    sta HANDMEM
+
+    jsr play_sfx_pick_up
 
     ; Move pointer forward
-    LDA INBOXPTR
-    CLC
-    ADC #$01
-    STA INBOXPTR
+    lda INBOXPTR
+    clc
+    adc #$01
+    sta INBOXPTR
 
-    LDA INBOXPTR + 1       ; handle overflow
-    ADC #$00
-    STA INBOXPTR + 1
+    lda INBOXPTR + 1        ; Handle overflow
+    adc #$00
+    sta INBOXPTR + 1
     
-    ; *** REFRESH THE DISPLAY SLOTS AFTER PICKUP ***
-    JSR refresh_inbox_display_slots
+    ; Refresh the display slots after pickup
+    jsr refresh_inbox_display_slots
     
-    ; *** MARK INBOX AS DIRTY SO NMI WILL REDRAW IT ***
-    LDA #$01
-    STA inbox_value_dirty
+    ; Mark inbox and hand as dirty so NMI will redraw them
+    lda #$01
+    sta inbox_value_dirty
+    sta hand_value_dirty
     
-    CLC
-RTS
+    ; Clear pending operation
+    lda #OP_NONE
+    sta pending_operation
+    
+    clc
+    rts
 
 ReachedEnd_Logic:
     ; Signal the player to stop by changing state
     lda #STATE_STOP
     sta player_state
     
-    SEC
-RTS
+    sec
+    rts
 
 ; Execute outbox logic AFTER player arrives
 OutboxLogic:
-    LDX SOLPTR
-    CPX MAXSOLUTIONSIZE
+    ldx SOLPTR
+    cpx MAXSOLUTIONSIZE
     beq :+
         lda HANDMEM
         sta SOLUTION,x
@@ -123,57 +160,76 @@ OutboxLogic:
     stx SOLPTR
 
     ; CLEAR THE HAND AFTER OUTBOX
-    LDA #$FF
-    STA HANDMEM
+    lda #$FF
+    sta HANDMEM
 
     jsr play_sfx_put_down
     
-    CLC
-RTS
+    ; Mark hand as dirty
+    lda #$01
+    sta hand_value_dirty
+    
+    ; Clear pending operation
+    lda #OP_NONE
+    sta pending_operation
+    
+    clc
+    rts
 
     CopyFromCommand:
-        LDX VAR0
-        LDA GAMEMMEM,x
-        STA HANDMEM
-
-        JMP SetTileDest
+        ldx VAR0
+    
+        ; Mark operation type
+        lda #OP_COPYFROM
+        sta pending_operation
+    
+        jmp SetTileDest
 
     CopyToCommand:
-        LDX VAR0
-        LDA HANDMEM
-        STA GAMEMMEM,x
-
-        JMP SetTileDest
+        ldx VAR0
+    
+        ; Mark operation type
+        lda #OP_COPYTO
+        sta pending_operation
+    
+        jmp SetTileDest
 
     AddCommand:
-        LDA HANDMEM
-        LDX VAR0
-        CLC
-        ADC GAMEMMEM,x
-        STA HANDMEM
-
-        JMP SetTileDest
+        ldx VAR0
+    
+        ; Mark operation type
+        lda #OP_ADD
+        sta pending_operation
+    
+        jmp SetTileDest
 
     SubCommand:
-        LDA HANDMEM
-        LDX VAR0
-        SEC
-        SBC GAMEMMEM,x
-        STA HANDMEM
+        ldx VAR0
+    
+        ; Mark operation type
+        lda #OP_SUB
+        sta pending_operation
+    
+        jmp SetTileDest
 
-        JMP SetTileDest
 
     BumpUpCommand:
-        LDX VAR0
-        INC GAMEMMEM,x
-
-        JMP SetTileDest
+        ldx VAR0
+    
+        ; Mark operation type
+        lda #OP_BUMPUP
+        sta pending_operation
+    
+        jmp SetTileDest
 
     BumpDownCommand:
-        LDX VAR0
-        DEC GAMEMMEM,x
-
-        JMP SetTileDest
+        ldx VAR0
+    
+        ; Mark operation type
+        lda #OP_BUMPDOWN
+        sta pending_operation
+    
+        jmp SetTileDest
 
     JumpCommand:
         LDX #$00 ;loop through all instructions to find the matching label
@@ -221,3 +277,149 @@ RTS
         sta player_idle_timer
         CLC
     RTS
+
+    execute_pending_tile_operation:
+    lda pending_operation
+    
+    cmp #OP_COPYFROM
+    beq @do_copyfrom
+    cmp #OP_COPYTO
+    beq @do_copyto
+    cmp #OP_ADD
+    beq @do_add
+    cmp #OP_SUB
+    beq @do_sub
+    cmp #OP_BUMPUP
+    beq @do_bumpup
+    cmp #OP_BUMPDOWN
+    beq @jump_bumpdown
+    
+    ; No operation or already handled
+    rts
+
+
+
+@do_copyfrom:
+    ldx pending_tile_index
+    lda GAMEMMEM,x
+    sta HANDMEM
+    
+    jsr play_sfx_pick_up
+    
+    ; Mark hand as dirty
+    lda #$01
+    sta hand_value_dirty
+    
+    ; Clear operation
+    lda #OP_NONE
+    sta pending_operation
+    rts
+
+@do_copyto:
+    ldx pending_tile_index
+    lda HANDMEM
+    sta GAMEMMEM,x
+    
+    jsr play_sfx_put_down
+    
+    ; Mark specific tile as dirty using bitmask
+    lda #$01
+    cpx #$00
+    beq @copyto_set_dirty
+@copyto_shift:
+    asl
+    dex
+    bne @copyto_shift
+@copyto_set_dirty:
+    ora tile_values_dirty
+    sta tile_values_dirty
+    
+    ; Clear operation
+    lda #OP_NONE
+    sta pending_operation
+    rts
+
+@do_add:
+    lda HANDMEM
+    ldx pending_tile_index
+    clc
+    adc GAMEMMEM,x
+    sta HANDMEM
+    
+    jsr play_sfx_pick_up
+    
+    ; Mark hand as dirty
+    lda #$01
+    sta hand_value_dirty
+    
+    ; Clear operation
+    lda #OP_NONE
+    sta pending_operation
+    rts
+
+@jump_bumpdown:
+    jmp @do_bumpdown
+
+@do_sub:
+    lda HANDMEM
+    ldx pending_tile_index
+    sec
+    sbc GAMEMMEM,x
+    sta HANDMEM
+    
+    jsr play_sfx_pick_up
+    
+    ; Mark hand as dirty
+    lda #$01
+    sta hand_value_dirty
+    
+    ; Clear operation
+    lda #OP_NONE
+    sta pending_operation
+    rts
+
+@do_bumpup:
+    ldx pending_tile_index
+    inc GAMEMMEM,x
+    
+    jsr play_sfx_pick_up
+    
+    ; Mark specific tile as dirty using bitmask
+    lda #$01
+    cpx #$00
+    beq @bumpup_set_dirty
+@bumpup_shift:
+    asl
+    dex
+    bne @bumpup_shift
+@bumpup_set_dirty:
+    ora tile_values_dirty
+    sta tile_values_dirty
+    
+    ; Clear operation
+    lda #OP_NONE
+    sta pending_operation
+    rts
+
+@do_bumpdown:
+    ldx pending_tile_index
+    dec GAMEMMEM,x
+    
+    jsr play_sfx_pick_up
+    
+    ; Mark specific tile as dirty using bitmask
+    lda #$01
+    cpx #$00
+    beq @bumpdown_set_dirty
+@bumpdown_shift:
+    asl
+    dex
+    bne @bumpdown_shift
+@bumpdown_set_dirty:
+    ora tile_values_dirty
+    sta tile_values_dirty
+    
+    ; Clear operation
+    lda #OP_NONE
+    sta pending_operation
+    rts

@@ -158,17 +158,9 @@ move_toward_target:
   beq @execute_inbox
   cmp #CMD_OUTBOX
   beq @execute_outbox
-  cmp #CMD_COPYTO
-  beq @execute_tile_modify
-  cmp #CMD_ADD
-  beq @execute_tile_modify
-  cmp #CMD_SUB
-  beq @execute_tile_modify
-  cmp #CMD_BUMPUP
-  beq @execute_tile_modify
-  cmp #CMD_BUMPDOWN
-  beq @execute_tile_modify
-  ; COPYFROM doesn't modify tiles
+  
+  ; For tile operations, execute the pending operation
+  jsr execute_pending_tile_operation
   jmp @set_facing
   
 @execute_inbox:
@@ -178,15 +170,9 @@ move_toward_target:
 @execute_outbox:
   jsr OutboxLogic
   jmp @set_facing
-
-@execute_tile_modify:
-  ; These commands already executed, but we need to update displays
-  jsr update_number_displays  ; Mark changed tiles as dirty
-  jmp @set_facing
   
 @set_facing:
   ; Set facing based on current position
-  ; Check if at inbox position
   lda player_x
   cmp #INBOX_X
   bne @face_right_arrival
