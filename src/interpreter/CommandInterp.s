@@ -274,10 +274,10 @@ OutboxLogic:
     JumpNegativeCommand:
         LDA HANDMEM
         BMI :+
-            JMP JumpCommand
+            CLC
+            RTS
         :
-        CLC
-    RTS
+    JMP JumpCommand
 
     LabelCommand:
     ; Reset idle timer so there's a delay before next command
