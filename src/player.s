@@ -20,14 +20,19 @@ update_player:
   rts
 
 @handle_stop:
+ ; ADD $FF TO SOLUTION FIRST
+  ldx SOLPTR
+  lda #$FF
+  sta SOLUTION,x
+  
   ; Check if solution is correct
   ldx SELECTEDPUZZLE
   jsr CheckPlayerSolution
   bcs @solution_wrong      ; Carry set = wrong solution
   
   ; Solution is correct - just set state
-  lda #STATE_WIN
-  sta game_state
+  lda #STATE_WIN           ; This is $05
+  sta game_state           ; <-- Setting game_state, NOT result_screen_state
   
   ; Initialize result arrow
   jsr init_result_arrow
@@ -39,16 +44,8 @@ update_player:
   
 @solution_wrong:
   ; Solution is wrong - just set state
-  lda #STATE_LOSS
-  sta game_state
-  
-  ; Initialize result arrow
-  jsr init_result_arrow
-  
-  ; Set flag to load background next frame
-  lda #$01
-  sta result_arrow_update
-  rts
+  lda #STATE_LOSS          ; This is $06
+  sta game_state           ; <-- Setting game_state, NOT result_screen_state
   
 ; Update player graphics (call from NMI only)
 update_player_gfx:

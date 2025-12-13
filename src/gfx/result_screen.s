@@ -367,6 +367,10 @@ reset_level_state:
     sta VAR1
     lda FullPuzzleList+1,x
     sta VAR0
+
+    ; Load expected solution for comparison
+    ldx SELECTEDPUZZLE
+    jsr LoadExpectedSolution
     
     ldy #$00
     lda (VAR0),y

@@ -41,6 +41,13 @@ INBOXIDX:               .res 1
 INTERPTR:               .res 1
 SOLPTR:                 .res 1
 
+; --------------------------------------------------------
+; Solution checking
+; --------------------------------------------------------
+EXPECTED_SOLUTION:      .res $20    ; Store expected solution here (same size as SOLUTION)
+solution_check_flag:    .res 1      ; 0 = not checked, 1 = correct, 2 = wrong
+solution_length:        .res 1      ; Length of expected solution (for debugging)
+player_solution_length: .res 1      ; Length of player solution (for debugging)
 
 ; --------------------------------------------------------
 ; UI + Command List
@@ -99,7 +106,7 @@ MMarrow_position_old_hi: .res 1
 MMarrow_update:          .res 1
 sound_enabled:           .res 1  ; 0 = sound off, 1 = sound on
 
-result_screen_state:     .res 1    ; Which result screen we're on (WIN or LOSS)
+;result_screen_state:     .res 1    ; Which result screen we're on (WIN or LOSS)
 result_arrow_row:        .res 1       ; Arrow position on result screen
 result_arrow_update:     .res 1    ; Flag to redraw arrow
 

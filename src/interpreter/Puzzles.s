@@ -87,55 +87,114 @@ CheckAllSolutions:
 RTS
 
 
-CheckPlayerSolution:
-    TXA
-    ASL
-    TAX
+LoadExpectedSolution:
+    ; Get the address where TestSolution actually is in ROM
+    ldx SELECTEDPUZZLE
+    cpx #$00
+    bne @puzzle1
     
-    ; Get pointer to solution list pointer
-    lda FullSolutionList,x
-    sta VAR0
+    ; Puzzle 0 - use TestSolution
+    ldx #$00
+@copy0:
+    lda TestSolution,x
+    sta EXPECTED_SOLUTION,x
     inx
-    lda FullSolutionList,x
-    sta VAR0+1
+    cmp #$FF            ; Check AFTER incrementing X
+    bne @copy0
+    jmp @done
     
-    ; Dereference to get actual solution pointer
-    ldy #$00
-    lda (VAR0),y        ; Get LOW byte of TestSolution pointer
-    sta CHECKSOLPTR
-    iny
-    lda (VAR0),y        ; Get HIGH byte of TestSolution pointer
-    sta CHECKSOLPTR+1
+@puzzle1:
+    cpx #$01
+    bne @puzzle2
     
-    ; Now compare
+    ; Puzzle 1 - use TestSolution2
+    ldx #$00
+@copy1:
+    lda TestSolution2,x
+    sta EXPECTED_SOLUTION,x
+    inx
+    cmp #$FF
+    bne @copy1
+    jmp @done
+    
+@puzzle2:
+    ; Puzzle 2 - use TestSolution3
+    ldx #$00
+@copy2:
+    lda TestSolution3,x
+    sta EXPECTED_SOLUTION,x
+    inx
+    cmp #$FF
+    bne @copy2
+    jmp @done
+
+@done:
+    dex                 ; X is one past the FF
+    stx solution_length
+    rts
+
+; CheckPlayerSolution - Compare SOLUTION with EXPECTED_SOLUTION
+; Input: X = SELECTEDPUZZLE index (not actually used since we already loaded expected)
+; Output: Carry CLEAR = correct, Carry SET = wrong
+;         Also sets solution_check_flag: 1 = correct, 2 = wrong
+CheckPlayerSolution:
+    ; Reset check flag
+    lda #$00
+    sta solution_check_flag
+    
+    ; Compare byte by byte
     ldy #$00
+    
 @compare_loop:
-    lda (CHECKSOLPTR),y
+    ; Load expected solution byte
+    lda EXPECTED_SOLUTION,y
+    
+    ; Check if we've reached the end of expected solution
     cmp #$FF
     beq @check_player_end
     
+    ; Compare with player solution
     cmp SOLUTION,y
-    bne @solution_wrong
+    bne @solution_wrong     ; If different, solution is wrong
     
+    ; Move to next byte
     iny
-    cpy MAXSOLUTIONSIZE
+    cpy MAXSOLUTIONSIZE     ; Safety check
     bcc @compare_loop
     
-    sec
-    rts
+    ; Reached max size without end marker - wrong
+    jmp @solution_wrong
 
 @check_player_end:
+    ; Expected solution ended at position Y
+    ; Check if player solution also ends here
     lda SOLUTION,y
     cmp #$FF
-    beq @solution_correct
-    sec
-    rts
+    beq @solution_correct   ; Both end at same point!
+    
+    ; Player has more values - wrong
+    jmp @solution_wrong
     
 @solution_correct:
+    ; Store player solution length for debugging
+    sty player_solution_length
+    
+    ; Set flag to CORRECT
+    lda #$01
+    sta solution_check_flag
+    
+    ; Return with carry CLEAR
     clc
     rts
 
 @solution_wrong:
+    ; Store player solution length for debugging (where it failed)
+    sty player_solution_length
+    
+    ; Set flag to WRONG
+    lda #$02
+    sta solution_check_flag
+    
+    ; Return with carry SET
     sec
     rts
-

@@ -24,6 +24,10 @@ InitTestLevel:
     STA SOLPTR
     STA INTERPTR
 
+     ; Load expected solution
+    ldx SELECTEDPUZZLE
+    jsr LoadExpectedSolution
+    
     ; Load inbox display slots with first 4 values
     ;JSR refresh_inbox_display_slots
     
