@@ -28,14 +28,19 @@ GenerateCommandList:
     and #%01000000
     bne @done               ; If already pressed, don't repeat
     
-    ; Check if we've hit the max number of commands (22 - 3 = 19 rows available)
-    lda command_list_count
-    cmp #$FF
-    bcs @done               ; If at max, don't add more
+    ;find the first free slot - less prone to errors
 
-    TAX
+    jsr FindLastSlot
+    bcc @done
+
+    ; Check if we've hit the max number of commands (22 - 3 = 19 rows available)
+    ;lda command_list_count
+    ;cmp #$FF
+    ;bcs @done               ; If at max, don't add more
+
+    ;TAX
     lda current_command
-    AND #$08
+    and #$08
     bne @JMPCOMM
     lda current_command
     sta COMMANDS,x
@@ -88,4 +93,22 @@ GenerateCommandList:
 
     lda #$01
     sta update_list
+    rts
+
+
+FindLastSlot:
+    ldx #$00
+    @loop:
+    lda COMMANDS,X
+    cmp #$FF
+    beq @slotfound
+    inx
+    cpx #$FF
+    beq @done ;no slot found
+    jmp @loop
+    @slotfound:
+    sec
+    rts
+    @done:
+    clc
     rts

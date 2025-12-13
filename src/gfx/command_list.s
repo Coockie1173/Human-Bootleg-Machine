@@ -20,9 +20,12 @@ init_command_list:
 handle_selected_command:
     lda update_list
     beq @end
+    lda FORCE_FULL_LIST_REDRAW
+    bne @Redraw_All
+    @ret_redraw:
 
     lda #$00
-    sta VAR0 ;EOL flag
+    sta VAR2 ;EOL flag
     
     lda #$03
     sta placeholder_row
@@ -34,23 +37,28 @@ handle_selected_command:
     ldx scrollIDX ;setup scroll index in full list
     @loopStart:
     PHX
+    PHY
     
     lda COMMANDS,x
     cmp #CMD_EOL
     bne :+
+      PLY
       PLX 
       jmp @clearflag
     :
-    sta VAR1
+    sta VAR3
 
     jsr draw_selected_command
 
     @LoopEnd:
+
     inc placeholder_row
     jsr calc_placeholder_address
+    PLY
     PLX
     inx
     DEY
+    cpy #$00
     bne @loopStart ;keep looping for all rows
     @clearflag:
     lda #$00
@@ -70,6 +78,28 @@ handle_selected_command:
     lda #$05
     sta $2007
 RTS
+
+@Redraw_All:
+  lda #$00
+  sta FORCE_FULL_LIST_REDRAW
+
+  lda #$03
+  sta placeholder_row
+  lda #24
+  sta placeholder_col
+  jsr calc_placeholder_address
+  
+  ldy #19
+  @loop:
+  cpy #$00
+  beq @ret_redraw
+
+  jsr erase_placeholder
+  inc placeholder_row
+  jsr calc_placeholder_address
+
+  dey
+  jmp @loop
 
 
 ; Erase placeholder (draw background tile)
@@ -109,7 +139,7 @@ DrawCommandList:
 
 ; tramampoline
 draw_selected_command:
-    lda VAR1
+    lda VAR3
     ASL
     TAX
     lda DrawCommandList,x

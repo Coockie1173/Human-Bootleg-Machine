@@ -49,7 +49,8 @@ movement_done:
     RTS
 
 check_listlength:
-    lda command_list_count
+    jsr FindLastSlot
+    TXA
     SEC
     SBC #20
     SEC

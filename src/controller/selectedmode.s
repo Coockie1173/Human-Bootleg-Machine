@@ -175,14 +175,47 @@ RemoveCommand:
     rts
 @ActuallyRemove:
 
+
     ;basically just "shift" the selected command out of the list.
     ;so from our selected index all the way to the end of list (+1) we shift our data
     jsr CalculateItemIDX ;grab our index of the command, we'll be (ab)using this to do all the shifting
+    lda COMMANDS,x
+    and #$08
+    bne @IfJump
+    jsr RemoveItem
 
+@loopend:
+    inc update_list
+@end:
+rts
 
+@IfJump:
+    lda VARIABLES,x
+    sta VAR0 ;keep the variable index to find the attached label/jump command (because guess what: this works both ways)
+    jsr RemoveItem
+
+    ;now the first got removed, we can scan for the second and remove that one as well
+    ldx #$00
+    @loop:
+    lda COMMANDS,X
+    and #$08
+    beq @next
+
+        lda VARIABLES,x
+        cmp VAR0
+        beq @found  
+    @next:
+    inx
+    jmp @loop
+@found:
+    jsr RemoveItem
+rts
+
+;X has the command to be removed
+RemoveItem:
     lda COMMANDS,x
     cmp #$FF
-    beq @end
+    beq @loopend
 
     ;so to re-iterate: in the loop we do the following.
     ;we swap with the next command, then check if commands-1,x == 0xFF
@@ -197,7 +230,26 @@ RemoveCommand:
     jmp @loop
 
 @loopend:
-    dec command_list_count
     inc update_list
-@end:
+    jsr ClearLoop
+
+    jsr CalculateItemIDX
+    lda COMMANDS,x
+    cmp #$FF
+    bne :+
+        DEC arrow_row
+        jsr calc_arrow_address
+    :
+    inc FORCE_FULL_LIST_REDRAW
+    rts
+
+;X is input, clears the rest of the command list to avoid any possible issues
+ClearLoop:
+    @Loop:
+    cpx #$FF
+    beq @end
+    lda #$FF
+    sta COMMANDS,x
+    inx
+    @end:
 rts

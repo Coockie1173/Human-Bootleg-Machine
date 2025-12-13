@@ -9,7 +9,9 @@ CheckStartInterpreter:
     bne @not_pressed  ; If it was already pressed, ignore
 
      ; START was pressed - check if there are ANY commands
-    lda command_list_count
+    jsr FindLastSlot
+    TXA
+    cmp #$00
     beq @no_commands        ; If count is 0, instant loss!
     
     ; Check if first command is $FF (empty list)
