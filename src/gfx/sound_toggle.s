@@ -3,25 +3,12 @@ menu_select_sound:
     ; Play selection sound (before toggling!)
     jsr play_sfx_select
     
-    ; Toggle sound state (assuming you have a sound_enabled flag)
-    lda sound_enabled
-    eor #$01                ; Flip bit 0 (0->1 or 1->0)
-    sta sound_enabled
+    ; Toggle sound state (assuming you have a sound_enabled flag) and stop or resume music
+    jsr toggle_music
     
     ; Update the display tiles
     jsr update_sound_display
     
-    ; If sound was turned off, stop music
-    lda sound_enabled
-    bne @sound_on
-    
-    ; Sound is now OFF
-    jsr famistudio_music_stop
-    rts
-    
-@sound_on:
-    ; Sound is now ON - restart menu music
-    jsr play_song_menu
     rts
 
 ; UPDATE SOUND DISPLAY ON SCREEN

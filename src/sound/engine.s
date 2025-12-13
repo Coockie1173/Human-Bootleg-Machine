@@ -13,26 +13,40 @@ init_sfx:
 rts
 
 toggle_music:
-    ;TODO ask Oumi if she already holds a value for toggle music in memory
-rts
+    lda sound_enabled
+    beq turn_on
 
-pause_music:
+turn_off:
     jsr famistudio_music_pause
+    lda #$00
+    sta sound_enabled
 rts
 
-play_song_menu:
-    lda MUSIC_MENU
+turn_on:
+    jsr famistudio_music_pause
+    lda #$01
+    sta sound_enabled
+rts
+
+play_music:
+    lda sound_enabled
+    beq @end
+
     jsr famistudio_music_play
+@end:
+rts
+
+;swapped the songs for better UX
+play_song_menu:
+    ;lda MUSIC_MENU
+    lda MUSIC_GAMEPLAY
+    jsr play_music
 rts
 
 play_song_gameplay:
-    lda MUSIC_GAMEPLAY
-    jsr famistudio_music_play
-rts
-
-play_song_victory:
-    lda MUSIC_VICTORY
-    jsr famistudio_music_play
+    ;lda MUSIC_GAMEPLAY
+    lda MUSIC_MENU
+    jsr play_music
 rts
 
 play_sfx_cursor:
@@ -64,3 +78,15 @@ play_sfx_put_down:
     ldx #FAMISTUDIO_SFX_CH0
     jsr famistudio_sfx_play
 rts
+
+play_sfx_victory:
+    lda SFX_VICTORY
+    ldx #FAMISTUDIO_SFX_CH2
+    jsr famistudio_sfx_play
+rts
+
+play_sfx_loose:
+    lda SFX_LOOSE
+    ldx #FAMISTUDIO_SFX_CH2
+    jsr famistudio_sfx_play
+rts 

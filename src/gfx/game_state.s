@@ -56,5 +56,8 @@ transition_to_game:
   ; Change game state
   lda #STATE_GAME
   sta game_state
+
+  ; Change game music
+  jsr play_song_gameplay
   
   rts
