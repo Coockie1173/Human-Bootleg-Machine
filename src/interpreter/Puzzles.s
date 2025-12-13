@@ -134,7 +134,7 @@ LoadExpectedSolution:
     rts
 
 ; CheckPlayerSolution - Compare SOLUTION with EXPECTED_SOLUTION
-; Input: X = SELECTEDPUZZLE index (not actually used since we already loaded expected)
+; Input: X = SELECTEDPUZZLE index
 ; Output: Carry CLEAR = correct, Carry SET = wrong
 ;         Also sets solution_check_flag: 1 = correct, 2 = wrong
 CheckPlayerSolution:
@@ -142,7 +142,18 @@ CheckPlayerSolution:
     lda #$00
     sta solution_check_flag
     
-    ; Compare byte by byte
+    ; LOSS CONDITION 1: Check if inbox still has values (not at $FF)
+    ldy #$00
+    lda (INBOXPTR),y
+    cmp #$FF
+    bne @solution_wrong     ; Inbox not empty = LOSS
+    
+    ; LOSS CONDITION 2: Check if player solution is empty (first byte is $FF)
+    lda SOLUTION
+    cmp #$FF
+    beq @solution_wrong     ; No output = LOSS
+    
+    ; Now do the actual comparison
     ldy #$00
     
 @compare_loop:
@@ -157,12 +168,12 @@ CheckPlayerSolution:
     cmp SOLUTION,y
     bne @solution_wrong     ; If different, solution is wrong
     
-    ; Move to next byte
+    ; Values match - continue to next byte
     iny
     cpy MAXSOLUTIONSIZE     ; Safety check
     bcc @compare_loop
     
-    ; Reached max size without end marker - wrong
+    ; If we exit the loop naturally (hit max size), that's wrong
     jmp @solution_wrong
 
 @check_player_end:
@@ -170,11 +181,11 @@ CheckPlayerSolution:
     ; Check if player solution also ends here
     lda SOLUTION,y
     cmp #$FF
-    beq @solution_correct   ; Both end at same point!
+    bne @solution_wrong     ; Player has different length - wrong
     
-    ; Player has more values - wrong
-    jmp @solution_wrong
-    
+    ; ALL CHECKS PASSED - FORCE CORRECT!
+    jmp @solution_correct
+
 @solution_correct:
     ; Store player solution length for debugging
     sty player_solution_length
@@ -183,7 +194,7 @@ CheckPlayerSolution:
     lda #$01
     sta solution_check_flag
     
-    ; Return with carry CLEAR
+    ; Return with carry CLEAR (correct)
     clc
     rts
 
@@ -195,6 +206,6 @@ CheckPlayerSolution:
     lda #$02
     sta solution_check_flag
     
-    ; Return with carry SET
+    ; Return with carry SET (wrong)
     sec
     rts

@@ -242,29 +242,33 @@ result_select_retry:
     
     rts
 
-; RESULT OPTION: MAIN MENU
 result_select_menu:
     jsr play_sfx_select
     
     ; FORCE HIDE RESULT ARROW IMMEDIATELY
     lda #$FF
-    sta $0200       ; Y position off-screen
-    sta $0204       ; Hide any other sprites too
+    sta $0200
+    sta $0204
     sta $0208
     sta $020C
     
-    ; FORCE DMA TRANSFER RIGHT NOW to apply the sprite hide
+    ; FORCE DMA TRANSFER RIGHT NOW
     lda #$00
-    sta $2003       ; Set OAM address to 0
+    sta $2003
     lda #$02
-    sta $4014       ; DMA transfer from $0200
+    sta $4014
     
-    ; NOW wait for vblank
     jsr wait_for_vblank
     
-    ; IMPORTANT: Reset game mode flag
+    ; RESET EVERYTHING TO CLEAN STATE
     lda #$00
     sta Gamemode
+    sta CURSORSTATE           ; ADD THIS
+    sta START_INTERPRETER     ; ADD THIS
+    sta command_list_count    ; ADD THIS
+    sta scrollIDX             ; ADD THIS
+    sta update_list           ; ADD THIS
+    sta arrow_update_flag     ; ADD THIS
     
     ; Reset command list
     jsr ResetCommandList
@@ -273,13 +277,13 @@ result_select_menu:
     lda #$00
     sta result_arrow_update
     
-    ; Now disable rendering
+    ; Disable rendering
     lda #%00000000
     sta $2001
     lda #%00000000
     sta $2000
     
-    ; Clear ALL sprite memory thoroughly
+    ; Clear ALL sprite memory
     ldx #$00
     lda #$FF
 @clear_sprites:
@@ -298,7 +302,7 @@ result_select_menu:
     ; Load menu background
     jsr load_background_menu
     
-    ; Re-initialize the menu arrow (this draws to nametable, not sprites)
+    ; Re-initialize menu arrow
     jsr init_MMarrow
     
     ; Play menu music
@@ -312,6 +316,7 @@ result_select_menu:
     
     rts
 
+    
 ; Hide the result arrow sprite
 hide_result_arrow:
     lda #$FF        ; Y = $FF means off-screen

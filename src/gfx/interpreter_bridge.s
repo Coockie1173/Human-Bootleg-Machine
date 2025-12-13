@@ -1,4 +1,3 @@
-; Call this when you want to execute the next command
 execute_next_command:
   ; SAFETY CHECK: Only run during actual gameplay
   lda game_state
@@ -12,6 +11,9 @@ execute_next_command:
   
   cmp #STATE_STOP
   beq @interpreter_stopped  ; If stopped, halt interpreter
+  
+  cmp #STATE_INBOX_NOT_EMPTY    ; <-- NEW CHECK
+  beq @interpreter_stopped      ; If inbox loss state, halt interpreter
   
   ; Check if idle timer is still counting down
   lda player_idle_timer
@@ -32,14 +34,12 @@ execute_next_command:
   rts
 
 @interpreter_stopped:
-  ; Player hit STATE_STOP - just return, don't check solution here
-  ; The solution check happens in update_player.s when STATE_STOP is handled
+  ; Player hit STATE_STOP or STATE_INBOX_NOT_EMPTY - just return
   sec
   rts
 
 @interpreter_done:
   ; Interpreter finished (reached $FF or error) - just return
-  ; The solution check happens in update_player.s when STATE_STOP is set
   sec
   rts
 

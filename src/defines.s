@@ -158,7 +158,8 @@ IDLE_TIME               = 30      ; Frames to wait at each destination (60 = 1 s
 ; Player states
 STATE_IDLE              = 0
 STATE_WALKING           = 1
-STATE_STOP              = 2        
+STATE_STOP              = 2   
+STATE_INBOX_NOT_EMPTY   = 3      
 
 ; Destination constants (10 total locations) [TEST]
 DEST_INBOX              = 0
