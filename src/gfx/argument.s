@@ -41,6 +41,11 @@ Show_Argument:
     cmp #$FF
     beq Show_Argument_end
 
+    lda COMMANDS,x
+    and #$08
+    bne DrawJumpArg
+
+    lda COMMANDS,x
     jsr DoesCommandHaveArgs
     bcs DrawArg
     jmp RemoveDrawArg
@@ -70,10 +75,40 @@ RemoveDrawArg:
 @end:
     lda #$00                ; Brown background tile
     sta $2007
+    sta $2007
 jmp DrawArgEnd
 
 ArgumentText:
 STRBYTE "TILE"
+
+LabelText:
+STRBYTE "LABEL"
+
+DrawJumpArg:
+    ldx #$00
+    lda #DRAWSTARTHI
+    sta VAR0
+    lda #DRAWSTARTLO
+    sta VAR1
+
+    @Loop:
+        lda LabelText,x
+        cmp #$FF
+        beq @end
+        sta VAR2
+        jsr DrawLetter
+        inc VAR1 ;shift over one tile
+        inx
+        jmp @Loop
+
+    @end:
+    ldx VAR3
+    lda VARIABLES,x
+    clc
+    adc #$28
+    sta VAR2
+    jsr DrawLetter
+jmp DrawArgEnd
 
 DrawArg:
 ldx #$00
@@ -99,6 +134,8 @@ clc
 adc #$28
 sta VAR2
 jsr DrawLetter
+lda #$00                ; Brown background tile
+sta $2007
 jmp DrawArgEnd
 
 
