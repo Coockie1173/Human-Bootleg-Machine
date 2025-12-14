@@ -152,6 +152,7 @@ gamemode_loss:
     jmp WaitForNMI
 
 gamemode_controls:
+    jsr check_controls_back
     jmp WaitForNMI
 
 gamemode_levelselect:

@@ -182,7 +182,7 @@ result_select_next:
     jsr hide_result_arrow
     
     ; Increment to next puzzle
-    inc SELECTEDPUZZLE
+    inc SELECTEDPUZZLE 
     
     ; TODO: Add check for max puzzles
     ; lda SELECTEDPUZZLE

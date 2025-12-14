@@ -1,4 +1,5 @@
 .include "gfx/sound_toggle.s"
+.include "gfx/controls_Screen.s"
 
 ; MENU ARROW MOVEMENT
 CheckMainmenuArrow:
@@ -131,12 +132,67 @@ menu_select_controls:
     lda #%00000000
     sta $2000
     
-    ; Load controls screen background
-    ; jsr load_background_controls
+    ;Load controls screen background
+    jsr load_background_controls
     
-    ; Set a flag to indicate we're in controls mode
-    ; lda #STATE_CONTROLS
-    ; sta game_state
+    ;Set a flag to indicate we're in controls mode
+    lda #STATE_CONTROLS
+    sta game_state
+    
+    ; Re-enable rendering
+    lda #%10000000
+    sta $2000
+    lda #%00011110
+    sta $2001
+    
+    rts
+
+    ; Check for B button press to return from controls screen
+check_controls_back:
+    lda controller_state
+    and #%01000000          ; Check B button
+    beq @not_pressed
+    
+    ; Check if it wasn't pressed before (edge detection)
+    lda previous_controller
+    and #%01000000
+    bne @not_pressed
+    
+    ; B button was just pressed - return to menu
+    jsr controls_back_to_menu
+    
+@not_pressed:
+    rts
+
+; Return from controls screen to main menu
+controls_back_to_menu:
+    jsr play_sfx_select
+    
+    ; Disable rendering
+    lda #%00000000
+    sta $2001
+    lda #%00000000
+    sta $2000
+    
+    ; Clear all sprites
+    jsr clear_all_sprites
+    
+    ; Return to main menu state
+    lda #STATE_MENU
+    sta game_state
+    
+    ; Reset menu arrow position
+    lda #MENU_START_ROW
+    sta MMarrow_row
+    
+    ; Load menu background
+    jsr load_background_menu
+    
+    ; Re-initialize menu arrow
+    jsr init_MMarrow
+    
+    ; Play menu music
+    jsr play_song_menu
     
     ; Re-enable rendering
     lda #%10000000
