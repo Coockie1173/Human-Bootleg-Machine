@@ -19,6 +19,17 @@
 .include "sound/sfx.s"
 .include "sound/famistudio_ca65.s"
 
+GameModeMainList:
+.dbyt gamemode_menu-1
+.dbyt gamemode_loading-1
+.dbyt gamemode_game-1
+.dbyt gamemode_win-1
+.dbyt gamemode_loss-1
+.dbyt gamemode_controls-1
+.dbyt gamemode_levelselect-1
+.dbyt gamemode_loadselect-1
+
+
 WaitForNMI:
     lda NMIFLAG
     beq WaitForNMI
@@ -31,16 +42,16 @@ main:
     
     ; Check game state
     lda game_state
-    cmp #STATE_MENU
-    beq @MainMenu
-    cmp #STATE_WIN
-    beq @WinScreen
-    cmp #STATE_LOSS
-    beq @LossScreen
-    cmp #STATE_LOADING
-    beq @LoadingScreen
+    asl
+    tax
+    lda GameModeMainList,x
+    pha
+    lda GameModeMainList+1,x
+    pha
+    rts
     
     ; STATE_GAME - normal gameplay
+gamemode_game:
     lda START_INTERPRETER
     beq @CheckInputs
         jsr update_player
@@ -62,16 +73,16 @@ main:
         jsr RemoveCommand
         jmp WaitForNMI
 
-@MainMenu:   
+gamemode_menu:   
     jsr CheckMainmenuArrow
     jsr CheckMenuStart
     jmp WaitForNMI
 
-@LoadingScreen:
+gamemode_loading:
     ; No special main loop logic needed
     jmp WaitForNMI
 
-@WinScreen:
+gamemode_win:
     ; Check if we need to load the background (first frame only)
     lda result_arrow_update
     cmp #$01
@@ -104,7 +115,7 @@ main:
     jsr CheckResultSelect
     jmp WaitForNMI
 
-@LossScreen:
+gamemode_loss:
     ; Check if we need to load the background (first frame only)
     lda result_arrow_update
     cmp #$01
@@ -137,6 +148,15 @@ main:
     jsr CheckResultSelect
     jmp WaitForNMI
 
+gamemode_controls:
+    jmp WaitForNMI
+
+gamemode_levelselect:
+    jmp WaitForNMI
+
+gamemode_loadselect:
+    jmp WaitForNMI
+
 ; Wait for VBlank helper
 wait_for_vblank:
     bit $2002
@@ -155,3 +175,4 @@ clear_all_sprites:
     inx
     bne @clear_loop
     rts
+    

@@ -13,9 +13,9 @@
 .include "gfx/drawpuzzletext.s"   
 
 GameModeList:
-.dbyt gamemode_menu-1, gamemode_loading-1, gamemode_game-1
-.dbyt gamemode_win-1, gamemode_lose-1, gamemode_controls-1
-.dbyt gamemode_levelselect-1, gamemode_loadselect-1
+.dbyt gamemode_menu_nmi-1, gamemode_loading_nmi-1, gamemode_game_nmi-1
+.dbyt gamemode_win_mni-1, gamemode_lose_mni-1, gamemode_controls_mni-1
+.dbyt gamemode_levelselect_mni-1, gamemode_loadselect_mni-1
 
 nmi:
   PHP
@@ -41,7 +41,7 @@ nmi:
   pha
   rts
 
-gamemode_game:  
+gamemode_game_nmi:  
   ; Game mode - run all game logic
   jsr Show_Argument
   jsr handle_command_selector_gfx
@@ -63,18 +63,18 @@ gamemode_game:
   
   jmp nmi_finish
 
-gamemode_menu:
+gamemode_menu_nmi:
   ; Menu mode - handle main menu arrow and check for start
   jsr handle_MMarrow_movement
   jmp nmi_finish
 
-gamemode_loading:
+gamemode_loading_nmi:
   jsr check_start_button
   jsr DrawPuzzleText
   jmp nmi_finish
 
-gamemode_win:
-gamemode_lose:
+gamemode_win_mni:
+gamemode_lose_mni:
   ; Result screens - only update sprite DMA, input is handled in main loop
   lda #$00
   sta $2003
@@ -137,7 +137,14 @@ game_logic_update:
   rts
 
 
-gamemode_loadselect:
-gamemode_controls:
-gamemode_levelselect:
+gamemode_controls_mni:
+  jmp nmi_finish
+
+gamemode_loadselect_mni:
+  ;wait for main to have finished (re)creating the lists
+  ;then fully clear out the screen
+  ;and draw all the puzzles
+  jmp nmi_finish
+
+gamemode_levelselect_mni:
   jmp nmi_finish

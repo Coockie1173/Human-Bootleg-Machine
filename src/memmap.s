@@ -160,6 +160,7 @@ INBOX_SLOT_6            : .res 1
 
 START_INTERPRETER       : .res 1
 FORCE_FULL_LIST_REDRAW  : .res 1 ;forcibly clears out the entire right side
+PUZZLELIST_FINISHED     : .res 1
 
 ; --------------------------------------------------------
 ; Command Buffer

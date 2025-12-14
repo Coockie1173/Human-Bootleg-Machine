@@ -152,6 +152,8 @@ menu_select_levels:
     jsr play_sfx_select
     lda #STATE_CHANGE_LEVEL_SELECT
     sta game_state
+    lda #$00
+    sta PUZZLELIST_FINISHED
     
     ; TODO: You'll need to implement these functions
     ; For now, just a placeholder that returns to menu
