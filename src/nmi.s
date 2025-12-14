@@ -12,6 +12,10 @@
 .include "gfx/hand_sprites.s"   
 .include "gfx/drawpuzzletext.s"   
 
+GameModeList:
+.dbyt gamemode_menu-1, gamemode_loading-1, gamemode_game-1
+.dbyt gamemode_win-1, gamemode_lose-1, gamemode_controls-1
+.dbyt gamemode_levelselect-1, gamemode_loadselect-1
 
 nmi:
   PHP
@@ -27,17 +31,17 @@ nmi:
   ; Read controller
   jsr read_controller
 
-   ; Check game state and handle accordingly
+   ; Check game state and trampoline to correct code
   lda game_state
-  cmp #STATE_MENU
-  beq @menu_mode
-  cmp #STATE_LOADING
-  beq @loading_mode
-  cmp #STATE_WIN
-  beq @win_mode
-  cmp #STATE_LOSS
-  beq @loss_mode
-  
+  asl
+  tax
+  lda GameModeList,x
+  pha
+  lda GameModeList+1,x
+  pha
+  rts
+
+gamemode_game:  
   ; Game mode - run all game logic
   jsr Show_Argument
   jsr handle_command_selector_gfx
@@ -57,28 +61,28 @@ nmi:
   lda #$02
   sta $4014
   
-  jmp @finish
+  jmp nmi_finish
 
-@menu_mode:
+gamemode_menu:
   ; Menu mode - handle main menu arrow and check for start
   jsr handle_MMarrow_movement
-  jmp @finish
+  jmp nmi_finish
 
-@loading_mode:
+gamemode_loading:
   jsr check_start_button
   jsr DrawPuzzleText
-  jmp @finish
+  jmp nmi_finish
 
-@win_mode:
-@loss_mode:
+gamemode_win:
+gamemode_lose:
   ; Result screens - only update sprite DMA, input is handled in main loop
   lda #$00
   sta $2003
   lda #$02
   sta $4014
-  jmp @finish
+  jmp nmi_finish
 
-@finish:
+nmi_finish:
   ; Reset scroll BEFORE re-enabling rendering
   bit $2002           ; Reset PPU address latch
   lda #$00
@@ -131,3 +135,9 @@ game_logic_update:
   jsr update_player_gfx
   jsr draw_hand_sprites
   rts
+
+
+gamemode_loadselect:
+gamemode_controls:
+gamemode_levelselect:
+  jmp nmi_finish

@@ -53,6 +53,7 @@ STATE_WIN               = $05  ; Changed from $02
 STATE_LOSS              = $06  ; Changed from $03
 STATE_CONTROLS          = $03
 STATE_LEVEL_SELECT      = $04
+STATE_CHANGE_LEVEL_SELECT      = $05
 
 ; Menu option enumeration
 MENU_START      = 0

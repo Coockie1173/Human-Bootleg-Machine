@@ -150,15 +150,17 @@ menu_select_controls:
 menu_select_levels:
     ; Play selection sound
     jsr play_sfx_select
+    lda #STATE_CHANGE_LEVEL_SELECT
+    sta game_state
     
     ; TODO: You'll need to implement these functions
     ; For now, just a placeholder that returns to menu
     
     ; Disable rendering
-    lda #%00000000
-    sta $2001
-    lda #%00000000
-    sta $2000
+    ;lda #%00000000
+    ;sta $2001
+    ;lda #%00000000
+    ;sta $2000
     
     ; Load level select screen background
     ; jsr load_background_levels
@@ -168,9 +170,9 @@ menu_select_levels:
     ; sta game_state
     
     ; Re-enable rendering
-    lda #%10000000
-    sta $2000
-    lda #%00011110
-    sta $2001
+    ;lda #%10000000
+    ;sta $2000
+    ;lda #%00011110
+    ;sta $2001
     
     rts
