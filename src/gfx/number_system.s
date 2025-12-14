@@ -310,7 +310,7 @@ update_number_sprites:
     
     ; INBOX SLOT 0
     lda INBOX_SLOT_1 + 0
-    cmp #$FF
+    cmp #$80
     beq @hide_inbox0
     jsr number_to_tiles
     lda #INBOX0_SPR_Y
@@ -337,7 +337,7 @@ update_number_sprites:
 @check_inbox1:
     ; INBOX SLOT 1
     lda INBOX_SLOT_1 + 1
-    cmp #$FF
+    cmp #$80
     beq @hide_inbox1
     jsr number_to_tiles
     lda #INBOX1_SPR_Y
@@ -364,7 +364,7 @@ update_number_sprites:
 @check_inbox2:
     ; INBOX SLOT 2
     lda INBOX_SLOT_1 + 2
-    cmp #$FF
+    cmp #$80
     beq @hide_inbox2
     jsr number_to_tiles
     lda #INBOX2_SPR_Y
@@ -395,7 +395,7 @@ update_number_sprites:
     beq @hide_outbox
     dex
     lda SOLUTION, x
-    cmp #$FF
+    cmp #$80
     beq @hide_outbox
     jsr number_to_tiles
     lda #OUTBOX_SPR_Y
