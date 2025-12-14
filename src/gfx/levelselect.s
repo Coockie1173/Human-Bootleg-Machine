@@ -10,7 +10,7 @@ init_levelselect:
     sta $2006
     
     ; Clear nametable (2048 bytes)
-    lda #$02
+    lda #$00
     ldx #$00
     ldy #$08
     @loop:
