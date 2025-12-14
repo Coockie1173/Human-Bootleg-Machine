@@ -295,3 +295,5 @@ TILE_NUM_MINUS_6            = $66
 TILE_NUM_MINUS_7            = $67
 TILE_NUM_MINUS_8            = $68
 TILE_NUM_MINUS_9            = $69
+
+PUZZLECOUNT                 = 1
