@@ -1,0 +1,12 @@
+Regular mode:
+    B : add command
+    A : switch mode
+    l/r : switch command to add
+    u/d : move cursor up down
+    start : begin
+switch mode:
+    A : switch mode
+    B : remove command
+    l/r : change parameter
+    u/d : move command
+    start : begin
