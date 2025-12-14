@@ -481,7 +481,7 @@ super_simple_inbox_draw:
     LDA #$00
     STA $2007
     STA $2007
-    jsr play_sfx_pick_up
+    ;jsr play_sfx_pick_up
 
     RTS
 

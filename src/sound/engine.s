@@ -29,9 +29,13 @@ turn_on:
 rts
 
 play_music:
+    ; store the song index first in scratch
+    sta VAR0
     lda sound_enabled
     beq @end
-
+    
+    ; load the song index after mute check
+    lda VAR0
     jsr famistudio_music_play
 @end:
 rts
