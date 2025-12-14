@@ -61,6 +61,8 @@ RTS
 
 LoadExpectedSolution:
 rts
+
+;Y HAS A NUMBER BETWEEN 0 AND 2
 LoadASolution:
     ; Get the address where TestSolution actually is in ROM
     PHY
