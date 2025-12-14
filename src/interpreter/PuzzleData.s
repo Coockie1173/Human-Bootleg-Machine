@@ -1,12 +1,12 @@
 InboxOutboxPuzzleInput: ;testing purposes
-.byte $0A,$15,$01,$00,$F8,$80
+.byte $0A,$15,$01,$00,$5A,$80
 InboxOutboxPuzzleInput2:
 .byte $05,$0A,$05,$10,$15,$80
 InboxOutboxPuzzleInput3:
 .byte $00,$00,$4C,$3C,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$80
 
 InboxOutboxPuzzleSolution:
-.byte $0A,$15,$01,$00,$FE,$80 ;80 because FF = -1
+.byte $0A,$15,$01,$00,$5A,$80 ;80 because FF = -1
 InboxOutboxPuzzleSolution2:
 .byte $05,$0A,$05,$10,$15,$80
 InboxOutboxPuzzleSolution3:
