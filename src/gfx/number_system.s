@@ -1,6 +1,3 @@
-; ============================================================================
-; SPRITE-BASED NUMBER DISPLAY SYSTEM - 3 INBOX SLOTS VERSION
-; ============================================================================
 ; Uses sprites 40-63 (24 sprites total)
 ; - Sprites 0-3: Player
 ; - Sprites 4-5: Hand (above player)
@@ -8,98 +5,50 @@
 ; - Sprites 56-61: Inbox slots 0-2 (6 sprites)
 ; - Sprites 62-63: Outbox (2 sprites)
 
-; Sprite assignments (starting at 40 to avoid conflicts)
-SPR_TILE0_LEFT  = 40
-SPR_TILE0_RIGHT = 41
-SPR_TILE1_LEFT  = 42
-SPR_TILE1_RIGHT = 43
-SPR_TILE2_LEFT  = 44
-SPR_TILE2_RIGHT = 45
-SPR_TILE3_LEFT  = 46
-SPR_TILE3_RIGHT = 47
-SPR_TILE4_LEFT  = 48
-SPR_TILE4_RIGHT = 49
-SPR_TILE5_LEFT  = 50
-SPR_TILE5_RIGHT = 51
-SPR_TILE6_LEFT  = 52
-SPR_TILE6_RIGHT = 53
-SPR_TILE7_LEFT  = 54
-SPR_TILE7_RIGHT = 55
 
-; Inbox slots (only 3)
-SPR_INBOX0_LEFT  = 56
-SPR_INBOX0_RIGHT = 57
-SPR_INBOX1_LEFT  = 58
-SPR_INBOX1_RIGHT = 59
-SPR_INBOX2_LEFT  = 60
-SPR_INBOX2_RIGHT = 61
 
-SPR_OUTBOX_LEFT = 62
-SPR_OUTBOX_RIGHT = 63
-
-; Sprite Y positions
-TILE0_SPR_Y = 56
-TILE1_SPR_Y = 56
-TILE2_SPR_Y = 80
-TILE3_SPR_Y = 80
-TILE4_SPR_Y = 104
-TILE5_SPR_Y = 104
-TILE6_SPR_Y = 128
-TILE7_SPR_Y = 128
-
-; Inbox Y positions (3 slots)
-INBOX0_SPR_Y = 64
-INBOX1_SPR_Y = 96
-INBOX2_SPR_Y = 128
-
-OUTBOX_SPR_Y = 64
-
-; Sprite X positions
-TILE0_SPR_X = 64
-TILE1_SPR_X = 96
-TILE2_SPR_X = 64
-TILE3_SPR_X = 96
-TILE4_SPR_X = 64
-TILE5_SPR_X = 96
-TILE6_SPR_X = 64
-TILE7_SPR_X = 96
-INBOX_SPR_X = 16
-OUTBOX_SPR_X = 152
-
-; ============================================================================
 ; CONVERT NUMBER TO TILES
-; Input: A = signed number (-99 to 99)
+; Input: A = signed number (will be clamped to -99 to 99)
 ; Output: VAR1 = left tile, VAR2 = right tile
-; ============================================================================
 number_to_tiles:
-    sta VAR0
+    ; Save X since we use it for division
+    pha                     ; Save A
     
     ; Check if negative
-    bpl @positive
+    bpl @check_positive_clamp
     
-    ; NEGATIVE - Get absolute value
+    ; NEGATIVE - check if less than -99
+    cmp #$9D                ; -99 in two's complement = $9D (157)
+    bcs @negative_ok        ; If >= -99, it's ok
+    
+    ; Clamp to -99
+    lda #$9D
+    
+@negative_ok:
+    ; Get absolute value
     eor #$FF
     clc
     adc #$01
-    sta VAR0
+    tax                     ; Save absolute value in X
     
     ; Check if single digit
     cmp #10
     bcc @neg_single
     
     ; NEGATIVE DOUBLE DIGIT
-    ldx #0
+    txa                     ; Get value back
+    ldy #0
 @neg_div:
     cmp #10
     bcc @neg_div_done
     sec
     sbc #10
-    inx
+    iny
     jmp @neg_div
 @neg_div_done:
-    ; X = tens (1-9), A = ones (0-9)
-    pha
-    txa
+    ; Y = tens (1-9), A = ones (0-9)
+    pha                     ; Save ones
+    tya
     clc
     adc #$60                ; $60 + 1 = $61, $60 + 2 = $62
     sta VAR1
@@ -107,33 +56,45 @@ number_to_tiles:
     clc
     adc #$07
     sta VAR2
+    pla                     ; Restore original A
     rts
     
 @neg_single:
     lda #$60
     sta VAR1
-    lda VAR0
+    txa
     clc
     adc #$07
     sta VAR2
+    pla                     ; Restore original A
     rts
 
-@positive:
+@check_positive_clamp:
+    ; Check if greater than 99
+    cmp #$64                ; 100 decimal
+    bcc @positive_ok
+    
+    ; Clamp to 99
+    lda #$63                ; 99 decimal
+    
+@positive_ok:
+    tax                     ; Save value in X
     cmp #10
     bcc @pos_single
     
     ; POSITIVE DOUBLE DIGIT
-    ldx #0
+    ldy #0
 @pos_div:
     cmp #10
     bcc @pos_div_done
     sec
     sbc #10
-    inx
+    iny
     jmp @pos_div
 @pos_div_done:
-    pha
-    txa
+    ; Y = tens, A = ones
+    pha                     ; Save ones
+    tya
     clc
     adc #$07
     sta VAR1
@@ -141,15 +102,17 @@ number_to_tiles:
     clc
     adc #$07
     sta VAR2
+    pla                     ; Restore original A
     rts
     
 @pos_single:
     lda #$07
     sta VAR1
-    lda VAR0
+    txa
     clc
     adc #$07
     sta VAR2
+    pla                     ; Restore original A
     rts
 
 ; ============================================================================

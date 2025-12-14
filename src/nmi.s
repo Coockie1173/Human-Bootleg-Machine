@@ -43,6 +43,10 @@ nmi:
   rts
 
 gamemode_game_nmi:  
+; Disable rendering
+  lda #%00000000
+  sta $2001
+
   ; Game mode - run all game logic
   jsr Show_Argument
   jsr handle_command_selector_gfx
