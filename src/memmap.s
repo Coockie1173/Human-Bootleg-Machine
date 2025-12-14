@@ -166,6 +166,7 @@ LEVELSELECTCURSOR_POSITION : .res 2
 LEVELSELECTCURSOR_POSITION_OLD : .res 2
 LEVELSELECTCURSOR_UPDATE : .res 1
 LEVELTOTALCOUNT_SELECTOR : .res 1
+SOLUTIONCHECKER_TMP      : .res 1
 
 ; --------------------------------------------------------
 ; Command Buffer

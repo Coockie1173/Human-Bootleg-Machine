@@ -358,7 +358,7 @@ reset_level_state:
     
     ; Clear solution
     ldx #$00
-    lda #$FF
+    lda #$80
 @clear_solution:
     sta SOLUTION,x
     inx

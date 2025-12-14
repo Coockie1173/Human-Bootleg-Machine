@@ -51,10 +51,28 @@ init_interpreter:
   sta SOLPTR
   
   ; Set up inbox pointer (point to test puzzle)
-  lda #<TestPuzzle          ; Low byte
-  sta INBOXPTR
-  lda #>TestPuzzle          ; High byte
+  lda SELECTEDPUZZLE
+  asl
+  tax
+
+  lda FullPuzzleList,x
+  sta VAR1
+  lda FullPuzzleList+1,x
+  sta VAR0
+
+  tya
+  asl
+  tay
+
+  lda (VAR0),y
   sta INBOXPTR+1
+  iny
+  lda (VAR0),y ;setup secondary pointer
+  sta INBOXPTR
+  ;lda #<TestPuzzle          ; Low byte
+  ;sta INBOXPTR
+  ;lda #>TestPuzzle          ; High byte
+  ;sta INBOXPTR+1
   
   ; Clear destination markers
   lda #$FF

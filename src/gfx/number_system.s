@@ -359,7 +359,7 @@ draw_hand_value_now:
 super_simple_inbox_draw:
     ; Slot 0
     LDA INBOX_SLOT_1
-    CMP #$FF
+    CMP #$80
     BEQ @s0_empty
     LDX #INBOXLOCHI
     LDY #INBOXLOCLO
@@ -378,7 +378,7 @@ super_simple_inbox_draw:
 @s1:
     ; Slot 1
     LDA INBOX_SLOT_1 + 1
-    CMP #$FF
+    CMP #$80
     BEQ @s1_empty
     LDX #INBOX1_HI
     LDY #INBOX1_LO
@@ -398,7 +398,7 @@ super_simple_inbox_draw:
 @s2:
     ; Slot 2
     LDA INBOX_SLOT_1 + 2
-    CMP #$FF
+    CMP #$80
     BEQ @s2_empty
     LDX #INBOX2_HI
     LDY #INBOX2_LO
@@ -418,7 +418,7 @@ super_simple_inbox_draw:
 @s3:
     ; Slot 3
     LDA INBOX_SLOT_1 + 3
-    CMP #$FF
+    CMP #$80
     BEQ @s3_empty
     LDX #INBOX3_HI
     LDY #INBOX3_LO
@@ -438,7 +438,7 @@ super_simple_inbox_draw:
 @s4:
     ; Slot 4 (NEW)
     LDA INBOX_SLOT_1 + 4
-    CMP #$FF
+    CMP #$80
     BEQ @s4_empty
     LDX #INBOX4_HI
     LDY #INBOX4_LO
@@ -458,7 +458,7 @@ super_simple_inbox_draw:
 @s5:
     ; Slot 5 (NEW)
     LDA INBOX_SLOT_1 + 5
-    CMP #$FF
+    CMP #$80
     BEQ @s5_empty
     LDX #INBOX5_HI
     LDY #INBOX5_LO

@@ -1,34 +1,4 @@
-TestPuzzle: ;testing purposes
-.byte $00,$01,$02,$03,$04,$FF
-TestPuzzle2:
-.byte $05,$0A,$05,$10,$15,$FF
-TestPuzzle3:
-.byte $00,$00,$4C,$3C,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$FF
-
-TestSolution:
-.byte $00,$02,$04,$06,$08,$FF 
-TestSolution2:
-.byte $0A,$14,$0A,$20,$2A,$FF 
-TestSolution3:
-.byte $00,$00,$98,$78,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$FF 
-
-TestPuzzleList:
-.dbyt TestPuzzle,TestPuzzle2,TestPuzzle3
-TestSolutionList:
-.dbyt TestSolution,TestSolution2,TestSolution3
-
-TestPuzzleText:
-STRBYTE "TAKE THE DATA FROM|THE INBOX|DOUBLE IT AND SEND IT|TO THE OUTBOX"
-DebugTextRemove:
-STRBYTE "UW KKR MOEDER"
-
-;we have a max of 255 puzzles
-FullPuzzleList:
-.dbyt TestPuzzleList, TestPuzzleList
-FullSolutionList:
-.dbyt TestSolutionList, TestSolutionList
-PuzzleTextPtrs:
-.dbyt TestPuzzleText, DebugTextRemove
+.include "./PuzzleData.s"
 
 ;X = current puzzle from full list
 CheckAllSolutions:
@@ -90,49 +60,42 @@ RTS
 
 
 LoadExpectedSolution:
+rts
+LoadASolution:
     ; Get the address where TestSolution actually is in ROM
-    ldx SELECTEDPUZZLE
-    cpx #$00
-    bne @puzzle1
-    
-    ; Puzzle 0 - use TestSolution
-    ldx #$00
-@copy0:
-    lda TestSolution,x
-    sta EXPECTED_SOLUTION,x
-    inx
-    cmp #$FF            ; Check AFTER incrementing X
-    bne @copy0
-    jmp @done
-    
-@puzzle1:
-    cpx #$01
-    bne @puzzle2
-    
-    ; Puzzle 1 - use TestSolution2
-    ldx #$00
-@copy1:
-    lda TestSolution2,x
-    sta EXPECTED_SOLUTION,x
-    inx
-    cmp #$FF
-    bne @copy1
-    jmp @done
-    
-@puzzle2:
-    ; Puzzle 2 - use TestSolution3
-    ldx #$00
-@copy2:
-    lda TestSolution3,x
-    sta EXPECTED_SOLUTION,x
-    inx
-    cmp #$FF
-    bne @copy2
-    jmp @done
+    PHY
+    PHX
+    lda SELECTEDPUZZLE
+    asl
+    tax
 
-@done:
-    dex                 ; X is one past the FF
-    stx solution_length
+    lda FullSolutionList,x
+    sta VAR1
+    lda FullSolutionList+1,x
+    sta VAR0
+
+    tya
+    asl
+    tay
+
+    lda (VAR0),y
+    sta VAR3
+    iny
+    lda (VAR0),y ;setup secondary pointer
+    sta VAR2
+
+    ldy #$00
+    @CopyLoop:
+        lda (VAR2),y
+        sta EXPECTED_SOLUTION,y
+        cmp #$80
+        beq @doneCopy
+        iny
+        jmp @CopyLoop
+    @doneCopy:
+
+    PLX
+    PLY
     rts
 
 ; CheckPlayerSolution - Compare SOLUTION with EXPECTED_SOLUTION
@@ -147,15 +110,21 @@ CheckPlayerSolution:
     ; LOSS CONDITION 1: Check if inbox still has values (not at $FF)
     ldy #$00
     lda (INBOXPTR),y
-    cmp #$FF
+    cmp #$80
     bne @solution_wrong     ; Inbox not empty = LOSS
     
     ; LOSS CONDITION 2: Check if player solution is empty (first byte is $FF)
     lda SOLUTION
-    cmp #$FF
+    cmp #$80
     beq @solution_wrong     ; No output = LOSS
+
+    lda #$00
+    sta SOLUTIONCHECKER_TMP
     
     ; Now do the actual comparison
+    @start:
+    ldy SOLUTIONCHECKER_TMP
+    jsr LoadASolution
     ldy #$00
     
 @compare_loop:
@@ -163,7 +132,7 @@ CheckPlayerSolution:
     lda EXPECTED_SOLUTION,y
     
     ; Check if we've reached the end of expected solution
-    cmp #$FF
+    cmp #$80
     beq @check_player_end
     
     ; Compare with player solution
@@ -182,7 +151,7 @@ CheckPlayerSolution:
     ; Expected solution ended at position Y
     ; Check if player solution also ends here
     lda SOLUTION,y
-    cmp #$FF
+    cmp #$80
     bne @solution_wrong     ; Player has different length - wrong
     
     ; ALL CHECKS PASSED - FORCE CORRECT!
@@ -197,6 +166,12 @@ CheckPlayerSolution:
     sta solution_check_flag
     
     ; Return with carry CLEAR (correct)
+    lda SOLUTIONCHECKER_TMP
+    cmp #$03
+    beq :+
+        inc SOLUTIONCHECKER_TMP
+        jmp @start
+    :
     clc
     rts
 
