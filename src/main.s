@@ -107,6 +107,8 @@ gamemode_win:
     
     lda #$02  ; Mark as loaded
     sta result_arrow_update
+    jsr famistudio_music_pause
+    jsr play_sfx_victory
     jmp WaitForNMI
     
 @WinScreenReady:
@@ -140,6 +142,8 @@ gamemode_loss:
     
     lda #$02  ; Mark as loaded
     sta result_arrow_update
+    jsr famistudio_music_pause
+    jsr play_sfx_loose
     jmp WaitForNMI
     
 @LossScreenReady:
