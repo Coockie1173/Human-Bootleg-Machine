@@ -118,8 +118,8 @@ EqualizerSolutionList:
 
 ;we have a max of 255 puzzles
 FullPuzzleList:
-.dbyt TestPuzzleList, OnlyZeroPuzzleList, BiggestOnlyList, RepeatList, SmallestList, EqualizerList
+.dbyt TestPuzzleList, OnlyZeroPuzzleList, RepeatList
 FullSolutionList:
-.dbyt TestSolutionList, OnlyZeroPuzzleSolutionList, BiggestOnlySolutionList, RepeatSolutionList, SmallestSolutionList, EqualizerSolutionList
+.dbyt TestSolutionList, OnlyZeroPuzzleSolutionList, RepeatSolutionList
 PuzzleTextPtrs:
-.dbyt TestPuzzleText, OnlyZeroText, BiggestOnlyText, RepeatOnlyText, SmallestOnlyText, EqualizerText
+.dbyt TestPuzzleText, OnlyZeroText, RepeatOnlyText
