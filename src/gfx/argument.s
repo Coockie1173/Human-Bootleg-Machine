@@ -76,6 +76,7 @@ RemoveDrawArg:
     lda #$00                ; Brown background tile
     sta $2007
     sta $2007
+    sta $2007
 jmp DrawArgEnd
 
 ArgumentText:
@@ -135,6 +136,8 @@ adc #$28
 sta VAR2
 jsr DrawLetter
 lda #$00                ; Brown background tile
+sta $2007
+sta $2007
 sta $2007
 jmp DrawArgEnd
 
