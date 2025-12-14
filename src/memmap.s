@@ -162,6 +162,9 @@ START_INTERPRETER       : .res 1
 FORCE_FULL_LIST_REDRAW  : .res 1 ;forcibly clears out the entire right side
 PUZZLELIST_FINISHED     : .res 1
 
+LEVELSELECTCURSOR_POSITION : .res 2
+LEVELSELECTCURSOR_POSITION_OLD : .res 2
+
 ; --------------------------------------------------------
 ; Command Buffer
 ; --------------------------------------------------------

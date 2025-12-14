@@ -5,6 +5,9 @@ TEXTLEVEL2: STRBYTE "KIIRGHH"
 TEXTLEVEL3: STRBYTE "A BIG LUMB WITH KNOTS"
 TEXTLEVEL4: STRBYTE "IT HAS THE JUICE"
 
+TEXTLEVELLIST:
+.dbyt TEXTLEVEL1, TEXTLEVEL2, TEXTLEVEL3, TEXTLEVEL4, $FFFF
+
 init_levelselect:
     ;clear out the entire screen  and show a puzzle list
     ; Set PPU address to $2000 (top-left of nametable)
@@ -26,7 +29,6 @@ init_levelselect:
     lda #STATE_LEVEL_SELECT
     sta game_state
 
-    ;now add the title
     ldx #$00
     lda #$20
     sta VAR0
@@ -46,83 +48,68 @@ init_levelselect:
     jmp @drawtoptext
     :
 
-    ;now add the level 1
     ldx #$00
     lda #$20
-    sta VAR0
-    lda #$A6    ; 3 rows down, 4 tiles right
-    sta VAR1
-    @drawlevel1:
-        lda TEXTLEVEL1, x
+    sta VAR8
+    lda #$A3
+    sta VAR9
+    @DrawAllTextLoop:
+        PHX ;include txa
+        asl
+        tax
+        lda TEXTLEVELLIST,x
         cmp #$FF
-        beq :++
-        cmp #$01
-        beq :+
-        sta VAR2
-        jsr DrawLetter
-        :
-        inc VAR1
-        inx
-    jmp @drawlevel1
-    :
+        beq @end
+            sta VAR4
+            lda TEXTLEVELLIST+1,x
+            sta VAR3
 
-    ;now add the level 2
-    ldx #$00
-    lda #$20
-    sta VAR0
-    lda #$E6    ; 3 rows down, 4 tiles right
-    sta VAR1
-    @drawlevel2:
-        lda TEXTLEVEL2, x
-        cmp #$FF
-        beq :++
-        cmp #$01
-        beq :+
-        sta VAR2
-        jsr DrawLetter
-        :
-        inc VAR1
-        inx
-    jmp @drawlevel2
-    :
+            lda VAR8
+            sta VAR0
+            lda VAR9
+            sta VAR1
+            ldy #$00
 
-    ;now add the level 3
-    ldx #$00
-    lda #$21
-    sta VAR0
-    lda #$26   ; 3 rows down, 4 tiles right
-    sta VAR1
-    @drawlevel3:
-        lda TEXTLEVEL3, x
-        cmp #$FF
-        beq :++
-        cmp #$01
-        beq :+
-        sta VAR2
-        jsr DrawLetter
-        :
-        inc VAR1
-        inx
-    jmp @drawlevel3
-    :
+            @Loop:
+                lda (VAR3),y
+                cmp #$FF
+                beq @done
+                cmp #$01
+                beq :+
+                sta VAR2
+                jsr DrawLetter
+                :
+                inc VAR1
+                iny
+            jmp @Loop
 
-    ;now add the level 4
-    ldx #$00
-    lda #$21
-    sta VAR0
-    lda #$66   ; 3 rows down, 4 tiles right
-    sta VAR1
-    @drawlevel4:
-        lda TEXTLEVEL4, x
-        cmp #$FF
-        beq :++
-        cmp #$01
-        beq :+
-        sta VAR2
-        jsr DrawLetter
-        :
-        inc VAR1
+        @done:
+        PLX
         inx
-    jmp @drawlevel4
-    :
+        lda VAR9
+        clc
+        adc #$60
+        sta VAR9
+        lda VAR8
+        adc #$00
+        sta VAR8
+    jmp @DrawAllTextLoop
+    @end:
+    pla
+
+    lda $2002
+    lda #$00
+
+    sta SELECTEDPUZZLE
+    lda #$20 ;forcibly move cursor to top item in the list
+    sta LEVELSELECTCURSOR_POSITION
+    sta LEVELSELECTCURSOR_POSITION_OLD
+    sta $2006
+    lda #$A2
+    sta LEVELSELECTCURSOR_POSITION+1
+    sta LEVELSELECTCURSOR_POSITION_OLD+1
+    sta $2006
+
+    lda #$6a
+    sta $2007
 rts
