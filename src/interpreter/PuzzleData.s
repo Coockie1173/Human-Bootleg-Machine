@@ -35,7 +35,7 @@ OnlyZeroPuzzleOutput3:
 .byte $00,$80
 
 OnlyZeroText:
-STRBYTE "ONLY SEND ZEROS TO|THE OUTBOX"
+STRBYTE "SEND ONLY ZEROS TO|THE OUTBOX"
 
 OnlyZeroPuzzleList:
 .dbyt InboxOutboxPuzzleInput,InboxOutboxPuzzleInput2,InboxOutboxPuzzleInput3
