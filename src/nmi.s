@@ -11,6 +11,7 @@
 .include "gfx/number_system.s"   
 .include "gfx/hand_sprites.s"   
 .include "gfx/drawpuzzletext.s"   
+.include "gfx/levelselect.s"
 
 GameModeList:
 .dbyt gamemode_menu_nmi-1, gamemode_loading_nmi-1, gamemode_game_nmi-1
@@ -141,9 +142,7 @@ gamemode_controls_mni:
   jmp nmi_finish
 
 gamemode_loadselect_mni:
-  ;wait for main to have finished (re)creating the lists
-  ;then fully clear out the screen
-  ;and draw all the puzzles
+  jsr init_levelselect
   jmp nmi_finish
 
 gamemode_levelselect_mni:
