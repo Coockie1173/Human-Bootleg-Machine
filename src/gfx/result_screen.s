@@ -159,10 +159,12 @@ CheckResultSelect:
 
 @handle_next:
     jsr result_select_next
+    jsr play_song_gameplay
     jmp @not_pressed
 
 @handle_retry:
     jsr result_select_retry
+    jsr play_song_gameplay
     jmp @not_pressed
 
 @handle_menu:
@@ -189,7 +191,6 @@ result_select_next:
     
     ; Reset and load next level
     jsr reset_level_state
-    
     ; Wait for vblank
     jsr wait_for_vblank
     lda #%00000000
