@@ -317,7 +317,7 @@ result_select_menu:
     
     rts
 
-    
+
 ; Hide the result arrow sprite
 hide_result_arrow:
     lda #$FF        ; Y = $FF means off-screen
@@ -387,7 +387,7 @@ reset_level_state:
     
     ; Refresh inbox display
     jsr refresh_inbox_display_slots
-    jsr init_number_displays
+    ;jsr init_number_displays
     
     ; Re-initialize all game sprites
     jsr init_arrow

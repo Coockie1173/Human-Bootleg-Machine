@@ -8,7 +8,7 @@
 .include "gfx/game_state.s"
 .include "gfx/interpreter_bridge.s"
 .include "gfx/argument.s"
-.include "gfx/number_system.s"   
+.include "gfx/number_system.s"     ; ← CHANGED from number_system.s
 .include "gfx/hand_sprites.s"   
 .include "gfx/drawpuzzletext.s"   
 .include "gfx/levelselect.s"
@@ -52,9 +52,8 @@ gamemode_game_nmi:
   ; Handle interpreter and player movement together
   jsr game_logic_update
   
-  ; *** DRAW EVERYTHING AFTER LOGIC, BEFORE RE-ENABLING RENDERING ***
-  jsr draw_pending_numbers        ; Draw number changes
-  jsr super_simple_inbox_draw     ; Draw inbox (MOVE HERE!)
+  ; *** UPDATE SPRITES (replaces draw_pending_numbers and super_simple_inbox_draw) ***
+  jsr update_number_sprites       ; ← NEW: Update all number sprites
   
   ; DMA transfer sprites
   lda #$00
@@ -67,11 +66,23 @@ gamemode_game_nmi:
 gamemode_menu_nmi:
   ; Menu mode - handle main menu arrow and check for start
   jsr handle_MMarrow_movement
+  
+  ; DMA transfer sprites
+  lda #$00
+  sta $2003
+  lda #$02
+  sta $4014
   jmp nmi_finish
 
 gamemode_loading_nmi:
   jsr check_start_button
   jsr DrawPuzzleText
+  
+  ; DMA transfer sprites
+  lda #$00
+  sta $2003
+  lda #$02
+  sta $4014
   jmp nmi_finish
 
 gamemode_win_mni:
@@ -122,8 +133,7 @@ game_logic_update:
   jsr execute_next_command
   bcs @interpreter_finished    ; If carry set, interpreter is done
   
-  ; UPDATE state, but DON'T DRAW yet
-  jsr update_number_displays       ; Just marks things dirty
+  ; UPDATE state (removed update_number_displays - no longer needed with sprites)
   jsr refresh_inbox_display_slots  ; Just updates RAM
   jmp @draw_player
 
@@ -139,11 +149,27 @@ game_logic_update:
 
 
 gamemode_controls_mni:
+  ; DMA transfer sprites
+  lda #$00
+  sta $2003
+  lda #$02
+  sta $4014
   jmp nmi_finish
 
 gamemode_loadselect_mni:
   jsr init_levelselect
+  
+  ; DMA transfer sprites
+  lda #$00
+  sta $2003
+  lda #$02
+  sta $4014
   jmp nmi_finish
 
 gamemode_levelselect_mni:
+  ; DMA transfer sprites
+  lda #$00
+  sta $2003
+  lda #$02
+  sta $4014
   jmp nmi_finish

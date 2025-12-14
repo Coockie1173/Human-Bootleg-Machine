@@ -1,5 +1,3 @@
-; level.s - Level initialization
-
 InitTestLevel:
     LDA #<TestPuzzle        ; Low byte of TestPuzzle address
     STA INBOXPTR
@@ -29,17 +27,15 @@ InitTestLevel:
     jsr LoadExpectedSolution
     
     ; Load inbox display slots with first 4 values
-    ;JSR refresh_inbox_display_slots
+    JSR refresh_inbox_display_slots   ; ← KEEP THIS
     
     ; Initialize the display system (marks everything dirty)
-    JSR init_number_displays
-    
-    ; Update to detect what changed (redundant but safe)
-    ;JSR update_number_displays
+    ; JSR init_number_displays          ; ← DELETE THIS LINE
     
     RTS
 
 refresh_inbox_display_slots:
+    ; ← KEEP THIS WHOLE FUNCTION - it's still needed!
     LDY #$00
     LDX #$00
     

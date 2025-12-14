@@ -55,7 +55,6 @@ gamemode_game:
     lda START_INTERPRETER
     beq @CheckInputs
         jsr update_player
-        jsr update_number_displays
         jmp WaitForNMI
 
     @CheckInputs:
