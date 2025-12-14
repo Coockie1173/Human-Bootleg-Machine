@@ -225,7 +225,7 @@ move_toward_target:
   ; This was the last command - NOW check if inbox is empty!
   ldy #$00
   lda (INBOXPTR),y
-  cmp #$FF
+  cmp #$80
   bne @inbox_not_empty     ; Inbox still has items = LOSS!
   
   ; Inbox is empty - set STOP state for solution check

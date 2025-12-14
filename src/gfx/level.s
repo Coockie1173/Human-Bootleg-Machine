@@ -1,21 +1,22 @@
 InitTestLevel:
-    LDA #<TestPuzzle        ; Low byte of TestPuzzle address
-    STA INBOXPTR
-    LDA #>TestPuzzle        ; High byte of TestPuzzle address
-    STA INBOXPTR+1
-    
-    ; DEBUG: Check what we're actually pointing at
-    LDY #$00
-    LDA (INBOXPTR), y    ; Should be $00
-    STA $0500            ; Store for inspection
-    
-    LDY #$01
-    LDA (INBOXPTR), y    ; Should be $01
-    STA $0501
-    
-    LDY #$02
-    LDA (INBOXPTR), y    ; Should be $02
-    STA $0502
+    lda SELECTEDPUZZLE
+    asl
+    tax
+
+    lda FullPuzzleList,x
+    sta VAR1
+    lda FullPuzzleList+1,x
+    sta VAR0
+
+    lda #$00
+    asl
+    tay
+
+    lda (VAR0),y
+    sta INBOXPTR+1
+    iny
+    lda (VAR0),y ;setup secondary pointer
+    sta INBOXPTR
 
     ; Reset other pointers
     LDA #$00
@@ -41,7 +42,7 @@ refresh_inbox_display_slots:
     
     ; Check if inbox is empty (first value is FF)
     LDA (INBOXPTR),y
-    CMP #$FF
+    CMP #$80
     BEQ @inbox_empty
 
 @loop:
@@ -50,7 +51,7 @@ refresh_inbox_display_slots:
     
     LDA (INBOXPTR),y
     
-    CMP #$FF
+    CMP #$80
     BEQ @found_end      ; If we hit FF, fill remaining slots with FF
     
     ; It's a valid number, store it
@@ -67,7 +68,7 @@ refresh_inbox_display_slots:
     CPX #$06
     BCS @done
     
-    LDA #$FF
+    LDA #$80
     STA INBOX_SLOT_1,x
     INX
     JMP @fill_rest
@@ -76,7 +77,7 @@ refresh_inbox_display_slots:
     ; Inbox is completely empty - fill all 4 slots with FF
     LDX #$00
 @empty_loop:
-    LDA #$FF
+    LDA #$80
     STA INBOX_SLOT_1,x
     INX
     CPX #$04

@@ -171,6 +171,7 @@ gamemode_loadselect_mni:
   jmp nmi_finish
 
 gamemode_levelselect_mni:
+  jsr handle_levelselect_nmi
   ; DMA transfer sprites
   lda #$00
   sta $2003

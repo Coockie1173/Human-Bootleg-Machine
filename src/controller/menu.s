@@ -109,12 +109,13 @@ menu_select_start:
     sta INBOXPTR            ; Setup our inbox pointer for our interpreter
 
     lda PuzzleTextPtrs,x
-    sta PUZZLETEXTPTR+1,x
+    sta PUZZLETEXTPTR+1
     lda PuzzleTextPtrs+1,x
-    sta PUZZLETEXTPTR,x
+    sta PUZZLETEXTPTR
 
     ; Set game mode flag
-    inc Gamemode
+    lda #STATE_LOADING
+    sta Gamemode
     
     rts
 
