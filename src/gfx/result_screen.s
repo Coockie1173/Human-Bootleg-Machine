@@ -182,7 +182,7 @@ result_select_next:
     jsr hide_result_arrow
     
     ; Increment to next puzzle
-    inc SELECTEDPUZZLE
+    inc SELECTEDPUZZLE 
     
     ; TODO: Add check for max puzzles
     ; lda SELECTEDPUZZLE
@@ -264,12 +264,12 @@ result_select_menu:
     ; RESET EVERYTHING TO CLEAN STATE
     lda #$00
     sta Gamemode
-    sta CURSORSTATE           ; ADD THIS
-    sta START_INTERPRETER     ; ADD THIS
-    sta command_list_count    ; ADD THIS
-    sta scrollIDX             ; ADD THIS
-    sta update_list           ; ADD THIS
-    sta arrow_update_flag     ; ADD THIS
+    sta CURSORSTATE           
+    sta START_INTERPRETER     
+    sta command_list_count    
+    sta scrollIDX             
+    sta update_list           
+    sta arrow_update_flag     
     
     ; Reset command list
     jsr ResetCommandList
@@ -317,7 +317,7 @@ result_select_menu:
     
     rts
 
-    
+
 ; Hide the result arrow sprite
 hide_result_arrow:
     lda #$FF        ; Y = $FF means off-screen
@@ -387,7 +387,7 @@ reset_level_state:
     
     ; Refresh inbox display
     jsr refresh_inbox_display_slots
-    jsr init_number_displays
+    ;jsr init_number_displays
     
     ; Re-initialize all game sprites
     jsr init_arrow

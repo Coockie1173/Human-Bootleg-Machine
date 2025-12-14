@@ -280,12 +280,33 @@ OutboxLogic:
     JMP JumpCommand
 
     LabelCommand:
+    ; Check if this is the last command (end of interpreter)
+    ldx INTERPTR
+    inx                     ; Check next position
+    lda COMMANDS,x
+    cmp #$FF               ; Is next command the terminator?
+    bne @not_end
+    
+    ; This label is at the end - LOSS CONDITION
+    ; Signal the player to stop
+    lda #STATE_STOP
+    sta player_state
+    
+    ; Prevent move_toward_target from overwriting state
+    lda #$FF
+    sta player_target_x
+    sta player_target_y
+    
+    ; Set carry to indicate failure (like ReachedEnd_Logic)
+    sec
+    rts
+    
+@not_end:
     ; Reset idle timer so there's a delay before next command
-        lda #IDLE_TIME
-        sta player_idle_timer
-        CLC
-    RTS
-
+    lda #IDLE_TIME
+    sta player_idle_timer
+    clc
+    rts
     execute_pending_tile_operation:
     lda pending_operation
     

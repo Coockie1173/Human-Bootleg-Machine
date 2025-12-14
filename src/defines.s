@@ -286,14 +286,14 @@ TILE_NUM_9                  = $1E
 
 TILE_MINUS                  = $60   ; For SINGLE digits > [-][x]
 
-TILE_NUM_MINUS_1            = $61   ; For DOUBLE digits
-TILE_NUM_MINUS_2            = $62   ; [-2][x]
-TILE_NUM_MINUS_3            = $63   ; [-3][x]
-TILE_NUM_MINUS_4            = $64   ; [-4][x] ...
-TILE_NUM_MINUS_5            = $65
-TILE_NUM_MINUS_6            = $66
-TILE_NUM_MINUS_7            = $67
-TILE_NUM_MINUS_8            = $68
-TILE_NUM_MINUS_9            = $69
+TILE_NUM_MINUS_1            = $60   ; For DOUBLE digits
+TILE_NUM_MINUS_2            = $61   ; [-2][x]
+TILE_NUM_MINUS_3            = $62   ; [-3][x]
+TILE_NUM_MINUS_4            = $63   ; [-4][x] ...
+TILE_NUM_MINUS_5            = $64
+TILE_NUM_MINUS_6            = $65
+TILE_NUM_MINUS_7            = $66
+TILE_NUM_MINUS_8            = $67
+TILE_NUM_MINUS_9            = $68
 
 PUZZLECOUNT                 = 1
