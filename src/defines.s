@@ -49,11 +49,11 @@
 STATE_MENU              = $00
 STATE_LOADING           = $01
 STATE_GAME              = $02
-STATE_WIN               = $05  ; Changed from $02
-STATE_LOSS              = $06  ; Changed from $03
-STATE_CONTROLS          = $03
-STATE_LEVEL_SELECT      = $04
-STATE_CHANGE_LEVEL_SELECT      = $05
+STATE_WIN               = $03 
+STATE_LOSS              = $04 
+STATE_CONTROLS          = $05
+STATE_LEVEL_SELECT      = $06
+STATE_CHANGE_LEVEL_SELECT      = $07
 
 ; Menu option enumeration
 MENU_START      = 0
