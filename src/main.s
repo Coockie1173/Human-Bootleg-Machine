@@ -14,6 +14,7 @@
 .include "controller/selector.s"
 .include "player.s"
 .include "controller/selectedmode.s"
+.include "controller/levelselectcursor.s"
 .include "sound/engine.s"
 .include "sound/songs.s"
 .include "sound/sfx.s"
@@ -156,6 +157,7 @@ gamemode_controls:
     jmp WaitForNMI
 
 gamemode_levelselect:
+    jsr HandleLVLSelectCursor
     jmp WaitForNMI
 
 gamemode_loadselect:

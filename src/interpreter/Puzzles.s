@@ -19,14 +19,16 @@ TestSolutionList:
 
 TestPuzzleText:
 STRBYTE "TAKE THE DATA FROM|THE INBOX|DOUBLE IT AND SEND IT|TO THE OUTBOX"
+DebugTextRemove:
+STRBYTE "UW KKR MOEDER"
 
 ;we have a max of 255 puzzles
 FullPuzzleList:
-.dbyt TestPuzzleList
+.dbyt TestPuzzleList, TestPuzzleList
 FullSolutionList:
-.dbyt TestSolutionList
+.dbyt TestSolutionList, TestSolutionList
 PuzzleTextPtrs:
-.dbyt TestPuzzleText
+.dbyt TestPuzzleText, DebugTextRemove
 
 ;X = current puzzle from full list
 CheckAllSolutions:

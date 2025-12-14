@@ -146,4 +146,5 @@ gamemode_loadselect_mni:
   jmp nmi_finish
 
 gamemode_levelselect_mni:
+  jsr handle_levelselect_nmi
   jmp nmi_finish

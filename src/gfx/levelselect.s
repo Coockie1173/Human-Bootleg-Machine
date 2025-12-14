@@ -18,6 +18,7 @@ init_levelselect:
     
     ; Clear nametable (2048 bytes)
     lda #$00
+    sta LEVELTOTALCOUNT_SELECTOR ;reset counter
     ldx #$00
     ldy #$08
     @loop:
@@ -26,8 +27,6 @@ init_levelselect:
         bne @loop
         dey
         bne @loop
-    lda #STATE_LEVEL_SELECT
-    sta game_state
 
     ldx #$00
     lda #$20
@@ -60,6 +59,7 @@ init_levelselect:
         lda TEXTLEVELLIST,x
         cmp #$FF
         beq @end
+            inc LEVELTOTALCOUNT_SELECTOR
             sta VAR4
             lda TEXTLEVELLIST+1,x
             sta VAR3
@@ -112,4 +112,35 @@ init_levelselect:
 
     lda #$6a
     sta $2007
+
+    dec LEVELTOTALCOUNT_SELECTOR
+
+    lda #STATE_LEVEL_SELECT
+    sta game_state
+rts
+
+
+handle_levelselect_nmi:
+    lda LEVELSELECTCURSOR_UPDATE
+    beq @End
+        lda $2002
+
+        lda LEVELSELECTCURSOR_POSITION_OLD
+        sta $2006
+        lda LEVELSELECTCURSOR_POSITION_OLD+1
+        sta $2006
+        lda #$00
+        sta $2007
+
+        lda LEVELSELECTCURSOR_POSITION
+        sta $2006
+        lda LEVELSELECTCURSOR_POSITION+1
+        sta $2006
+        lda #$6a
+        sta $2007
+
+        lda #$00
+        sta LEVELSELECTCURSOR_UPDATE
+
+    @End:
 rts
