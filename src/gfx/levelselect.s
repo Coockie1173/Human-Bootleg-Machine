@@ -26,7 +26,7 @@ init_levelselect:
     ldx #$00
     lda #$20
     sta VAR0
-    lda #$42-
+    lda #$42
     sta VAR1
     @drawtoptext:
         lda TEXTLEVELSELECT, x
