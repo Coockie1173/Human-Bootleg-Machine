@@ -279,6 +279,8 @@ draw_hand_value_now:
     ldy #$90
     jsr draw_number
 
+    
+
     rts
 
 ; draw_inbox_front_now - Draw inbox front value
@@ -375,6 +377,8 @@ super_simple_inbox_draw:
     STA $2007
     STA $2007
 
+    jsr play_sfx_pick_up
+
 @s1:
     ; Slot 1
     LDA INBOX_SLOT_1 + 1
@@ -393,6 +397,7 @@ super_simple_inbox_draw:
     LDA #$00
     STA $2007
     STA $2007
+    jsr play_sfx_pick_up
 
 
 @s2:
@@ -413,6 +418,7 @@ super_simple_inbox_draw:
     LDA #$00
     STA $2007
     STA $2007
+    jsr play_sfx_pick_up
 
 
 @s3:
@@ -433,6 +439,7 @@ super_simple_inbox_draw:
     LDA #$00
     STA $2007
     STA $2007
+    jsr play_sfx_pick_up
 
 
 @s4:
@@ -453,6 +460,7 @@ super_simple_inbox_draw:
     LDA #$00
     STA $2007
     STA $2007
+    jsr play_sfx_pick_up
 
 
 @s5:
@@ -473,6 +481,7 @@ super_simple_inbox_draw:
     LDA #$00
     STA $2007
     STA $2007
+    jsr play_sfx_pick_up
 
     RTS
 
