@@ -130,6 +130,8 @@ nmi_finish:
 game_logic_update:
   ; Check if player is idle and ready for next command
   lda player_state
+  cmp #STATE_STOP
+  beq @interpreter_finished
   cmp #STATE_IDLE
   bne @draw_player
 
@@ -154,12 +156,37 @@ game_logic_update:
   cmp #STATE_STOP
   bne @draw_player
   
+  jmp @CheckWin
   ; Transition to loss screen
+@solution_wrong:
   lda #STATE_LOSS
   sta game_state
   lda #$01
   sta result_arrow_update  ; Signal result screen needs init
   ;jsr init_result_arrow
+  jmp @draw_player
+
+@CheckWin:
+ ; ADD $FF TO SOLUTION FIRST
+  ldx SOLPTR
+  lda #$FF
+  sta SOLUTION,x
+  
+  ; Check if solution is correct
+  ldx SELECTEDPUZZLE
+  jsr CheckPlayerSolution
+  bcs @solution_wrong      ; Carry set = wrong solution
+  
+  ; Solution is correct - just set state
+  lda #STATE_WIN           ; This is $05
+  sta game_state           ; <-- Setting game_state, NOT result_screen_state
+  
+  ; Initialize result arrow
+  jsr init_result_arrow
+  
+  ; Set flag to load background next frame
+  lda #$01
+  sta result_arrow_update
   jmp @draw_player
 
 
