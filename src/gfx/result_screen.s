@@ -158,8 +158,8 @@ CheckResultSelect:
     jmp @not_pressed
 
 @handle_next:
-    jsr result_select_next
-    jsr play_song_gameplay
+    ;jsr result_select_next
+    ;jsr play_song_gameplay
     jmp @not_pressed
 
 @handle_retry:

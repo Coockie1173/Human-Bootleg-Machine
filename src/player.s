@@ -8,9 +8,7 @@ update_player:
   cmp #STATE_WALKING
   beq @handle_walking
   cmp #STATE_STOP
-  beq @handle_stop
-  cmp #STATE_INBOX_NOT_EMPTY
-  beq @handle_inbox_not_empty   
+  beq @handle_stop 
   rts
 
 @handle_idle:
@@ -22,14 +20,19 @@ update_player:
   rts
 
 @handle_stop:
+ ; ADD $FF TO SOLUTION FIRST
+  ldx SOLPTR
+  lda #$FF
+  sta SOLUTION,x
+  
   ; Check if solution is correct
   ldx SELECTEDPUZZLE
   jsr CheckPlayerSolution
   bcs @solution_wrong      ; Carry set = wrong solution
   
   ; Solution is correct - just set state
-  lda #STATE_WIN
-  sta game_state
+  lda #STATE_WIN           ; This is $05
+  sta game_state           ; <-- Setting game_state, NOT result_screen_state
   
   ; Initialize result arrow
   jsr init_result_arrow
@@ -41,30 +44,9 @@ update_player:
   
 @solution_wrong:
   ; Solution is wrong - just set state
-  lda #STATE_LOSS
-  sta game_state
+  lda #STATE_LOSS          ; This is $06
+  sta game_state           ; <-- Setting game_state, NOT result_screen_state
   
-  ; Initialize result arrow
-  jsr init_result_arrow
-  
-  ; Set flag to load background next frame
-  lda #$01
-  sta result_arrow_update
-  rts
-
-@handle_inbox_not_empty:
-  ; FORCE LOSS - inbox wasn't empty when commands ended!
-  lda #STATE_LOSS
-  sta game_state
-  
-  ; Initialize result arrow
-  jsr init_result_arrow
-  
-  ; Set flag to load background next frame
-  lda #$01
-  sta result_arrow_update
-  rts
-
 ; Update player graphics (call from NMI only)
 update_player_gfx:
   jsr draw_player_sprites
@@ -222,20 +204,8 @@ move_toward_target:
   cmp #$FF
   bne @set_facing          ; Not last command, continue normally
   
-  ; This was the last command - NOW check if inbox is empty!
-  ldy #$00
-  lda (INBOXPTR),y
-  cmp #$80
-  bne @inbox_not_empty     ; Inbox still has items = LOSS!
-  
-  ; Inbox is empty - set STOP state for solution check
+  ; This was the last command - set STOP state
   lda #STATE_STOP
-  sta player_state
-  rts
-
-@inbox_not_empty:
-  ; Commands ended but inbox not empty = FORCE LOSS!
-  lda #STATE_INBOX_NOT_EMPTY
   sta player_state
   rts
 
@@ -258,7 +228,7 @@ move_toward_target:
   lda #$00
   sta player_facing
   rts
-  
+
 @move_horizontal:
   ; Move horizontally toward target
   lda player_x
@@ -394,4 +364,3 @@ set_facing_direction:
   
 @keep_facing:
   rts
-

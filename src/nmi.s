@@ -47,18 +47,24 @@ gamemode_game_nmi:
   lda #%00000000
   sta $2001
 
+; Disable rendering
+  lda #%00000000
+  sta $2001
+
   ; Game mode - run all game logic
   jsr Show_Argument
   jsr handle_command_selector_gfx
   jsr handle_arrow_movement
   jsr handle_selected_command
+  jsr draw_pending_numbers
   
+
+
   ; Handle interpreter and player movement together
   jsr game_logic_update
-  
-  ; *** UPDATE SPRITES (replaces draw_pending_numbers and super_simple_inbox_draw) ***
-  jsr update_number_sprites       ; ← NEW: Update all number sprites
-  
+  jsr draw_pending_numbers        ; Draw tiles/hand/outbox
+  jsr super_simple_inbox_draw     ; ← ADD THIS LINE!
+
   ; DMA transfer sprites
   lda #$00
   sta $2003
@@ -137,23 +143,34 @@ game_logic_update:
   jsr execute_next_command
   bcs @interpreter_finished    ; If carry set, interpreter is done
   
-  ; UPDATE state (removed update_number_displays - no longer needed with sprites)
+  ; UPDATE state, but DON'T DRAW yet
+  jsr update_number_displays       ; Just marks things dirty
   jsr refresh_inbox_display_slots  ; Just updates RAM
   jmp @draw_player
 
 @interpreter_finished:
-  ; Interpreter finished (this gets hit when reaching $FF or inbox empty)
-  ; Don't do anything here - let the player state machine handle it
+  ; Check if player is in STOP state (loss condition)
+  lda player_state
+  cmp #STATE_STOP
+  bne @draw_player
   
+  ; Transition to loss screen
+  lda #STATE_LOSS
+  sta game_state
+  lda #$01
+  sta result_arrow_update  ; Signal result screen needs init
+  ;jsr init_result_arrow
+  jmp @draw_player
+
+
 @draw_player:
   ; Always update player sprites in NMI
   jsr update_player_gfx
   jsr draw_hand_sprites
   rts
 
-
 gamemode_controls_mni:
-  ; DMA transfer sprites
+  ; DMA transfer spritesF
   lda #$00
   sta $2003
   lda #$02
@@ -171,7 +188,7 @@ gamemode_loadselect_mni:
   jmp nmi_finish
 
 gamemode_levelselect_mni:
-  jsr handle_levelselect_nmi
+;  jsr handle_levelselect_nmi
   ; DMA transfer sprites
   lda #$00
   sta $2003

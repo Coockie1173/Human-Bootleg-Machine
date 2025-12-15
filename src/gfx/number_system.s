@@ -1,384 +1,524 @@
-; Uses sprites 40-63 (24 sprites total)
-; - Sprites 0-3: Player
-; - Sprites 4-5: Hand (above player)
-; - Sprites 40-55: Tiles 0-7 (16 sprites)
-; - Sprites 56-61: Inbox slots 0-2 (6 sprites)
-; - Sprites 62-63: Outbox (2 sprites)
+; Number system integration
 
+.include "gfx/number_display.s"
 
+; Bitmask table (ROM) - masks for tiles 0..7
+tile_mask_table:
+    .byte %00000001  ; tile 0
+    .byte %00000010  ; tile 1
+    .byte %00000100  ; tile 2
+    .byte %00001000  ; tile 3
+    .byte %00010000  ; tile 4
+    .byte %00100000  ; tile 5
+    .byte %01000000  ; tile 6
+    .byte %10000000  ; tile 7
 
-; CONVERT NUMBER TO TILES
-; Input: A = signed number (will be clamped to -99 to 99)
-; Output: VAR1 = left tile, VAR2 = right tile
-number_to_tiles:
-    ; Save X since we use it for division
-    pha                     ; Save A
+; init_number_displays - Initialize system on level load
+init_number_displays:
+    ; Clear all tile RAM values to 0
+    ldx #$00
+    lda #$00
+@clear_loop:
+    sta GAMEMMEM, x
+    sta last_tile_values, x
+    inx
+    cpx #$08
+    bcc @clear_loop
     
-    ; Check if negative
-    bpl @check_positive_clamp
+    jsr refresh_inbox_display_slots
+
+    ; Mark all tiles dirty ONCE for initial draw
+    lda #$FF
+    sta tile_values_dirty
+
+    ; Mark special values for initial draw
+    lda #$01
+    sta hand_value_dirty
+    sta inbox_value_dirty
+    sta outbox_value_dirty
     
-    ; NEGATIVE - check if less than -99
-    cmp #$9D                ; -99 in two's complement = $9D (157)
-    bcs @negative_ok        ; If >= -99, it's ok
-    
-    ; Clamp to -99
-    lda #$9D
-    
-@negative_ok:
-    ; Get absolute value
-    eor #$FF
-    clc
-    adc #$01
-    tax                     ; Save absolute value in X
-    
-    ; Check if single digit
-    cmp #10
-    bcc @neg_single
-    
-    ; NEGATIVE DOUBLE DIGIT
-    txa                     ; Get value back
-    ldy #0
-@neg_div:
-    cmp #10
-    bcc @neg_div_done
-    sec
-    sbc #10
-    iny
-    jmp @neg_div
-@neg_div_done:
-    ; Y = tens (1-9), A = ones (0-9)
-    pha                     ; Save ones
-    tya
-    clc
-    adc #$60                ; $60 + 1 = $61, $60 + 2 = $62
-    sta VAR1
-    pla
-    clc
-    adc #$07
-    sta VAR2
-    pla                     ; Restore original A
+    ; Clear last known special values
+    lda #$00
+    sta last_hand_value
+    lda #$FF
+    sta last_inbox_value
+    sta last_outbox_value
+
     rts
+
+; set_tile_dirty - Mark a specific tile as dirty
+; Input: X = tile index (0-7)
+set_tile_dirty:
+    lda tile_mask_table, x
+    ora tile_values_dirty
+    sta tile_values_dirty
+    rts
+
+; Mark only changed tiles as dirty
+check_tile_changes:
+    ldx #$00
+@loop:
+    ; Compare current value with last known
+    lda GAMEMMEM, x
+    cmp last_tile_values, x
+    beq @next               ; Same value, skip
     
-@neg_single:
-    lda #$60
-    sta VAR1
+    ; Value changed!
+    sta last_tile_values, x ; Update last known value
+    
+    ; Mark this tile as dirty
     txa
-    clc
-    adc #$07
-    sta VAR2
-    pla                     ; Restore original A
-    rts
-
-@check_positive_clamp:
-    ; Check if greater than 99
-    cmp #$64                ; 100 decimal
-    bcc @positive_ok
-    
-    ; Clamp to 99
-    lda #$63                ; 99 decimal
-    
-@positive_ok:
-    tax                     ; Save value in X
-    cmp #10
-    bcc @pos_single
-    
-    ; POSITIVE DOUBLE DIGIT
-    ldy #0
-@pos_div:
-    cmp #10
-    bcc @pos_div_done
-    sec
-    sbc #10
-    iny
-    jmp @pos_div
-@pos_div_done:
-    ; Y = tens, A = ones
-    pha                     ; Save ones
-    tya
-    clc
-    adc #$07
-    sta VAR1
+    pha                     ; Save X
+    jsr set_tile_dirty      ; X is still the tile index
     pla
-    clc
-    adc #$07
-    sta VAR2
-    pla                     ; Restore original A
-    rts
+    tax                     ; Restore X
     
-@pos_single:
-    lda #$07
-    sta VAR1
-    txa
-    clc
-    adc #$07
-    sta VAR2
-    pla                     ; Restore original A
+@next:
+    inx
+    cpx #$08
+    bcc @loop
+    
     rts
 
-; ============================================================================
-; UPDATE ALL NUMBER SPRITES
-; ============================================================================
-update_number_sprites:
-    ; TILE 0
-    lda GAMEMMEM + 0
-    jsr number_to_tiles
-    lda #TILE0_SPR_Y
-    sta $0200 + (SPR_TILE0_LEFT * 4)
-    sta $0200 + (SPR_TILE0_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_TILE0_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_TILE0_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_TILE0_LEFT * 4) + 2
-    sta $0200 + (SPR_TILE0_RIGHT * 4) + 2
-    lda #TILE0_SPR_X
-    sta $0200 + (SPR_TILE0_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_TILE0_RIGHT * 4) + 3
+; check_hand_change - Check if hand value changed
+check_hand_change:
+    lda HANDMEM
+    cmp last_hand_value
+    beq @no_change
     
-    ; TILE 1
-    lda GAMEMMEM + 1
-    jsr number_to_tiles
-    lda #TILE1_SPR_Y
-    sta $0200 + (SPR_TILE1_LEFT * 4)
-    sta $0200 + (SPR_TILE1_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_TILE1_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_TILE1_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_TILE1_LEFT * 4) + 2
-    sta $0200 + (SPR_TILE1_RIGHT * 4) + 2
-    lda #TILE1_SPR_X
-    sta $0200 + (SPR_TILE1_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_TILE1_RIGHT * 4) + 3
+    ; Changed!
+    sta last_hand_value
+    lda #$01
+    sta hand_value_dirty
     
-    ; TILE 2
-    lda GAMEMMEM + 2
-    jsr number_to_tiles
-    lda #TILE2_SPR_Y
-    sta $0200 + (SPR_TILE2_LEFT * 4)
-    sta $0200 + (SPR_TILE2_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_TILE2_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_TILE2_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_TILE2_LEFT * 4) + 2
-    sta $0200 + (SPR_TILE2_RIGHT * 4) + 2
-    lda #TILE2_SPR_X
-    sta $0200 + (SPR_TILE2_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_TILE2_RIGHT * 4) + 3
+@no_change:
+    rts
+
+; check_inbox_change - Check if inbox front value changed
+check_inbox_change:
+    ldy #$00
+    lda (INBOXPTR), y       ; Get current front value
+    cmp last_inbox_value
+    beq @no_change
     
-    ; TILE 3
-    lda GAMEMMEM + 3
-    jsr number_to_tiles
-    lda #TILE3_SPR_Y
-    sta $0200 + (SPR_TILE3_LEFT * 4)
-    sta $0200 + (SPR_TILE3_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_TILE3_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_TILE3_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_TILE3_LEFT * 4) + 2
-    sta $0200 + (SPR_TILE3_RIGHT * 4) + 2
-    lda #TILE3_SPR_X
-    sta $0200 + (SPR_TILE3_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_TILE3_RIGHT * 4) + 3
+    ; Changed!
+    sta last_inbox_value
+    lda #$01
+    sta inbox_value_dirty
     
-    ; TILE 4
-    lda GAMEMMEM + 4
-    jsr number_to_tiles
-    lda #TILE4_SPR_Y
-    sta $0200 + (SPR_TILE4_LEFT * 4)
-    sta $0200 + (SPR_TILE4_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_TILE4_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_TILE4_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_TILE4_LEFT * 4) + 2
-    sta $0200 + (SPR_TILE4_RIGHT * 4) + 2
-    lda #TILE4_SPR_X
-    sta $0200 + (SPR_TILE4_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_TILE4_RIGHT * 4) + 3
-    
-    ; TILE 5
-    lda GAMEMMEM + 5
-    jsr number_to_tiles
-    lda #TILE5_SPR_Y
-    sta $0200 + (SPR_TILE5_LEFT * 4)
-    sta $0200 + (SPR_TILE5_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_TILE5_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_TILE5_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_TILE5_LEFT * 4) + 2
-    sta $0200 + (SPR_TILE5_RIGHT * 4) + 2
-    lda #TILE5_SPR_X
-    sta $0200 + (SPR_TILE5_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_TILE5_RIGHT * 4) + 3
-    
-    ; TILE 6
-    lda GAMEMMEM + 6
-    jsr number_to_tiles
-    lda #TILE6_SPR_Y
-    sta $0200 + (SPR_TILE6_LEFT * 4)
-    sta $0200 + (SPR_TILE6_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_TILE6_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_TILE6_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_TILE6_LEFT * 4) + 2
-    sta $0200 + (SPR_TILE6_RIGHT * 4) + 2
-    lda #TILE6_SPR_X
-    sta $0200 + (SPR_TILE6_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_TILE6_RIGHT * 4) + 3
-    
-    ; TILE 7
-    lda GAMEMMEM + 7
-    jsr number_to_tiles
-    lda #TILE7_SPR_Y
-    sta $0200 + (SPR_TILE7_LEFT * 4)
-    sta $0200 + (SPR_TILE7_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_TILE7_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_TILE7_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_TILE7_LEFT * 4) + 2
-    sta $0200 + (SPR_TILE7_RIGHT * 4) + 2
-    lda #TILE7_SPR_X
-    sta $0200 + (SPR_TILE7_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_TILE7_RIGHT * 4) + 3
-    
-    ; INBOX SLOT 0
-    lda INBOX_SLOT_1 + 0
-    cmp #$80
-    beq @hide_inbox0
-    jsr number_to_tiles
-    lda #INBOX0_SPR_Y
-    sta $0200 + (SPR_INBOX0_LEFT * 4)
-    sta $0200 + (SPR_INBOX0_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_INBOX0_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_INBOX0_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_INBOX0_LEFT * 4) + 2
-    sta $0200 + (SPR_INBOX0_RIGHT * 4) + 2
-    lda #INBOX_SPR_X
-    sta $0200 + (SPR_INBOX0_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_INBOX0_RIGHT * 4) + 3
-    jmp @check_inbox1
-@hide_inbox0:
-    lda #$FF
-    sta $0200 + (SPR_INBOX0_LEFT * 4)
-    sta $0200 + (SPR_INBOX0_RIGHT * 4)
-    
-@check_inbox1:
-    ; INBOX SLOT 1
-    lda INBOX_SLOT_1 + 1
-    cmp #$80
-    beq @hide_inbox1
-    jsr number_to_tiles
-    lda #INBOX1_SPR_Y
-    sta $0200 + (SPR_INBOX1_LEFT * 4)
-    sta $0200 + (SPR_INBOX1_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_INBOX1_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_INBOX1_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_INBOX1_LEFT * 4) + 2
-    sta $0200 + (SPR_INBOX1_RIGHT * 4) + 2
-    lda #INBOX_SPR_X
-    sta $0200 + (SPR_INBOX1_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_INBOX1_RIGHT * 4) + 3
-    jmp @check_inbox2
-@hide_inbox1:
-    lda #$FF
-    sta $0200 + (SPR_INBOX1_LEFT * 4)
-    sta $0200 + (SPR_INBOX1_RIGHT * 4)
-    
-@check_inbox2:
-    ; INBOX SLOT 2
-    lda INBOX_SLOT_1 + 2
-    cmp #$80
-    beq @hide_inbox2
-    jsr number_to_tiles
-    lda #INBOX2_SPR_Y
-    sta $0200 + (SPR_INBOX2_LEFT * 4)
-    sta $0200 + (SPR_INBOX2_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_INBOX2_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_INBOX2_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_INBOX2_LEFT * 4) + 2
-    sta $0200 + (SPR_INBOX2_RIGHT * 4) + 2
-    lda #INBOX_SPR_X
-    sta $0200 + (SPR_INBOX2_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_INBOX2_RIGHT * 4) + 3
-    jmp @check_outbox
-@hide_inbox2:
-    lda #$FF
-    sta $0200 + (SPR_INBOX2_LEFT * 4)
-    sta $0200 + (SPR_INBOX2_RIGHT * 4)
-    
-@check_outbox:
-    ; OUTBOX
+@no_change:
+    rts
+
+; check_outbox_change - Check if outbox value changed
+check_outbox_change:
     ldx SOLPTR
     cpx #$00
-    beq @hide_outbox
+    beq @empty              ; No solution items yet
+    
+    dex                     ; Get last item index
+    lda SOLUTION, x
+    cmp last_outbox_value
+    beq @no_change
+    
+    ; Changed!
+    sta last_outbox_value
+    lda #$01
+    sta outbox_value_dirty
+    rts
+    
+@empty:
+    lda #$FF
+    cmp last_outbox_value
+    beq @no_change
+    sta last_outbox_value
+    lda #$01
+    sta outbox_value_dirty
+    
+@no_change:
+    rts
+
+; update_number_displays - Check all values and mark changes
+update_number_displays:
+    jsr check_tile_changes
+    jsr check_hand_change
+    jsr check_inbox_change
+    jsr check_outbox_change 
+    rts
+
+; draw_pending_numbers - Draw only dirty numbers
+draw_pending_numbers:
+    ; Quick-check if any work needed
+    lda tile_values_dirty
+    bne @do_tiles
+    ;lda hand_value_dirty
+    ;bne @do_hand
+    lda inbox_value_dirty
+    bne @do_inbox
+    lda outbox_value_dirty
+    bne @do_outbox
+    rts                     ; Nothing to do
+
+@do_tiles:
+    ; Only draw tiles that have their bit set
+    ldx #$00                ; X = tile index 0..7
+@tile_loop:
+    ; Test whether this tile's bit is set
+    lda tile_values_dirty
+    and tile_mask_table, x
+    beq @next_tile          ; Bit not set, skip
+    
+    ; Draw this tile
+    txa
+    pha                     ; Save X
+    
+    ; Get value to draw
+    lda GAMEMMEM, x
+    pha                     ; Save value
+    
+    ; Get PPU address
+    jsr get_tile_ppu_address  ; Returns X=hi, Y=lo
+    
+    ; Draw the number
+    pla                     ; Restore value to A
+    jsr draw_number
+    
+    ; Clear this tile's dirty bit
+    pla                     ; Restore tile index
+    tax
+    
+    lda tile_mask_table, x
+    eor #$FF                ; Invert mask
+    and tile_values_dirty
+    sta tile_values_dirty
+    
+@next_tile:
+    inx
+    cpx #$08
+    bcc @tile_loop
+
+
+@do_inbox:
+    lda inbox_value_dirty
+    beq @do_outbox
+    ;jsr draw_inbox_front_now
+    ;jsr draw_inbox_all
+    lda #$00
+    sta inbox_value_dirty
+
+@do_outbox:
+    lda outbox_value_dirty
+    beq @done
+    jsr draw_outbox_front_now
+    lda #$00
+    sta outbox_value_dirty
+
+@done:
+    rts
+
+; get_tile_ppu_address - Get PPU address for tile display
+; Input: X = tile index (0-7)
+; Output: X = PPU high byte, Y = PPU low byte
+get_tile_ppu_address:
+    cpx #$00
+    bne @tile1
+    ldx #TILE0LOCHI
+    ldy #TILE0LOCLO
+    rts
+    
+@tile1:
+    cpx #$01
+    bne @tile2
+    ldx #TILE1LOCHI
+    ldy #TILE1LOCLO
+    rts
+    
+@tile2:
+    cpx #$02
+    bne @tile3
+    ldx #TILE2LOCHI
+    ldy #TILE2LOCLO
+    rts
+    
+@tile3:
+    cpx #$03
+    bne @tile4
+    ldx #TILE3LOCHI
+    ldy #TILE3LOCLO
+    rts
+    
+@tile4:
+    cpx #$04
+    bne @tile5
+    ldx #TILE4LOCHI
+    ldy #TILE4LOCLO
+    rts
+    
+@tile5:
+    cpx #$05
+    bne @tile6
+    ldx #TILE5LOCHI
+    ldy #TILE5LOCLO
+    rts
+    
+@tile6:
+    cpx #$06
+    bne @tile7
+    ldx #TILE6LOCHI
+    ldy #TILE6LOCLO
+    rts
+    
+@tile7:
+    ldx #TILE7LOCHI
+    ldy #TILE7LOCLO
+    rts
+
+; draw_hand_value_now - Draw hand value
+draw_hand_value_now:
+    lda HANDMEM
+    ldx #$21
+    ldy #$90
+    jsr draw_number
+
+    rts
+
+; draw_inbox_front_now - Draw inbox front value
+;draw_inbox_front_now:
+    ;ldy #$00
+    ;lda (INBOXPTR), y
+    
+    ;cmp #$FF
+    ;beq @empty
+    
+    ; Draw the value
+    ;ldx #INBOXLOCHI
+    ;ldy #INBOXLOCLO
+    ;jsr draw_number
+    ;rts
+    
+;@empty:
+    ; Inbox is empty - erase display
+    ;ldx #INBOXLOCHI
+    ;ldy #INBOXLOCLO
+    ;jsr erase_number
+    ;rts
+
+;draw_inbox_all:
+    ; Reset PPU latch first
+    ;bit $2002
+    
+    ;LDX #$00
+
+;@loop:
+    ;LDA INBOX_SLOT_1,x
+    ;CMP #$FF
+    ;BEQ @draw_empty_tile    ; If FF, draw empty tile ($03)
+    
+    ; Draw the number
+    ;PHX                     ; save slot index
+    ;PHA                     ; save value to draw
+    
+    ; Get PPU address for this slot
+    ;TXA                     ; Move slot index to A
+    ;JSR get_inbox_slot_ppu_address
+    ; returns X=hi, Y=lo
+    
+    ;PLA                     ; restore number to draw
+    ;JSR draw_number
+    
+    ;PLX                     ; restore slot index
+    ;JMP @next_slot
+
+;@draw_empty_tile:
+    ;PHX                     ; save slot index
+    
+    ; Get PPU address for this slot
+    ;TXA                     ; Move slot index to A
+    ;JSR get_inbox_slot_ppu_address
+    ; returns X=hi, Y=lo
+    
+    ; Draw two $03 tiles (or whatever your empty tile is)
+    ; Reset PPU latch
+    ;bit $2002
+    ;stx $2006
+    ;sty $2006
+    
+    ;lda #$00                ; Empty tile
+   ; sta $2007
+  ;  sta $2007
+    
+ ;   PLX                     ; restore slot index
+
+;@next_slot:
+    ;INX
+    ;CPX #$04
+    ;BCC @loop
+
+;@done:
+;    RTS
+
+super_simple_inbox_draw:
+    ; Slot 0
+    LDA INBOX_SLOT_1
+    CMP #$FF
+    BEQ @s0_empty
+    LDX #INBOXLOCHI
+    LDY #INBOXLOCLO
+    JSR draw_number
+    JMP @s1
+@s0_empty:
+    BIT $2002
+    LDA #INBOXLOCHI
+    STA $2006
+    LDA #INBOXLOCLO
+    STA $2006
+    LDA #$00
+    STA $2007
+    STA $2007
+
+@s1:
+    ; Slot 1
+    LDA INBOX_SLOT_1 + 1
+    CMP #$FF
+    BEQ @s1_empty
+    LDX #INBOX1_HI
+    LDY #INBOX1_LO
+    JSR draw_number
+    JMP @s2
+@s1_empty:
+    BIT $2002
+    LDA #INBOX1_HI
+    STA $2006
+    LDA #INBOX1_LO
+    STA $2006
+    LDA #$00
+    STA $2007
+    STA $2007
+
+
+@s2:
+    ; Slot 2
+    LDA INBOX_SLOT_1 + 2
+    CMP #$FF
+    BEQ @s2_empty
+    LDX #INBOX2_HI
+    LDY #INBOX2_LO
+    JSR draw_number
+    JMP @s3
+@s2_empty:
+    BIT $2002
+    LDA #INBOX2_HI
+    STA $2006
+    LDA #INBOX2_LO
+    STA $2006
+    LDA #$00
+    STA $2007
+    STA $2007
+
+
+@s3:
+    ; Slot 3
+    LDA INBOX_SLOT_1 + 3
+    CMP #$FF
+    BEQ @s3_empty
+    LDX #INBOX3_HI
+    LDY #INBOX3_LO
+    JSR draw_number
+    JMP @s4
+@s3_empty:
+    BIT $2002
+    LDA #INBOX3_HI
+    STA $2006
+    LDA #INBOX3_LO
+    STA $2006
+    LDA #$00
+    STA $2007
+    STA $2007
+
+
+@s4:
+    ; Slot 4 (NEW)
+    LDA INBOX_SLOT_1 + 4
+    CMP #$FF
+    BEQ @s4_empty
+    LDX #INBOX4_HI
+    LDY #INBOX4_LO
+    JSR draw_number
+    JMP @s5
+@s4_empty:
+    BIT $2002
+    LDA #INBOX4_HI
+    STA $2006
+    LDA #INBOX4_LO
+    STA $2006
+    LDA #$00
+    STA $2007
+    STA $2007
+
+
+@s5:
+    ; Slot 5 (NEW)
+    LDA INBOX_SLOT_1 + 5
+    CMP #$FF
+    BEQ @s5_empty
+    LDX #INBOX5_HI
+    LDY #INBOX5_LO
+    JSR draw_number
+    RTS
+@s5_empty:
+    BIT $2002
+    LDA #INBOX5_HI
+    STA $2006
+    LDA #INBOX5_LO
+    STA $2006
+    LDA #$00
+    STA $2007
+    STA $2007
+
+    RTS
+
+; draw_outbox_front_now - Draw outbox last value
+draw_outbox_front_now:
+    ldx SOLPTR
+    cpx #$00
+    beq @empty_outbox
+    
+    ; Draw the last value
     dex
     lda SOLUTION, x
-    cmp #$80
-    beq @hide_outbox
-    jsr number_to_tiles
-    lda #OUTBOX_SPR_Y
-    sta $0200 + (SPR_OUTBOX_LEFT * 4)
-    sta $0200 + (SPR_OUTBOX_RIGHT * 4)
-    lda VAR1
-    sta $0200 + (SPR_OUTBOX_LEFT * 4) + 1
-    lda VAR2
-    sta $0200 + (SPR_OUTBOX_RIGHT * 4) + 1
-    lda #%00000010
-    sta $0200 + (SPR_OUTBOX_LEFT * 4) + 2
-    sta $0200 + (SPR_OUTBOX_RIGHT * 4) + 2
-    lda #OUTBOX_SPR_X
-    sta $0200 + (SPR_OUTBOX_LEFT * 4) + 3
-    clc
-    adc #8
-    sta $0200 + (SPR_OUTBOX_RIGHT * 4) + 3
+    ldx #OUTBOXLOCHI
+    ldy #OUTBOXLOCLO
+    jsr draw_number
     rts
-@hide_outbox:
-    lda #$FF
-    sta $0200 + (SPR_OUTBOX_LEFT * 4)
-    sta $0200 + (SPR_OUTBOX_RIGHT * 4)
+    
+@empty_outbox:
+    ; Outbox is empty - erase display
+    ldx #OUTBOXLOCHI
+    ldy #OUTBOXLOCLO
+    jsr erase_number
     rts
+
+get_inbox_slot_ppu_address:
+    CMP #$00
+    BNE @slot1
+    LDX #INBOXLOCHI
+    LDY #INBOXLOCLO
+    RTS
+
+@slot1:
+    CMP #$01
+    BNE @slot2
+    LDX #INBOX1_HI
+    LDY #INBOX1_LO
+    RTS
+
+@slot2:
+    CMP #$02
+    BNE @slot3
+    LDX #INBOX2_HI
+    LDY #INBOX2_LO
+    RTS
+
+@slot3:
+    LDX #INBOX3_HI
+    LDY #INBOX3_LO
+    RTS

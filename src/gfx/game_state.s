@@ -51,7 +51,7 @@ transition_to_game:
   jsr init_player
   
   ; Initialize number displays
-  ;jsr init_number_displays
+  jsr init_number_displays
   
   ; Change game state
   lda #STATE_GAME

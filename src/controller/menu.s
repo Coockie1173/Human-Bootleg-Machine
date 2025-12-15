@@ -77,7 +77,7 @@ CheckMenuStart:
     jmp @not_pressed
 
 @handle_levels:
-    jsr menu_select_levels
+    ;jsr menu_select_levels
     jmp @not_pressed
 
 @handle_sound:

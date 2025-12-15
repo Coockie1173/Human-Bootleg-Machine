@@ -141,7 +141,6 @@ InboxLogic:
 
 
 ReachedEnd_Logic:
-     ; Inbox is empty - this is GOOD, continue to check if we're at end of commands
      ; Signal the player to stop
     lda #STATE_STOP
     sta player_state
@@ -274,11 +273,10 @@ OutboxLogic:
     JumpNegativeCommand:
         LDA HANDMEM
         BMI :+
-            CLC
-            RTS
+            JMP JumpCommand
         :
-    JMP JumpCommand
-
+        CLC
+    RTS
     LabelCommand:
     ; Check if this is the last command (end of interpreter)
     ldx INTERPTR

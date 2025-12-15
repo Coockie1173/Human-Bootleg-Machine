@@ -14,7 +14,7 @@
 .include "controller/selector.s"
 .include "player.s"
 .include "controller/selectedmode.s"
-.include "controller/levelselectcursor.s"
+;.include "controller/levelselectcursor.s"
 .include "sound/engine.s"
 .include "sound/songs.s"
 .include "sound/sfx.s"
@@ -99,6 +99,8 @@ gamemode_win:
     jsr clear_all_sprites
     
     jsr load_background_win
+
+    jsr init_result_arrow
     
     lda #%10000000
     sta $2000
@@ -135,6 +137,8 @@ gamemode_loss:
     
     jsr load_background_loss  ; 
     
+    jsr init_result_arrow
+
     lda #%10000000
     sta $2000
     lda #%00011110
@@ -157,7 +161,7 @@ gamemode_controls:
     jmp WaitForNMI
 
 gamemode_levelselect:
-    jsr HandleLVLSelectCursor
+    ;jsr HandleLVLSelectCursor
     jmp WaitForNMI
 
 gamemode_loadselect:
