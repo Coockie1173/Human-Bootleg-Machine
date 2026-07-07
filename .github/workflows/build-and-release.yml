@@ -3,8 +3,8 @@ name: Build and Release NES ROM
 on:
   push:
     tags:
-      - 'v*'         # Trigger on version tags like v1.0, v0.2.1
-  workflow_dispatch:  # Allow manual runs from the Actions tab
+      - 'v*'        
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,11 +15,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # cc65 is available in Ubuntu's apt repos
       - name: Install cc65
         run: sudo apt-get update && sudo apt-get install -y cc65
 
-      # Find all .s / .asm files under src/ and assemble each one
       - name: Assemble source files
         run: |
           mkdir -p build
@@ -30,9 +28,6 @@ jobs:
             ca65 "$src_file" -o "build/${base}.o" --listing "build/${base}.lst" --debug-info
           done
 
-      # Link all object files into a .nes ROM
-      # Assumes a linker config at src/nes.cfg (common for NesHacker-style projects).
-      # If yours is elsewhere, update the -C path below.
       - name: Link ROM
         run: |
           OBJ_FILES=$(ls build/*.o 2>/dev/null | tr '\n' ' ')
@@ -78,11 +73,10 @@ jobs:
     name: Publish to GitHub Releases
     needs: build
     runs-on: ubuntu-latest
-    # Only publish a release when a version tag triggered the workflow
     if: startsWith(github.ref, 'refs/tags/')
 
     permissions:
-      contents: write   # Needed to create releases and upload assets
+      contents: write  
 
     steps:
       - name: Download ROM artifact
