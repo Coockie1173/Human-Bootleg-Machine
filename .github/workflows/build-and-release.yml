@@ -3,8 +3,8 @@ name: Build and Release NES ROM
 on:
   push:
     tags:
-      - 'v*'        
-  workflow_dispatch:
+      - 'v*'          
+  workflow_dispatch:  
 
 jobs:
   build:
@@ -18,56 +18,34 @@ jobs:
       - name: Install cc65
         run: sudo apt-get update && sudo apt-get install -y cc65
 
-      - name: Assemble source files
+      - name: Assemble
         run: |
-          mkdir -p build
-          for src_file in src/*.s src/*.asm; do
-            [ -f "$src_file" ] || continue
-            base=$(basename "$src_file" | sed 's/\.[^.]*$//')
-            echo "Assembling $src_file -> build/${base}.o"
-            ca65 "$src_file" -o "build/${base}.o" --listing "build/${base}.lst" --debug-info
-          done
+          mkdir -p Build
+          ca65 src/main.s -g -o Build/main.o
 
-      - name: Link ROM
+      - name: Link
         run: |
-          OBJ_FILES=$(ls build/*.o 2>/dev/null | tr '\n' ' ')
-          if [ -z "$OBJ_FILES" ]; then
-            echo "No object files found — assembly step may have failed."
+          ld65 -t nes -o Build/HRS.nes Build/main.o --dbgfile Build/HRS.dbg
+
+      - name: Verify ROM
+        run: |
+          if [ ! -f Build/HRS.nes ]; then
+            echo "ROM file not found!"
             exit 1
           fi
-
-          # Resolve linker config: prefer src/nes.cfg, fall back to cc65's built-in NES target
-          if [ -f "src/nes.cfg" ]; then
-            CFG_ARG="-C src/nes.cfg"
-          elif [ -f "nes.cfg" ]; then
-            CFG_ARG="-C nes.cfg"
-          else
-            CFG_ARG="-t nes"
-          fi
-
-          echo "Linking with: ld65 $CFG_ARG $OBJ_FILES -o build/HumanBootlegMachine.nes"
-          ld65 $CFG_ARG $OBJ_FILES -o build/HumanBootlegMachine.nes
-
-      - name: Verify ROM was produced
-        run: |
-          if [ ! -f build/HumanBootlegMachine.nes ]; then
-            echo "ROM file not found after linking!"
-            exit 1
-          fi
-          echo "ROM size: $(wc -c < build/HumanBootlegMachine.nes) bytes"
-          # Quick sanity check: NES ROMs start with the iNES magic bytes "NES\x1a"
-          MAGIC=$(xxd -p -l 4 build/HumanBootlegMachine.nes)
+          echo "ROM size: $(wc -c < Build/HRS.nes) bytes"
+          MAGIC=$(xxd -p -l 4 Build/HRS.nes)
           if [ "$MAGIC" = "4e45531a" ]; then
-            echo "iNES header looks valid."
+            echo "iNES header valid."
           else
-            echo "Warning: file does not start with iNES magic bytes (got $MAGIC). Check linker config."
+            echo "Warning: unexpected header bytes: $MAGIC"
           fi
 
       - name: Upload ROM as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: HumanBootlegMachine-rom
-          path: build/HumanBootlegMachine.nes
+          name: HRS-rom
+          path: Build/HRS.nes
 
   release:
     name: Publish to GitHub Releases
@@ -76,13 +54,13 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     permissions:
-      contents: write  
+      contents: write
 
     steps:
       - name: Download ROM artifact
         uses: actions/download-artifact@v4
         with:
-          name: HumanBootlegMachine-rom
+          name: HRS-rom
           path: dist/
 
       - name: Create GitHub Release
@@ -95,10 +73,8 @@ jobs:
             NES ROM built automatically from source using cc65.
 
             ### How to play
-            Load `HumanBootlegMachine.nes` in any NES emulator that supports iNES format
+            Load `HRS.nes` in any NES emulator that supports iNES format
             (e.g. [Mesen](https://www.mesen.ca/), [FCEUX](https://fceux.com/)).
-
-            See [`controls.txt`](https://github.com/${{ github.repository }}/blob/main/controls.txt) for controls.
-          files: dist/HumanBootlegMachine.nes
+          files: dist/HRS.nes
           draft: false
           prerelease: false
